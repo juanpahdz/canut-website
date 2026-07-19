@@ -43,10 +43,11 @@ Air-light v. 4.2.2 was approved to [official WordPress theme directory](https://
     5. [WordPress & functions](#wordpress--functions)
     6. [Custom Post Types](#custom-post-types)
     7. [Custom Taxonomies](#custom-taxonomies)
-    8. [Namespaced PHP](#namespaced-php)
-    9. [Accessibility](#accessibility)
-    10. [Lazy load](#lazy-load)
-    11. [Disabled features](#disabled-features)
+    8. [Custom ACF field groups](#custom-acf-field-groups)
+    9. [Namespaced PHP](#namespaced-php)
+    10. [Accessibility](#accessibility)
+    11. [Lazy load](#lazy-load)
+    12. [Disabled features](#disabled-features)
 5. [Extra building blocks](#extra-building-blocks)
     1. [Sticky navigation](#sticky-navigation)
     2. [WooCommerce support](#woocommerce-support)
@@ -155,6 +156,18 @@ Air-light can register your Taxonomies automatically.
 
 2. Add a file `inc/taxonomies/your-taxonomy.php`
 3. Extend `Taxonomy` class with `Your_Taxonomy` and define your taxonomy in a public function called `register()`. See the example: `inc/taxonomies/your-taxonomy.php`.
+
+#### Custom ACF field groups
+
+Field groups registered via PHP (`acf_add_local_field_group()`) live in their own files under `inc/acf-fields/`, kept fully separate from the rest of the theme. They are only loaded when Advanced Custom Fields is active, so the theme won't break on sites without the plugin.
+
+1. Copy `inc/acf-fields/your-field-group.php` to a new file named after your field group, eg. `inc/acf-fields/hero.php`
+2. Update the `key`, `title`, `fields` and `location` inside `acf_add_local_field_group()`. Easiest way to get this array is building the field group in ACF UI, then using its "Export" > "Generate PHP" screen
+3. Require the new file from `inc/acf-fields.php`
+
+```
+require get_theme_file_path( '/inc/acf-fields/hero.php' );
+```
 
 ### Namespaced PHP
 

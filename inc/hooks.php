@@ -59,9 +59,24 @@ add_filter( 'block_categories_all', __NAMESPACE__ . '\acf_blocks_add_category_in
 add_action( 'acf/init', __NAMESPACE__ . '\acf_blocks_init' );
 add_filter( 'acf/fields/wysiwyg/toolbars', __NAMESPACE__ . '\add_custom_tinymce_toolbars' );
 
+/**
+ * Custom ACF field groups
+ *
+ * Only load if Advanced Custom Fields is active, so the theme doesn't break without it
+ */
+if ( function_exists( 'acf_add_local_field_group' ) ) {
+  require get_theme_file_path( 'inc/acf-fields.php' );
+}
+
 
 /**
  * Form related hooks
  */
 require get_theme_file_path( 'inc/hooks/forms.php' );
 add_action( 'gform_enqueue_scripts', __NAMESPACE__ . '\dequeue_gf_stylesheets', 999 );
+
+/**
+ * WooCommerce
+ */
+require get_theme_file_path( 'inc/hooks/woocommerce.php' );
+add_filter( 'loop_shop_columns', __NAMESPACE__ . '\woocommerce_loop_columns' );

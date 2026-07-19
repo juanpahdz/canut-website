@@ -1,0 +1,74 @@
+// stylelint-disable custom-property-pattern, csstools/value-no-unknown-custom-properties
+@use '../variables' as *;
+
+// Basic layout for WooCommerce shop/archive and single product pages.
+// WooCommerce's own .button class already inherits the theme button style
+// from layout/_general.scss, so no button rules are needed here.
+.woocommerce-breadcrumb {
+  color: var(--wp--preset--color--black);
+  font-size: var(--wp--preset--font-size--body-s);
+  margin-bottom: var(--wp--preset--spacing--l);
+}
+
+ul.products {
+  display: grid;
+  gap: var(--wp--preset--spacing--l);
+  grid-template-columns: repeat(2, 1fr);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  li.product {
+    text-align: left;
+
+    a {
+      color: var(--wp--preset--color--black);
+      text-decoration: none;
+    }
+
+    img {
+      height: auto;
+      width: 100%;
+    }
+
+    .woocommerce-loop-product__title {
+      font-size: var(--wp--preset--font-size--body-m);
+      font-weight: var(--wp--custom--font-weight--semi-bold);
+      margin: var(--wp--preset--spacing--s) 0 0;
+    }
+
+    .price {
+      color: var(--wp--preset--color--black);
+      display: block;
+      margin-top: var(--wp--preset--spacing--xs);
+    }
+  }
+
+  @media (min-width: $breakpoint-tablet-landscape) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.woocommerce-pagination {
+  margin-top: var(--wp--preset--spacing--xl);
+}
+
+div.product {
+  .price {
+    font-size: var(--wp--preset--font-size--heading-s);
+    font-weight: var(--wp--custom--font-weight--bold);
+  }
+
+  .woocommerce-product-details__short-description {
+    margin-top: var(--wp--preset--spacing--m);
+  }
+}
+
+.woocommerce-message,
+.woocommerce-error,
+.woocommerce-info {
+  border-top: 3px solid var(--wp--preset--color--black);
+  list-style: none;
+  margin: 0 0 var(--wp--preset--spacing--l);
+  padding: var(--wp--preset--spacing--m);
+}

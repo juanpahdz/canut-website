@@ -1,3 +1,10 @@
+### [Unreleased]: 2026-07-19
+
+* Add `inc/acf-fields/` and `inc/acf-fields.php` for registering ACF field groups via PHP, kept separate and only loaded when ACF is active
+* Move all development tooling, source assets and configs into `_dev/`, keeping only runtime files at the theme root for production deploys
+* Rebrand theme metadata in `style.css` for Canut
+* Add WooCommerce support: theme support declaration, `woocommerce/global/wrapper-start.php` and `wrapper-end.php` template overrides matching the theme's `<main>` markup, 3-column shop loop, and basic product grid styles
+
 ### 10.2.0: 2026-06-23
 
 * Remove wysiwyg(tinymce) editor specific styles. Move default link css to theme.json, ref: DEV-1032
