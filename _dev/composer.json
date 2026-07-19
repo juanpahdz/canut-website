@@ -1,0 +1,10 @@
+{
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
+  },
+  "require-dev": {
+    "digitoimistodude/dude-coding-standards": "^1.0"
+  }
+}

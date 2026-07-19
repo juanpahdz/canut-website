@@ -1,0 +1,31 @@
+@charset 'utf-8';
+
+/**
+ * Editor-only styles for WordPress block editor (Gutenberg)
+ *
+ * WordPress automatically parses and scopes all selectors in this stylesheet
+ * to .editor-styles-wrapper, preventing leaks into wp-admin areas.
+ *
+ * Example transformation:
+ * - Input:  .class { font-size: 16px; }
+ * - Output: .editor-styles-wrapper .class { font-size: 16px; }
+ *
+ * This allows us to include global styles (typography, formatting) without
+ * worrying about affecting WordPress admin interface.
+ *
+ * @package air-light
+ * @link https://developer.wordpress.org/reference/functions/add_editor_style/
+ * @link https://developer.wordpress.org/block-editor/how-to-guides/themes/theme-support/#editor-styles
+ */
+
+// Variables (fonts, colors, spacing, typography)
+@use 'variables';
+
+// Typography (automatically scoped by WordPress to .editor-styles-wrapper)
+@use 'layout/typography';
+
+// Block variations
+@use 'block-variations';
+
+// Formatting (already scoped to .editor-styles-wrapper and .entry-content)
+@use 'formatting/img';

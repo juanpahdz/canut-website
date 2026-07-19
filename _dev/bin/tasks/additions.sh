@@ -1,0 +1,61 @@
+#!/bin/bash
+echo "${YELLOW}Adding media library folder...${TXTRESET}"
+mkdir -p ${PROJECT_PATH}/media
+echo "" > ${PROJECT_PATH}/media/index.php
+chmod 777 ${PROJECT_PATH}/media
+
+echo "${YELLOW}Generating default README.md...${TXTRESET}"
+
+# Extract versions from style.css
+NEWEST_AIR_VERSION=$(grep -m1 "^Version:" ${PROJECT_THEME_PATH}/style.css | sed 's/Version: //')
+NEWEST_WORDPRESS_VERSION=$(grep -m1 "^Tested up to:" ${PROJECT_THEME_PATH}/style.css | sed 's/Tested up to: //')
+NEWEST_PHP_VERSION=$(grep -m1 "^Requires PHP:" ${PROJECT_THEME_PATH}/style.css | sed 's/Requires PHP: //')
+CURRENT_DATE=$(LC_TIME=en_US date '+%d %b %Y' |tr ' ' '_');
+echo "# ${PROJECT_NAME}
+![based_on_air_version ${NEWEST_AIR_VERSION}_](https://img.shields.io/badge/based_on_air_version-${NEWEST_AIR_VERSION}_-brightgreen.svg?style=flat-square) ![project_created ${CURRENT_DATE}](https://img.shields.io/badge/project_created-${CURRENT_DATE}-blue.svg?style=flat-square) ![Tested_up_to WordPress_${NEWEST_WORDPRESS_VERSION}](https://img.shields.io/badge/Tested_up_to-WordPress_${NEWEST_WORDPRESS_VERSION}-blue.svg?style=flat-square) ![Compatible_with PHP_${NEWEST_PHP_VERSION}](https://img.shields.io/badge/Compatible_with-PHP_${NEWEST_PHP_VERSION}-green.svg?style=flat-square)
+
+This project is hand made for customer by Dude.
+
+**Disclaimer:** Please remove this disclaimer after you have edited the README.md, style.css version information and details and screenshot.png. If you see this text in place after the project has been deployed to production, \`git blame\` is in place ;)
+
+## Stack
+
+### Project is based on
+
+* [digitoimistodude/dudestack](https://github.com/digitoimistodude/dudestack)
+* [digitoimistodude/air-light](https://github.com/digitoimistodude/air-light)
+
+### Recommended development environment
+
+* [digitoimistodude/macos-lemp-setup](https://github.com/digitoimistodude/macos-lemp-setup)
+
+## Theme screenshot
+
+![Screenshot](/content/themes/${THEME_NAME}/screenshot.png?raw=true \"Screenshot\")
+
+## Getting started
+
+Your local server should be up and running. If you need help, ask your supervisor or refer to **[Internal Development Docs](https://app.gitbook.com/o/PedExJWZmbCiZe4gDwKC/s/VVikkYgIZ9miBzwYDCYh/)** → **[Joining the project later on](https://app.gitbook.com/o/PedExJWZmbCiZe4gDwKC/s/VVikkYgIZ9miBzwYDCYh/project-stages/joining-the-project-later-on)**.
+
+### Installation
+
+In project root:
+
+\`\`\`
+composer install
+nvm install
+nvm use
+npm install
+\`\`\`
+
+In theme directory:
+
+\`\`\`
+npm install
+\`\`\`
+
+Start development from project root:
+
+\`\`\`
+npm run dev
+\`\`\`" > "${PROJECTS_HOME}/${PROJECT_NAME}/README.md"

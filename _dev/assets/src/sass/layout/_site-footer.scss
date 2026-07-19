@@ -1,0 +1,56 @@
+// WordPress custom properties from theme.json
+// stylelint-disable custom-property-pattern, csstools/value-no-unknown-custom-properties
+// The very bottom of the site. Usually contains supporting
+// or secondary navigation, social media icons, contact details
+// and such.
+
+// Please note: These are mostly for demo purposes
+// so feel free to remove everything in this file
+// and start over.
+.site-footer {
+  // Making sure the footer background is white, even on WordPress.org
+  background-color: var(--wp--preset--color--white);
+  border-top: 1px solid #e3e3f0;
+  color: var(--wp--preset--color--black);
+  overflow: hidden;
+  padding: 3.75rem 1.25rem;
+
+  .container {
+    padding-bottom: 2.5rem;
+    padding-top: 2.5rem;
+  }
+
+  p,
+  a {
+    color: var(--wp--preset--color--black);
+  }
+
+  .site-info {
+    display: grid;
+    gap: 1rem;
+    justify-content: start;
+  }
+
+  .theme-info {
+    font-size: var(--wp--preset--font-size--16);
+  }
+
+  .theme-info a {
+    display: block;
+  }
+
+  .powered-by-wordpress,
+  .theme-info {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .powered-by-wordpress {
+    font-weight: var(--wp--custom--font-weight--semi-bold);
+  }
+
+  .powered-by-wordpress svg {
+    height: 1.75rem;
+    width: 1.75rem;
+  }
+}

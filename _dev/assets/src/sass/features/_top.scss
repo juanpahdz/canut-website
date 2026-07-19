@@ -1,0 +1,38 @@
+// WordPress custom properties from theme.json
+// stylelint-disable custom-property-pattern, csstools/value-no-unknown-custom-properties
+// The one and only anchor link that brings user back to top
+.top {
+  --color-background-top: var(--wp--preset--color--black);
+  --color-background-top-hover: var(--wp--preset--color--white);
+  background-color: var(--color-background-top);
+  border: 1px solid var(--wp--preset--color--black);
+  border-radius: 0;
+  bottom: var(--wp--preset--spacing--m);
+  color: var(--wp--preset--color--white);
+  cursor: pointer;
+  font-size: var(--wp--preset--font-size--16);
+  height: 1.875rem;
+  line-height: 1.875rem;
+  opacity: 0;
+  position: fixed;
+  right: var(--wp--preset--spacing--m);
+  text-align: center;
+  text-decoration: none;
+  transition: 500ms opacity;
+  visibility: hidden;
+  width: 1.875rem;
+  z-index: 1;
+
+  &:hover {
+    background-color: var(--color-background-top-hover);
+  }
+
+  &:focus {
+    background-color: var(--color-background-top);
+  }
+}
+
+.top.is-visible {
+  opacity: 1;
+  visibility: visible;
+}

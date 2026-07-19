@@ -1,0 +1,33 @@
+name: JS
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    name: Test JS
+    runs-on: ubuntu-22.04
+
+    steps:
+    - name: Checkout the repository
+      uses: actions/checkout@v4
+
+    - name: Read .nvmrc
+      run: echo "NVMRC=$(cat _dev/.nvmrc)" >> $GITHUB_OUTPUT
+      id: nvm
+
+    - name: Setup node
+      uses: actions/setup-node@v4
+      with:
+        node-version: '${{ steps.nvm.outputs.NVMRC }}'
+
+    - name: Install packages
+      run: npm install
+      working-directory: _dev
+
+    - name: Lint JS
+      run: npm run lint
+      working-directory: _dev
+
+    - name: Build JS with Parcel
+      run: npm run dev:js
+      working-directory: _dev

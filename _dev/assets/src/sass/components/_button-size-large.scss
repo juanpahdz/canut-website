@@ -1,0 +1,6 @@
+// stylelint-disable custom-property-pattern, csstools/value-no-unknown-custom-properties
+// stylelint-disable number-max-precision, rem-over-px/rem-over-px
+@mixin button-size-large() {
+  font-size: var(--wp--preset--font-size--body-l);
+  padding: 14px 22px;
+}

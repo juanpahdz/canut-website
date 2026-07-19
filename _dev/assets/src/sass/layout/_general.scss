@@ -1,0 +1,112 @@
+// WordPress uses custom properties with double dashes from theme.json that don't match kebab-case
+// stylelint-disable custom-property-pattern, csstools/value-no-unknown-custom-properties
+@use '../components' as *;
+@use '../variables' as *;
+@use '../helpers' as *;
+
+// This file is meant for general styles and containers
+// that apply everywhere throughout the website. Add more
+// always repeating elements right below.
+
+// Default structural element
+.block {
+  background-color: var(--wp--preset--color--white);
+  margin: 0 auto;
+  position: relative;
+}
+
+// Global link helper
+// This is useful in services -type of areas where the whole block is a link
+// Remember to define aria-label or screen-reader-text for accessibility
+.global-link {
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: 3;
+}
+
+// Site wrapper
+.site {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 100%;
+
+  // Prevent longer dropdowns from cutting out on too low pages
+  min-height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+// Containers
+.container {
+  margin: 0 auto;
+  margin-left: auto;
+  margin-right: auto;
+  // prettier-ignore
+  max-width: calc(var(--wp--style--global--wide-size) + var(--wp--style--root--padding-right) + var(--wp--style--root--padding-left));
+  padding-bottom: var(--wp--preset--spacing--xl);
+  padding-left: var(--wp--style--root--padding-left);
+  padding-right: var(--wp--style--root--padding-right);
+  padding-top: var(--wp--preset--spacing--xl);
+}
+
+.edit-link:last-child,
+.edit-link {
+  --color-link-edit-border: #ddd;
+  --color-link-edit-text: #555;
+  --color-link-edit-text-hover: #fff;
+  --color-link-edit-background-hover: #aaa;
+  --color-link-edit-border-hover: #aaa;
+  display: block;
+  margin-bottom: 1.25rem;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 1.25rem;
+  max-width: var(--wp--style--global--wide-size);
+  min-width: 0;
+  overflow: hidden;
+  text-align: left;
+  transition: all 150ms;
+  width: 100%;
+
+  a {
+    background-color: var(--wp--preset--color--white);
+    border: 2px dashed var(--color-link-edit-border);
+    clear: both;
+    color: var(--color-link-edit-text);
+    display: block;
+    font-weight: var(--wp--custom--font-weight--semi-bold);
+    margin: 0 auto;
+    max-width: calc(100% - 2rem);
+    padding: 1rem;
+    text-align: center;
+    text-decoration: none;
+    transition: all 150ms;
+  }
+
+  &:focus,
+  a:hover {
+    background-color: var(--color-link-edit-background-hover);
+    border-color: var(--color-link-edit-border-hover);
+    color: var(--color-link-edit-text-hover);
+  }
+}
+
+// Buttons outside of block content
+.button {
+  @include button();
+
+  &.is-style-outline {
+    @include button-style-outline();
+  }
+
+  &.is-size-small {
+    @include button-size-small();
+  }
+
+  &.is-size-large {
+    @include button-size-large();
+  }
+}

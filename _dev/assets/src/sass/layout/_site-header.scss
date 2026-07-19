@@ -1,0 +1,48 @@
+// WordPress uses custom properties with double dashes from theme.json that don't match kebab-case
+// stylelint-disable custom-property-pattern, csstools/value-no-unknown-custom-properties
+@use '../variables' as *;
+
+.site-header {
+  background-color: var(--wp--preset--color--white);
+
+  @media screen and (max-width: ($breakpoint-nav - 1px)) {
+    background-color: var(--color-background-nav-mobile-header);
+  }
+}
+
+.js-nav-active .site-header {
+  background-color: var(--color-background-nav-mobile-header-active);
+}
+
+.site-header-inner {
+  align-items: flex-start;
+  column-gap: var(--wp--style--block-gap);
+  display: flex;
+  justify-content: space-between;
+  margin-left: auto;
+  margin-right: auto;
+  // prettier-ignore
+  max-width: calc(var(--wp--style--global--wide-size) + var(--wp--style--root--padding-right) + var(--wp--style--root--padding-left));
+  padding-bottom: 0;
+  padding-left: var(--wp--style--root--padding-left);
+  padding-right: var(--wp--style--root--padding-right);
+  padding-top: 2.5rem;
+  position: relative;
+  z-index: 15;
+
+  @media screen and (max-width: ($breakpoint-nav - 1px)) {
+    padding-bottom: 0;
+    padding-top: 1.25rem;
+  }
+}
+
+.site-title {
+  line-height: 0;
+  margin: 0;
+
+  a {
+    align-items: center;
+    color: var(--wp--preset--color--black);
+    display: flex;
+  }
+}

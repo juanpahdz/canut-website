@@ -1,0 +1,91 @@
+@use '../variables' as *;
+// stylelint-disable a11y/no-display-none, plugin/file-max-lines
+// Import nav-toggle
+@use 'nav-toggle';
+@use 'nav-mobile';
+
+// Mobile styles
+@media screen and (max-width: ($breakpoint-nav - 1px)) {
+  // Dropdown toggle
+  .menu-item-clickable {
+    align-items: center;
+    background-color: transparent;
+    border-bottom: 0;
+    border-left: 0;
+    border-right: 0;
+    border-top: 1px solid var(--color-separator-nav-mobile);
+    color: var(--color-main-level-menu-item-mobile);
+    display: flex;
+    font-size: var(--typography-size-main-level-mobile);
+    font-weight: var(--typography-weight-main-level-mobile);
+    gap: 0.625rem;
+    justify-content: space-between;
+    margin-left: 0;
+    margin-right: 0;
+    padding-bottom: var(--padding-main-level-vertical-mobile);
+    padding-left: var(--padding-sub-menu-horizontal-mobile);
+    padding-right: var(--padding-sub-menu-horizontal-mobile);
+    padding-top: var(--padding-main-level-vertical-mobile);
+    position: relative;
+    text-align: initial;
+    text-decoration: none;
+    width: 100%;
+    z-index: 0;
+  }
+
+  .menu-item-clickable::after {
+    background-color: currentColor;
+    content: '';
+    display: block;
+    flex-shrink: 0;
+    height: 8px;
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='8' viewBox='0 0 13 8'%3E%3Cpath fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' d='M0.751298 0.75L5.85072 6.514C5.87222 6.53823 5.89861 6.55763 5.92816 6.57091C5.95771 6.5842 5.98974 6.59107 6.02213 6.59107C6.05453 6.59107 6.08656 6.5842 6.11611 6.57091C6.14565 6.55763 6.17205 6.53823 6.19355 6.514L11.293 0.75'/%3E%3C/svg%3E");
+    mask-position: 50% 50%;
+    mask-repeat: no-repeat;
+    mask-size: contain;
+    transition: transform 0.35s cubic-bezier(0.19, 1, 0.22, 1);
+    width: 13px;
+  }
+
+  .menu-item-clickable.toggled-on::after {
+    transform: rotate(-180deg) rotateX(0deg);
+  }
+
+  .menu-item-clickable:hover {
+    cursor: pointer;
+  }
+
+  .menu-item-clickable:focus {
+    cursor: pointer;
+    z-index: 100;
+  }
+
+  .sub-menu .menu-item-clickable {
+    color: var(--color-sub-menu-mobile);
+  }
+
+  // Mobile navigation core functionality
+  .js-nav-active {
+    overflow: hidden;
+
+    .menu-items-wrapper {
+      background-color: var(--color-background-menu-items-active);
+      opacity: 1;
+      pointer-events: all;
+      transform: translate3d(0, 0, 0);
+      visibility: visible;
+      width: var(--width-navigation);
+    }
+  }
+
+  .site-main,
+  .site-footer {
+    transition: transform 180ms ease-in-out;
+  }
+
+  // Push site content and footer to the left
+  .js-nav-active .site-main,
+  .js-nav-active .site-footer {
+    transform: translate3d(calc(var(--width-navigation) * -1), 0, 0);
+  }
+}
