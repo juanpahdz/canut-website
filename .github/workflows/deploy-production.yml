@@ -1,0 +1,108 @@
+name: Deploy to production (SiteGround)
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup SSH
+      uses: webfactory/ssh-agent@v0.9.0
+      with:
+        ssh-private-key: ${{ secrets.SSH_PROD_PRIVATE_KEY }}
+
+    - name: Compress files into zip
+      run: |
+        zip -r new-theme.zip . \
+          -x "_dev/*" \
+          -x ".git/*" \
+          -x ".github/*" \
+          -x ".claude/*" \
+          -x ".gitignore" \
+          -x "CLAUDE.md" \
+          -x "*.DS_Store"
+
+    - name: Copy zip file via SSH
+      run: |
+        scp -P ${{ secrets.SSH_PROD_PORT }} -o StrictHostKeyChecking=no new-theme.zip ${{ secrets.SSH_PROD_USER }}@${{ secrets.SSH_PROD_HOST }}:~/www/${{ secrets.SSH_PROD_WEBSITE }}/public_html/wp-content/themes/new-theme.zip
+
+    - name: Execute remote commands
+      run: |
+        ssh -p ${{ secrets.SSH_PROD_PORT }} -o StrictHostKeyChecking=no ${{ secrets.SSH_PROD_USER }}@${{ secrets.SSH_PROD_HOST }} << 'EOF'
+          set -e
+
+          WEBSITE="${{ secrets.SSH_PROD_WEBSITE }}"
+          OLD_FOLDER="${{ secrets.SSH_OLD_FOLDER_NAME }}"
+          NEW_FOLDER="${{ secrets.SSH_NEW_FOLDER_NAME }}"
+          THEMES_DIR="$HOME/www/$WEBSITE/public_html/wp-content/themes"
+
+          echo "=== Starting deployment to PRODUCTION ==="
+          echo "Website: $WEBSITE"
+          echo "Old folder: ${OLD_FOLDER:-'not set'}"
+          echo "New folder: ${NEW_FOLDER:-'canut'}"
+
+          if [ -z "$NEW_FOLDER" ]; then
+            NEW_FOLDER="canut"
+            echo "Using default folder name: $NEW_FOLDER"
+          fi
+
+          if [[ "$NEW_FOLDER" =~ [*/\$\&\|\;\`] ]]; then
+            echo "ERROR: NEW_FOLDER contains disallowed characters"
+            exit 1
+          fi
+
+          # Step 1: maintenance flag on the currently active theme, if any
+          if [ -n "$OLD_FOLDER" ] && [ -d "$THEMES_DIR/$OLD_FOLDER" ]; then
+            touch "$THEMES_DIR/$OLD_FOLDER/maintenance.flag" 2>/dev/null || true
+            echo "Maintenance flag created"
+          else
+            echo "No old folder found, skipping maintenance flag"
+          fi
+
+          # Step 2: unzip the new build
+          echo "Unzipping new theme..."
+          unzip -q "$THEMES_DIR/new-theme.zip" -d "$THEMES_DIR/new-theme-temp"
+          echo "Unzip done"
+
+          # Step 3: remove the old theme folder
+          if [ -n "$OLD_FOLDER" ] && [ -d "$THEMES_DIR/$OLD_FOLDER" ]; then
+            echo "Removing old folder: $OLD_FOLDER"
+            rm -rf "$THEMES_DIR/$OLD_FOLDER"
+            echo "Old folder removed"
+          else
+            echo "No old folder to remove"
+          fi
+
+          # Step 4: rename new folder into place
+          echo "Renaming folder to: $NEW_FOLDER"
+          mv "$THEMES_DIR/new-theme-temp" "$THEMES_DIR/$NEW_FOLDER"
+          echo "Folder renamed"
+
+          # Step 5: clean up the zip
+          rm -f "$THEMES_DIR/new-theme.zip"
+          echo "Zip file removed"
+
+          # Step 6: purge SiteGround cache
+          WP_DIR="$HOME/www/$WEBSITE/public_html"
+          cd "$WP_DIR"
+
+          echo "Purging SiteGround cache..."
+
+          if command -v wp &> /dev/null; then
+            wp sg purge 2>/dev/null && echo "SG Optimizer cache purged" || echo "SG Optimizer not available"
+            wp cache flush 2>/dev/null && echo "WordPress cache flushed" || echo "Cache flush not available"
+            wp transient delete --all 2>/dev/null && echo "Transients deleted" || true
+          else
+            echo "WP-CLI not available, skipping cache purge"
+          fi
+
+          echo "=== Deployment to PRODUCTION completed successfully ==="
+        EOF

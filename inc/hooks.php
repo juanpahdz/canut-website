@@ -63,10 +63,15 @@ add_filter( 'acf/fields/wysiwyg/toolbars', __NAMESPACE__ . '\add_custom_tinymce_
 /**
  * Custom ACF field groups
  *
- * Only load if Advanced Custom Fields is active, so the theme doesn't break without it
+ * Only load if Advanced Custom Fields is active, so the theme doesn't break
+ * without it. Registration itself is deferred to acf/init rather than run
+ * immediately here - each field group calls translation functions (__())
+ * inline, and doing that before WordPress's init action fires triggers WP
+ * 6.7's _load_textdomain_just_in_time notice for the air-light domain.
  */
 if ( function_exists( 'acf_add_local_field_group' ) ) {
   require get_theme_file_path( 'inc/acf-fields.php' );
+  add_action( 'acf/init', __NAMESPACE__ . '\register_acf_field_groups' );
 }
 
 

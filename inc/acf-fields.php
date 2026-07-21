@@ -13,14 +13,22 @@
 
 namespace Air_Light;
 
-// require get_theme_file_path( '/inc/acf-fields/your-field-group.php' );
-require get_theme_file_path( '/inc/acf-fields/homepage-canut.php' );
-require get_theme_file_path( '/inc/acf-fields/historia.php' );
-require get_theme_file_path( '/inc/acf-fields/product-canut.php' );
-require get_theme_file_path( '/inc/acf-fields/categoria-ayuda.php' );
-require get_theme_file_path( '/inc/acf-fields/recurso-ayuda.php' );
-require get_theme_file_path( '/inc/acf-fields/pregunta-soporte.php' );
-require get_theme_file_path( '/inc/acf-fields/nosotros-canut.php' );
-require get_theme_file_path( '/inc/acf-fields/pagina-informativa.php' );
-require get_theme_file_path( '/inc/acf-fields/contacto-canut.php' );
-require get_theme_file_path( '/inc/acf-fields/garantia-canut.php' );
+/**
+ * Require every custom ACF field group file. Hooked to acf/init (see
+ * inc/hooks.php) instead of run immediately - each field group calls
+ * translation functions (__()) inline, and doing that before WordPress's
+ * init action fires triggers WP 6.7's _load_textdomain_just_in_time notice.
+ */
+function register_acf_field_groups() {
+  // require get_theme_file_path( '/inc/acf-fields/your-field-group.php' );
+  require get_theme_file_path( '/inc/acf-fields/homepage-canut.php' );
+  require get_theme_file_path( '/inc/acf-fields/historia.php' );
+  require get_theme_file_path( '/inc/acf-fields/product-canut.php' );
+  require get_theme_file_path( '/inc/acf-fields/categoria-ayuda.php' );
+  require get_theme_file_path( '/inc/acf-fields/recurso-ayuda.php' );
+  require get_theme_file_path( '/inc/acf-fields/pregunta-soporte.php' );
+  require get_theme_file_path( '/inc/acf-fields/nosotros-canut.php' );
+  require get_theme_file_path( '/inc/acf-fields/pagina-informativa.php' );
+  require get_theme_file_path( '/inc/acf-fields/contacto-canut.php' );
+  require get_theme_file_path( '/inc/acf-fields/garantia-canut.php' );
+} // end register_acf_field_groups
