@@ -1,0 +1,157 @@
+// CANUT cart popup: upsell card + discount-by-online-payment card
+// stylelint-disable custom-property-pattern, csstools/value-no-unknown-custom-properties
+@use '../variables' as *;
+
+.cart-upsell-canut,
+.cart-discount-canut {
+  @include canut-radius(md);
+  align-items: center;
+  background-color: var(--wp--preset--color--bg-base);
+  border: 1px solid var(--wp--preset--color--border);
+  display: flex;
+  gap: var(--wp--preset--spacing--space-sm);
+  padding: var(--wp--preset--spacing--space-sm);
+}
+
+.cart-discount-canut {
+  background-color: color-mix(in sRGB, var(--wp--preset--color--success) 8%, var(--wp--preset--color--bg-base));
+  border-color: color-mix(in sRGB, var(--wp--preset--color--success) 25%, transparent);
+}
+
+.cart-upsell-canut-icon,
+.cart-discount-canut-icon {
+  align-items: center;
+  border-radius: 50%;
+  display: flex;
+  flex-shrink: 0;
+  height: 2.25rem;
+  justify-content: center;
+  width: 2.25rem;
+
+  svg {
+    height: 1.125rem;
+    width: 1.125rem;
+  }
+}
+
+.cart-upsell-canut-icon {
+  background-color: var(--wp--preset--color--bg-surface);
+  color: var(--wp--preset--color--text-secondary);
+}
+
+.cart-discount-canut-icon {
+  background-color: color-mix(in sRGB, var(--wp--preset--color--success) 15%, transparent);
+  color: var(--wp--preset--color--success);
+}
+
+.cart-upsell-canut-body,
+.cart-discount-canut-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-xs);
+  min-width: 0;
+}
+
+.cart-upsell-canut-button {
+  @include text-style(caption, body, bold);
+  @include canut-radius(full);
+  background-color: var(--wp--preset--color--primary-dark);
+  border: 0;
+  color: var(--wp--preset--color--white);
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: var(--wp--preset--spacing--space-xs) var(--wp--preset--spacing--space-sm);
+  white-space: nowrap;
+
+  &:hover,
+  &:focus {
+    background-color: var(--wp--preset--color--primary);
+  }
+}
+
+.cart-upsell-canut-title,
+.cart-discount-canut-title {
+  @include text-style(body, display, medium);
+  align-items: center;
+  color: var(--wp--preset--color--primary);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--wp--preset--spacing--space-xs);
+  margin: 0;
+}
+
+.cart-discount-canut-title {
+  color: var(--wp--preset--color--success);
+}
+
+.cart-discount-canut-badge {
+  @include text-style(caption, body, medium);
+  @include canut-radius(full);
+  background-color: var(--wp--preset--color--success);
+  color: var(--wp--preset--color--white);
+  padding: 0.125rem var(--wp--preset--spacing--space-xs);
+  text-transform: uppercase;
+}
+
+.cart-discount-canut-prices {
+  align-items: baseline;
+  display: flex;
+  gap: var(--wp--preset--spacing--space-xs);
+  margin: 0;
+}
+
+.cart-discount-canut-original {
+  @include text-style(small, body, regular);
+  color: var(--wp--preset--color--text-secondary);
+  text-decoration: line-through;
+}
+
+.cart-discount-canut-discounted {
+  @include text-style(body, display, medium);
+  color: var(--wp--preset--color--success);
+}
+
+.cart-upsell-canut-text,
+.cart-discount-canut-text {
+  @include text-style(small, body, regular);
+  color: var(--wp--preset--color--text-secondary);
+  margin: 0;
+}
+
+.cart-discount-canut-code {
+  @include canut-radius(sm);
+  align-items: center;
+  background-color: var(--wp--preset--color--bg-surface);
+  border: 1px dashed var(--wp--preset--color--border);
+  display: flex;
+  gap: var(--wp--preset--spacing--space-xs);
+  justify-content: space-between;
+  padding: var(--wp--preset--spacing--space-xs) var(--wp--preset--spacing--space-sm);
+}
+
+.cart-discount-canut-code-value {
+  @include text-style(small, body, medium);
+  color: var(--wp--preset--color--text-primary);
+  letter-spacing: var(--wp--custom--canut--letter-spacing--caption);
+}
+
+.cart-discount-canut-copy {
+  @include text-style(caption, body, medium);
+  align-items: center;
+  background-color: transparent;
+  border: 0;
+  color: var(--wp--preset--color--accent);
+  cursor: pointer;
+  display: inline-flex;
+  gap: var(--wp--preset--spacing--space-xs);
+
+  svg {
+    height: 1em;
+    width: 1em;
+  }
+
+  &.is-copied {
+    color: var(--wp--preset--color--success);
+  }
+}

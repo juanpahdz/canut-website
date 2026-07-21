@@ -77,7 +77,12 @@ add_action( 'after_setup_theme', function() {
      * Menu locations
      */
     'menu_locations' => [
-      'primary' => __( 'Primary Menu', 'air-light' ),
+      // Not run through __() - these are wp-admin-only location names (Appearance
+      // > Menus), and this array is built on after_setup_theme, before init;
+      // translating this early trips WP 6.7's "textdomain loaded too early" notice.
+      'primary'        => 'Primary Menu',
+      'footer_company' => 'Footer - Compañía',
+      'footer_support' => 'Footer - Soporte',
     ],
 
     /**
@@ -88,6 +93,7 @@ add_action( 'after_setup_theme', function() {
      */
     'taxonomies' => [
       // 'Your_Taxonomy' => [ 'post', 'page' ],
+      'Categoria_Ayuda' => [ 'recurso_ayuda', 'pregunta_soporte' ],
     ],
 
     /**
@@ -97,7 +103,9 @@ add_action( 'after_setup_theme', function() {
      * https://github.com/digitoimistodude/air-light#custom-post-types
      */
     'post_types' => [
-      // 'Your_Post_Type',
+      'Historia',
+      'Recurso_Ayuda',
+      'Pregunta_Soporte',
     ],
 
     /**
@@ -105,17 +113,49 @@ add_action( 'after_setup_theme', function() {
      */
     // Register custom ACF Blocks
     'acf_blocks' => [
-      // [
-      //   'name'           => 'block-file-slug',
-      //   'title'          => 'Block Visible Name',
-      //   // You can safely remove lines below if you find no use for them
-      //   'prevent_cache'  => false, // Defaults to false,
-      //   // Icon defaults to svg file inside assets/svg/block-icons named after the block name,
-      //   // eg. assets/svg/block-icons/block-file-slug.svg
-      //   //
-      //   // Icon setting defines the dashicon equivalent: https://developer.wordpress.org/resource/dashicons/#block-default
-      //   // 'icon'  => 'block-default',
-      // ],
+      [
+        'name'  => 'homepage-canut',
+        // Not run through __() - same after_setup_theme/init ordering issue as
+        // menu_locations above; this is a block-editor-only label.
+        'title' => 'Página de inicio CANUT',
+        // One block holds every homepage section (hero, banda de confianza,
+        // estilo de vida, producto destacado, cómo funciona, branding
+        // emocional, reseñas, garantía, CTA final) so editing the Front
+        // page means editing this single block's fields.
+        'icon'  => 'admin-home',
+      ],
+      [
+        'name'  => 'nosotros-canut',
+        'title' => 'Página Nosotros CANUT',
+        // One block holds every "Nosotros" section (hero, origen,
+        // diferenciales, CTA final) so editing the page means editing
+        // this single block's fields.
+        'icon'  => 'admin-users',
+      ],
+      [
+        'name'  => 'contacto-canut',
+        'title' => 'Página Contacto CANUT',
+        // One block holds every "Contacto" section (hero, formulario,
+        // WhatsApp, atención/correo, ubicación) so editing the page means
+        // editing this single block's fields.
+        'icon'  => 'email-alt',
+        // The form shows a success/error banner from $_GET after submit,
+        // so this block's output can't be cached like a static section.
+        'prevent_cache' => true,
+      ],
+      [
+        'name'  => 'garantia-canut',
+        'title' => 'Página Garantía CANUT',
+        // One block holds every "Garantía" section (hero, artículo legal,
+        // exclusiones, confianza + CTA) so editing the page means editing
+        // this single block's fields.
+        'icon'  => 'shield',
+        // Overrides acf_block_defaults' 'preview' mode: always shows the
+        // ACF fields form straight away instead of the rendered page
+        // preview + an "Edit" toolbar toggle, since editors kept missing
+        // that toggle on this block.
+        'mode'  => 'edit',
+      ],
     ],
 
     // Custom ACF block default settings

@@ -24,6 +24,7 @@ namespace Air_Light;
  */
 require get_theme_file_path( 'inc/hooks/general.php' );
 add_action( 'widgets_init', __NAMESPACE__ . '\widgets_init' );
+add_action( 'pre_get_posts', __NAMESPACE__ . '\historia_archive_posts_per_page' );
 
 /**
  * Scripts and styles associated hooks
@@ -76,7 +77,40 @@ require get_theme_file_path( 'inc/hooks/forms.php' );
 add_action( 'gform_enqueue_scripts', __NAMESPACE__ . '\dequeue_gf_stylesheets', 999 );
 
 /**
+ * Internal design-system reference page (/sistema-de-diseno)
+ */
+require get_theme_file_path( 'inc/hooks/design-system.php' );
+add_action( 'wp_head', __NAMESPACE__ . '\design_system_noindex', 1 );
+add_filter( 'robots_txt', __NAMESPACE__ . '\design_system_robots_txt', 10, 2 );
+add_filter( 'wp_sitemaps_posts_query_args', __NAMESPACE__ . '\design_system_exclude_from_sitemap', 10, 2 );
+
+/**
  * WooCommerce
  */
 require get_theme_file_path( 'inc/hooks/woocommerce.php' );
 add_filter( 'loop_shop_columns', __NAMESPACE__ . '\woocommerce_loop_columns' );
+
+/**
+ * Checkout page (CANUT redesign)
+ */
+require get_theme_file_path( 'inc/hooks/checkout.php' );
+
+/**
+ * "Lleva X y ahorra Y%" per-product quantity discount
+ */
+require get_theme_file_path( 'inc/hooks/quantity-discount.php' );
+
+/**
+ * Cart drawer (replaces the standalone Cart page)
+ */
+require get_theme_file_path( 'inc/hooks/cart-drawer.php' );
+
+/**
+ * Centro de ayuda (help center) live search
+ */
+require get_theme_file_path( 'inc/hooks/help-center.php' );
+
+/**
+ * Soporte: community question form + approval workflow
+ */
+require get_theme_file_path( 'inc/hooks/soporte.php' );

@@ -1,0 +1,228 @@
+// CANUT checkout: a CSS/JS reskin of WooCommerce's Checkout BLOCK (Store
+// API - skeleton loaders, AJAX speed), not a template override. The block
+// keeps its own markup/behaviour; only class names it already ships are
+// targeted here (checked against the installed plugin's own
+// assets/client/blocks/checkout.css, not guessed) - see inc/hooks/checkout.php
+// for the two PHP-side extensions (Barrio field, gateway order/discount).
+// Numbered steps are the block's own `showFormStepNumbers` attribute
+// (enabled on the Checkout page itself), just restyled from a plain "1."
+// into the CANUT circular badge.
+// stylelint-disable custom-property-pattern, csstools/value-no-unknown-custom-properties
+@use '../variables' as *;
+
+// Minimal header: centered logo only, no nav/cart/account.
+.site-header-checkout {
+  align-items: center;
+  backdrop-filter: blur(0.375rem);
+  background-color: color-mix(in sRGB, var(--wp--preset--color--bg-base) 80%, transparent);
+  border-bottom: 1px solid var(--wp--preset--color--border);
+  display: flex;
+  justify-content: center;
+  padding: var(--wp--preset--spacing--space-sm) var(--wp--preset--spacing--space-md);
+
+  svg,
+  img {
+    height: 2rem;
+    width: auto;
+  }
+}
+
+// Minimal footer: brand + copyright, no menus/social/payment icons.
+.site-footer-checkout {
+  align-items: center;
+  background-color: color-mix(in sRGB, var(--wp--preset--color--success) 12%, var(--wp--preset--color--bg-surface));
+  border-top: 1px solid var(--wp--preset--color--border);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--wp--preset--spacing--space-sm);
+  justify-content: space-between;
+  padding: var(--wp--preset--spacing--space-lg) var(--wp--preset--spacing--space-md);
+}
+
+.site-footer-checkout-brand {
+  @include text-style(h-4, display, bold, h-4);
+  color: var(--wp--preset--color--text-primary);
+  margin: 0 0 var(--wp--preset--spacing--space-xs);
+}
+
+.site-footer-checkout-copyright {
+  @include text-style(small, body, regular);
+  color: var(--wp--preset--color--text-secondary);
+  margin: 0;
+}
+
+.site-footer-checkout-links {
+  display: flex;
+  gap: var(--wp--preset--spacing--space-md);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  a {
+    @include text-style(small, body, regular);
+    color: var(--wp--preset--color--text-secondary);
+    text-decoration: none;
+
+    &:hover,
+    &:focus {
+      color: var(--wp--preset--color--text-primary);
+    }
+  }
+}
+
+// Checkout block wrapper: page background + base typography/colors, so
+// every block-provided element inherits CANUT tokens instead of the block's
+// own (theme.json-derived) defaults.
+.wp-block-woocommerce-checkout {
+  color: var(--wp--preset--color--text-primary);
+
+  ::selection {
+    background-color: var(--wp--preset--color--accent);
+  }
+}
+
+// --- Numbered steps -----------------------------------------------------
+// Core renders "1." as a ::before counter on the step title, with a
+// vertical rule down the step body via ::before on __content/__description
+// (see checkout.css - this isn't guessed). Restyle the counter into a
+// circular badge and recolor the connecting rule.
+.wc-block-components-checkout-step__title {
+  @include text-style(h-3, display, medium, h-3);
+  color: var(--wp--preset--color--text-primary);
+}
+
+.wc-block-checkout__form--with-step-numbers .wc-block-components-checkout-step--with-step-number {
+  .wc-block-components-checkout-step__title::before {
+    @include text-style(small, body, bold);
+    align-items: center;
+    background-color: var(--wp--preset--color--primary);
+    border-radius: 50%;
+    color: color-mix(in sRGB, var(--wp--preset--color--white) 65%, var(--wp--preset--color--primary));
+    display: flex;
+    height: 2rem;
+    justify-content: center;
+    left: -2.75rem;
+    top: 0;
+    transform: none;
+    width: 2rem;
+  }
+
+  .wc-block-components-checkout-step__content::before,
+  .wc-block-components-checkout-step__description::before {
+    border-left-color: var(--wp--preset--color--border);
+    left: -1.75rem;
+  }
+}
+
+.wc-block-components-checkout-step__description {
+  color: var(--wp--preset--color--text-secondary);
+}
+
+// --- Text inputs / selects / textareas -----------------------------------
+.wc-block-components-text-input,
+.wc-block-components-address-form .wc-block-components-select,
+.wc-block-components-textarea {
+  input,
+  select,
+  textarea {
+    @include canut-radius(sm);
+    background-color: var(--wp--preset--color--bg-surface);
+    border-color: var(--wp--preset--color--border) !important;
+    color: var(--wp--preset--color--text-primary);
+  }
+
+  label {
+    color: var(--wp--preset--color--text-secondary);
+  }
+
+  input:focus,
+  select:focus,
+  textarea:focus {
+    border-color: var(--wp--preset--color--accent) !important;
+    box-shadow: 0 0 0 3px color-mix(in sRGB, var(--wp--preset--color--accent) 15%, transparent) !important;
+  }
+}
+
+// --- Payment methods: radio list restyled as selectable cards ------------
+// Payment methods render via RadioControl's "accordion" variant - each
+// .wc-block-components-radio-control-accordion-option *is* the clickable
+// row containing the real radio input, matching the Figma card design
+// closely enough to restyle directly rather than rebuild.
+.wc-block-checkout__payment-method {
+  .wc-block-components-radio-control {
+    display: grid;
+    gap: var(--wp--preset--spacing--space-sm);
+    grid-template-columns: 1fr;
+
+    @media (min-width: $breakpoint-mobile) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .wc-block-components-radio-control-accordion-option {
+    @include canut-radius(md);
+    background-color: var(--wp--preset--color--bg-surface);
+    border: 2px solid var(--wp--preset--color--border);
+    padding: var(--wp--preset--spacing--space-md);
+    transition: background-color 150ms ease, border-color 150ms ease;
+
+    &.wc-block-components-radio-control-accordion-option--checked-option-highlighted,
+    &:has(input:checked) {
+      background-color: color-mix(in sRGB, var(--wp--preset--color--accent-dark) 4%, var(--wp--preset--color--bg-surface));
+      border-color: var(--wp--preset--color--accent-dark);
+    }
+  }
+
+  .wc-block-components-radio-control__label {
+    @include text-style(small, body, bold);
+    color: var(--wp--preset--color--text-primary);
+  }
+
+  .wc-block-components-radio-control__secondary-label,
+  .wc-block-components-radio-control__description {
+    @include text-style(caption, body, regular);
+    color: var(--wp--preset--color--text-secondary);
+  }
+
+  input[type='radio'] {
+    accent-color: var(--wp--preset--color--accent-dark);
+  }
+}
+
+// --- Order summary sidebar: sticky card matching the design system -------
+.wc-block-checkout__sidebar {
+  .wc-block-components-order-summary,
+  .wc-block-components-totals-wrapper {
+    @include canut-radius(md);
+    @include canut-shadow(card);
+    background-color: var(--wp--preset--color--bg-surface);
+  }
+
+  .wc-block-components-checkout-order-summary__title {
+    @include text-style(h-4, display, medium, h-4);
+    color: var(--wp--preset--color--text-primary);
+  }
+
+  .wc-block-components-order-summary-item__total-price,
+  .wc-block-components-totals-item__value {
+    color: var(--wp--preset--color--text-primary);
+  }
+
+  .wc-block-components-totals-footer-item {
+    .wc-block-components-totals-item__label,
+    .wc-block-components-totals-item__value {
+      @include text-style(body-lg, display, medium);
+    }
+  }
+}
+
+.wc-block-components-checkout-place-order-button {
+  @include canut-radius(btn);
+  background-color: var(--wp--preset--color--primary-dark) !important;
+  border-color: var(--wp--preset--color--primary-dark) !important;
+
+  &:hover,
+  &:focus {
+    @include canut-shadow(hover);
+  }
+}

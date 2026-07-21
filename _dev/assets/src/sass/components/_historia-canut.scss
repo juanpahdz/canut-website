@@ -1,0 +1,72 @@
+// Historia card + swipeable horizontal list, shared by the front page
+// carousel (template-parts/front-page/historias.php) and the historia
+// archive/single templates.
+// stylelint-disable custom-property-pattern, csstools/value-no-unknown-custom-properties
+@use '../variables' as *;
+
+.historia-list {
+  display: flex;
+  gap: var(--wp--preset--spacing--space-md);
+  list-style: none;
+  margin: 0;
+  overflow-x: auto;
+  padding: 0 0 var(--wp--preset--spacing--space-xs);
+  scroll-snap-type: x mandatory;
+}
+
+.historia-card {
+  @include canut-radius(lg);
+  @include canut-shadow(card);
+  background-color: var(--wp--preset--color--bg-surface);
+  display: flex;
+  flex: 0 0 min(25rem, 85vw);
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-md);
+  padding: var(--wp--preset--spacing--space-lg);
+  scroll-snap-align: start;
+
+  // Below tablet, size each card so exactly one is fully visible plus a
+  // consistent sliver of the next - `85vw` above can consume the whole
+  // visible row together with the list gap, hiding the next card entirely.
+  @media screen and (max-width: $breakpoint-tablet) {
+    flex-basis: calc(100vw - (var(--wp--style--root--padding-left) + var(--wp--style--root--padding-right)) - var(--wp--preset--spacing--space-md) - var(--wp--preset--spacing--space-sm));
+  }
+}
+
+.historia-card-media {
+  @include canut-radius(md);
+  aspect-ratio: 336 / 192;
+  overflow: hidden;
+
+  img {
+    display: block;
+    height: 100%;
+    object-fit: cover;
+    width: 100%;
+  }
+}
+
+.historia-card-rating {
+  display: flex;
+  gap: 0.125rem;
+
+  svg {
+    color: var(--wp--preset--color--accent);
+    height: 1.1rem;
+    width: 1.1rem;
+  }
+}
+
+.historia-card-quote {
+  @include text-style(body, body, regular);
+  color: var(--wp--preset--color--text-secondary);
+  flex-grow: 1;
+  font-style: italic;
+  margin: 0;
+}
+
+.historia-card-author {
+  @include text-style(body, body, bold);
+  color: var(--wp--preset--color--text-primary);
+  margin: 0;
+}

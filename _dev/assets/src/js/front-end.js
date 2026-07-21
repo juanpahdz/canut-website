@@ -18,6 +18,17 @@ import {
   navDesktop,
   navMobile,
 } from './modules/navigation';
+import initDesignSystem from './modules/design-system';
+import initStickyHeader from './modules/sticky-header';
+import initTabsCanut from './modules/tabs-canut';
+import initProductGallery from './modules/product-gallery';
+import initGalleryStripVideoFallback from './modules/gallery-strip-video-fallback';
+import initFaqImageSync from './modules/faq-image-sync';
+import initAccordionCanut from './modules/accordion-canut';
+import initCartDrawer from './modules/cart-drawer';
+import initPaginaInformativaToc from './modules/pagina-informativa';
+import initHelpCenterCanut from './modules/help-center-canut';
+import initShopFilters from './modules/shop-filters';
 // Define Javascript is active by changing the body class
 document.body.classList.remove('no-js');
 document.body.classList.add('js');
@@ -36,6 +47,18 @@ document.addEventListener('DOMContentLoaded', () => {
   navDesktop();
   // navClick();
   navMobile();
+
+  initDesignSystem();
+  initStickyHeader();
+  initTabsCanut();
+  initProductGallery();
+  initGalleryStripVideoFallback();
+  initFaqImageSync();
+  initAccordionCanut();
+  initCartDrawer();
+  initPaginaInformativaToc();
+  initHelpCenterCanut();
+  initShopFilters();
 
   // Uncomment if you like to use a sticky navigation
   // navSticky();

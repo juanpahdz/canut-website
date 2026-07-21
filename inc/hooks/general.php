@@ -23,3 +23,15 @@ function widgets_init() {
     'after_title'   => '</h2>',
   ) );
 } // end widgets_init
+
+/**
+ * Cap how many historias load per page on the historia archive, since there
+ * can be thousands of them - the rest are reached via pagination.
+ *
+ * @param \WP_Query $query The query being modified.
+ */
+function historia_archive_posts_per_page( $query ) {
+  if ( ! is_admin() && $query->is_main_query() && is_post_type_archive( 'historia' ) ) {
+    $query->set( 'posts_per_page', 24 );
+  }
+} // end historia_archive_posts_per_page

@@ -1,0 +1,414 @@
+// Styles for the "Nosotros" page (template-parts/nosotros/*.php).
+// WordPress custom properties from theme.json
+// stylelint-disable custom-property-pattern, csstools/value-no-unknown-custom-properties
+@use '../variables' as *;
+
+// Soft accent tint used for the "Conserjería Humana" card background,
+// derived from the existing accent token via color-mix so no new raw hex
+// value is introduced (same approach as --canut-tint-soft).
+$nosotros-accent-soft: color-mix(in sRGB, var(--wp--preset--color--accent) 20%, var(--wp--preset--color--white) 80%);
+
+// 1. Hero -------------------------------------------------------------
+.nosotros-hero {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  min-height: clamp(28rem, 70vh, 42.5rem);
+  overflow: hidden;
+  position: relative;
+}
+
+.nosotros-hero-media {
+  height: 100%;
+  inset: 0;
+  overflow: hidden;
+  position: absolute;
+  width: 100%;
+
+  img {
+    height: 100%;
+    object-fit: cover;
+    width: 100%;
+  }
+
+  &::after {
+    background-image: linear-gradient(to right, color-mix(in sRGB, var(--wp--preset--color--primary-dark) 60%, transparent) 0%, transparent 60%);
+    content: '';
+    inset: 0;
+    position: absolute;
+  }
+}
+
+.nosotros-hero-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-sm);
+  max-width: 36rem;
+  padding-bottom: var(--wp--preset--spacing--space-lg);
+  position: relative;
+  z-index: 1;
+}
+
+.nosotros-hero-eyebrow {
+  @include text-style(body, body, regular);
+  color: color-mix(in sRGB, var(--wp--preset--color--white) 90%, transparent);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.nosotros-hero-title {
+  @include text-style(heading-xl, display, light);
+  color: var(--wp--preset--color--white);
+  line-height: 1.1;
+  margin: 0;
+}
+
+.nosotros-hero-text {
+  @include text-style(body-lg, body, regular);
+  color: color-mix(in sRGB, var(--wp--preset--color--white) 90%, transparent);
+  margin: 0;
+  max-width: 32rem;
+}
+
+// 2. Origen -------------------------------------------------------------
+// Figma keeps a soft mint tint behind every section except the white
+// "Diferenciales" bento grid below - see .nosotros-cta for the other one.
+.nosotros-origen {
+  background-color: var(--canut-tint-soft);
+  padding-bottom: var(--wp--preset--spacing--space-xl);
+  padding-top: var(--wp--preset--spacing--space-xl);
+}
+
+.nosotros-origen-inner {
+  align-items: center;
+  display: grid;
+  gap: var(--wp--preset--spacing--space-xl);
+  grid-template-columns: 1fr 1fr;
+
+  @media screen and (max-width: $breakpoint-tablet-landscape) {
+    gap: var(--wp--preset--spacing--space-lg);
+    grid-template-columns: 1fr;
+  }
+}
+
+.nosotros-origen-media {
+  @include canut-radius(lg);
+  @include canut-shadow(card);
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+
+  img {
+    display: block;
+    height: 100%;
+    object-fit: cover;
+    width: 100%;
+  }
+}
+
+.nosotros-origen-title {
+  @include text-style(h-2, display, regular);
+  color: var(--wp--preset--color--text-primary);
+  margin: 0 0 var(--wp--preset--spacing--space-md);
+}
+
+.nosotros-origen-text {
+  @include text-style(body-lg, body, regular);
+  color: var(--wp--preset--color--text-secondary);
+  margin: 0 0 var(--wp--preset--spacing--space-md);
+}
+
+.nosotros-origen-text-small {
+  @include text-style(small, body, regular);
+}
+
+.nosotros-origen-quote {
+  border-top: 1px solid var(--wp--preset--color--border);
+  margin: 0;
+  padding-top: var(--wp--preset--spacing--space-md);
+
+  p {
+    @include text-style(body, body, regular);
+    color: color-mix(in sRGB, var(--wp--preset--color--text-primary) 70%, transparent);
+    font-style: italic;
+    margin: 0;
+  }
+}
+
+// 3. Diferenciales (bento grid) -----------------------------------------
+.nosotros-valores {
+  background-color: var(--wp--preset--color--bg-surface);
+  padding-bottom: var(--wp--preset--spacing--space-2-xl);
+  padding-top: var(--wp--preset--spacing--space-2-xl);
+}
+
+.nosotros-valores-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-xs);
+  margin-bottom: var(--wp--preset--spacing--space-xl);
+  text-align: center;
+}
+
+.nosotros-valores-eyebrow {
+  @include text-style(body, body, regular);
+  color: var(--wp--preset--color--accent-dark);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.nosotros-valores-title {
+  @include text-style(h-2, display, regular);
+  color: var(--wp--preset--color--text-primary);
+  margin: 0;
+}
+
+.nosotros-valores-grid {
+  display: grid;
+  gap: var(--wp--preset--spacing--space-md);
+  grid-template-columns: repeat(12, 1fr);
+
+  @media screen and (max-width: $breakpoint-tablet-landscape) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.nosotros-card {
+  @include canut-radius(md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-lg);
+  grid-column: span 6;
+  justify-content: space-between;
+  padding: var(--wp--preset--spacing--space-lg);
+
+  // First card renders wide with inline media (Diseño Atemporal).
+  &.has-media {
+    flex-direction: row;
+
+    @media screen and (max-width: $breakpoint-tablet) {
+      flex-direction: column;
+    }
+  }
+
+  // Fixed 4-card bento layout (see the ACF field group's instructions):
+  // row 1 is an 8/4 split, row 2 is an even 6/6 split - grid-column can't
+  // key off content (has-media/variant) alone since two cards in the same
+  // row need different spans despite matching classes, so position it is.
+  @media screen and (min-width: $breakpoint-tablet-landscape + 1) {
+    &:nth-of-type(1) {
+      grid-column: span 8;
+    }
+
+    &:nth-of-type(2) {
+      grid-column: span 4;
+    }
+
+    &:nth-of-type(3),
+    &:nth-of-type(4) {
+      grid-column: span 6;
+    }
+  }
+
+  @media screen and (max-width: $breakpoint-tablet-landscape) {
+    grid-column: span 1 !important;
+  }
+}
+
+.nosotros-card.is-light {
+  @include canut-shadow(card);
+  background-color: var(--wp--preset--color--bg-surface);
+}
+
+.nosotros-card.is-dark {
+  background-color: var(--wp--preset--color--primary-dark);
+}
+
+.nosotros-card.is-accent {
+  background-color: $nosotros-accent-soft;
+}
+
+.nosotros-card-body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-sm);
+  justify-content: center;
+
+  // flex-basis 0 (not auto) forces an even split with .nosotros-card-media
+  // regardless of how much text either side happens to have - content-based
+  // auto basis let the media column collapse to a sliver.
+  .nosotros-card.has-media & {
+    flex: 1 1 0;
+    justify-content: center;
+    min-width: 0;
+  }
+}
+
+.nosotros-card-icon {
+  color: var(--wp--preset--color--accent-dark);
+  display: block;
+
+  .nosotros-card.is-dark & {
+    color: var(--wp--preset--color--white);
+  }
+
+  .nosotros-card.is-accent & {
+    color: var(--wp--preset--color--accent-dark);
+  }
+
+  svg {
+    display: block;
+    height: 1.75rem;
+    width: 1.75rem;
+  }
+}
+
+.nosotros-card-title {
+  @include text-style(h-3, display, medium);
+  color: var(--wp--preset--color--text-primary);
+  margin: 0;
+
+  .nosotros-card.is-dark & {
+    color: var(--wp--preset--color--white);
+  }
+
+  .nosotros-card.is-accent & {
+    color: var(--wp--preset--color--accent-dark);
+  }
+}
+
+.nosotros-card-text {
+  @include text-style(body, body, regular);
+  color: var(--wp--preset--color--text-secondary);
+  margin: 0;
+
+  .nosotros-card.is-dark & {
+    color: color-mix(in sRGB, var(--wp--preset--color--white) 80%, transparent);
+  }
+
+  .nosotros-card.is-accent & {
+    color: color-mix(in sRGB, var(--wp--preset--color--accent-dark) 80%, transparent);
+  }
+}
+
+.nosotros-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--wp--preset--spacing--space-sm);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nosotros-card-tag {
+  @include text-style(caption, body, semi-bold);
+  @include canut-radius(full);
+  background-color: var(--canut-tint-deep);
+  color: var(--wp--preset--color--text-primary);
+  letter-spacing: var(--wp--custom--canut--letter-spacing--caption);
+  padding: var(--wp--preset--spacing--space-xs) var(--wp--preset--spacing--space-sm);
+  text-transform: uppercase;
+}
+
+.nosotros-card-link {
+  @include text-style(body, body, semi-bold);
+  align-items: center;
+  color: var(--wp--preset--color--accent-dark);
+  display: inline-flex;
+  gap: var(--wp--preset--spacing--space-xs);
+
+  svg {
+    height: 0.9em;
+    width: 0.9em;
+  }
+}
+
+.nosotros-card-stat {
+  border-top: 1px solid color-mix(in sRGB, var(--wp--preset--color--white) 20%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-xs);
+  padding-top: var(--wp--preset--spacing--space-md);
+}
+
+.nosotros-card-stat-value {
+  @include text-style(heading-xl, body, bold);
+  color: var(--wp--preset--color--white);
+  line-height: 1;
+}
+
+.nosotros-card-stat-label {
+  @include text-style(caption, body, semi-bold);
+  color: color-mix(in sRGB, var(--wp--preset--color--white) 70%, transparent);
+  letter-spacing: var(--wp--custom--canut--letter-spacing--caption);
+  text-transform: uppercase;
+}
+
+.nosotros-card-media {
+  @include canut-radius(sm);
+  // Matches .nosotros-card-body's flex-basis: 0 (see the comment there) -
+  // both need the same basis for the 50/50 split to actually be even;
+  // leaving this one at the default "auto" let it claim the image's
+  // intrinsic width as a head start over the text column.
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+
+  img {
+    display: block;
+    height: 100%;
+    min-height: 12rem;
+    object-fit: cover;
+    width: 100%;
+  }
+}
+
+// 4. CTA final ----------------------------------------------------------
+// Same mint tint as .nosotros-origen (see the comment there) - only the
+// "Diferenciales" bento grid above breaks the pattern with a white bg.
+.nosotros-cta {
+  background-color: var(--canut-tint-soft);
+  padding-bottom: var(--wp--preset--spacing--space-xl);
+  padding-left: var(--wp--preset--spacing--space-sm);
+  padding-right: var(--wp--preset--spacing--space-sm);
+  padding-top: var(--wp--preset--spacing--space-xl);
+}
+
+.nosotros-cta-inner {
+  @include canut-radius(lg);
+  background-color: var(--wp--preset--color--primary-dark);
+  overflow: hidden;
+  padding: var(--wp--preset--spacing--space-2-xl) var(--wp--preset--spacing--space-lg);
+  position: relative;
+}
+
+.nosotros-cta-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-md);
+  margin: 0 auto;
+  max-width: 42rem;
+  position: relative;
+  text-align: center;
+  z-index: 1;
+
+  h2 {
+    @include text-style(h-2, display, regular);
+    color: var(--wp--preset--color--white);
+    margin: 0;
+  }
+
+  p {
+    @include text-style(body-lg, body, regular);
+    color: color-mix(in sRGB, var(--wp--preset--color--white) 80%, transparent);
+    margin: 0;
+  }
+}
+
+.nosotros-cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--wp--preset--spacing--space-md);
+  justify-content: center;
+  padding-top: var(--wp--preset--spacing--space-xs);
+}

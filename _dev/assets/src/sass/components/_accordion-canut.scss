@@ -1,0 +1,51 @@
+// CANUT FAQ accordion, built on native <details>/<summary> (no JS required)
+// stylelint-disable custom-property-pattern, csstools/value-no-unknown-custom-properties
+@use '../variables' as *;
+
+.accordion-canut-item {
+  border-bottom: 1px solid var(--wp--preset--color--border);
+
+  &:first-child {
+    border-top: 1px solid var(--wp--preset--color--border);
+  }
+
+  &[open] .accordion-canut-trigger svg {
+    transform: rotate(180deg);
+  }
+}
+
+.accordion-canut-trigger {
+  @include text-style(body, display, medium);
+  align-items: center;
+  color: var(--wp--preset--color--text-primary);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  list-style: none;
+  padding: var(--wp--preset--spacing--space-sm) 0;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  // Chevron icon: raw SVGs from assets/svg/ carry no size of their own, so
+  // this has to target the svg element directly (same pattern as
+  // .trust-badge-canut svg, .button-canut-base svg) rather than a class that
+  // would need adding to the SVG markup itself.
+  svg {
+    color: var(--wp--preset--color--accent);
+    flex-shrink: 0;
+    height: 1em;
+    transition: transform 200ms ease;
+    width: 1em;
+  }
+}
+
+.accordion-canut-panel {
+  @include text-style(body, body, regular);
+  color: var(--wp--preset--color--text-secondary);
+  padding: 0 0 var(--wp--preset--spacing--space-sm);
+  // Fade is driven by JS (modules/accordion-canut.js) toggling opacity
+  // alongside the height animation - this just defines the transition.
+  transition: opacity 200ms ease;
+}

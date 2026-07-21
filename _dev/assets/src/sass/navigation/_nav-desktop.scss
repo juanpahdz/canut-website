@@ -5,7 +5,7 @@
 .site-header ul {
   // Affecting to both main and sub-levels
   --color-current: var(--wp--preset--color--black);
-  --color-current-dropdown: var(--wp--preset--color--white);
+  --color-current-dropdown: var(--wp--preset--color--primary-dark);
   --dropdown-toggle-size: 0.75rem;
 
   // Main level items on desktop
@@ -24,10 +24,10 @@
   --padding-sub-menu-vertical: 0.625rem;
   --padding-sub-menu-link-vertical: 0.5rem;
   --padding-sub-menu-link-horizontal: 1.25rem;
-  --width-sub-menu: 12.5rem;
-  --color-sub-menu: var(--wp--preset--color--white);
-  --color-hover-sub-menu: var(--wp--preset--color--white);
-  --color-background-sub-menu: var(--wp--preset--color--black);
+  --width-sub-menu: 20rem;
+  --color-sub-menu: var(--wp--preset--color--primary);
+  --color-hover-sub-menu: var(--wp--preset--color--primary-dark);
+  --color-background-sub-menu: var(--wp--preset--color--white);
   --gap-dropdown: 1.6rem;
 }
 
@@ -42,6 +42,14 @@
     line-height: 0;
     padding-bottom: 0;
     padding-top: 0;
+  }
+
+  // Logo + "Contáctanos" CTA are off-canvas drawer only content (see
+  // _nav-mobile.scss) - desktop already has the logo in .site-branding and
+  // "Contacto" as a regular nav link.
+  .menu-items-wrapper-branding,
+  .menu-items-wrapper-contact {
+    display: none;
   }
 
   // Navigation unordered list wrapper element
@@ -82,9 +90,8 @@
   }
 
   .menu-item .sub-menu a {
-    align-items: center;
     color: var(--color-sub-menu);
-    display: inline-flex;
+    display: block;
     font-size: var(--typography-size-sub-menu);
     font-weight: var(--typography-weight-sub-menu);
     line-height: 1.5;
@@ -92,12 +99,47 @@
     padding-left: var(--padding-sub-menu-link-horizontal);
     padding-right: var(--padding-sub-menu-link-horizontal);
     padding-top: var(--padding-sub-menu-link-vertical);
+    text-decoration: none;
     white-space: normal;
     width: 100%;
   }
 
+  // WP's schema.org microdata wraps the link content in an extra
+  // <span itemprop="name"> (see add_schema_to_navbar_ul() in nav-walker.php) -
+  // this is the flex container for .dropdown-item-media/.dropdown-item-label
+  // instead of the <a> itself. Using display: contents on this span to skip
+  // it entirely made Chromium fall back to content-based sizing instead of
+  // stretching the image to the full card width, so it stays a real
+  // (column) flex container here.
+  .menu-item .sub-menu a > [itemprop='name'] {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
   .menu-item .sub-menu button {
     color: var(--color-sub-menu);
+  }
+
+  // Product image shown above the text - hidden on mobile where the
+  // off-canvas drawer keeps plain text links (see _nav-mobile.scss).
+  .dropdown-item-media {
+    display: block;
+  }
+
+  .dropdown-item-thumbnail {
+    @include canut-radius(sm);
+    aspect-ratio: 4 / 3;
+    display: block;
+    object-fit: cover;
+    width: 100%;
+  }
+
+  // Constrains the title to the image's width so a long product name wraps
+  // onto multiple lines instead of forcing the card wider.
+  .dropdown-item-label {
+    display: block;
+    max-width: 100%;
   }
 
   .menu-item .sub-menu {
@@ -110,10 +152,9 @@
     color: var(--color-current);
   }
 
-  // Current menu item in submenu with underline
+  // Current menu item in submenu
   .sub-menu .menu-item.current-menu-item > a {
-    text-decoration: underline;
-    text-decoration-thickness: 2px;
+    background-color: var(--wp--preset--color--light);
   }
 
   // Let's make space for the nav-toggle/arrow
@@ -128,9 +169,8 @@
 
   .menu-item .sub-menu a:hover,
   .menu-item .sub-menu a:focus {
+    background-color: var(--wp--preset--color--light);
     color: var(--color-hover-sub-menu);
-    text-decoration: underline;
-    text-decoration-thickness: 2px;
   }
 
   // Create animation illusion
@@ -193,10 +233,13 @@
 
   // Dropdowns
   .sub-menu {
+    @include canut-radius(md);
+    @include canut-shadow(card);
     background-color: var(--color-background-sub-menu);
-    border: 1px solid var(--wp--preset--color--black);
+    border: 1px solid var(--wp--preset--color--border);
     left: 0;
     margin-left: 0;
+    overflow: hidden;
     padding-bottom: 0;
     padding-left: 0;
     padding-right: 0;
@@ -299,6 +342,10 @@
     align-items: center;
     background-color: transparent;
     border: 0;
+    // Buttons don't inherit text color like other inline elements do, so
+    // without this the chevron stays browser-default black even when
+    // .home flips --color-main-level to white over the transparent hero header.
+    color: var(--color-main-level);
     display: inline-flex;
     justify-content: center;
     padding: 0;

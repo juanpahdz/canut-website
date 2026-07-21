@@ -1,0 +1,83 @@
+// CANUT info banners: tinted boxes used for informational callouts on
+// checkout (shipping info, help/contact). Tints are derived from existing
+// color tokens via color-mix rather than new hardcoded hex values.
+// stylelint-disable custom-property-pattern, csstools/value-no-unknown-custom-properties
+@use '../variables' as *;
+
+.banner-canut {
+  @include canut-radius(md);
+  align-items: flex-start;
+  border: 1px solid color-mix(in sRGB, var(--wp--preset--color--border) 50%, transparent);
+  display: flex;
+  gap: var(--wp--preset--spacing--space-sm);
+  padding: var(--wp--preset--spacing--space-sm);
+  width: 100%;
+
+  > svg {
+    color: var(--wp--preset--color--text-primary);
+    flex-shrink: 0;
+    height: 1.25rem;
+    width: 1.25rem;
+  }
+}
+
+// Groups an icon + title on one side of .is-help, so the link can sit on
+// the other via justify-content: space-between on the parent.
+.banner-canut-content {
+  align-items: center;
+  display: flex;
+  gap: var(--wp--preset--spacing--space-sm);
+
+  svg {
+    color: var(--wp--preset--color--text-primary);
+    flex-shrink: 0;
+    height: 1.25rem;
+    width: 1.25rem;
+  }
+}
+
+.banner-canut-title {
+  @include text-style(small, body, regular);
+  color: var(--wp--preset--color--text-primary);
+  margin: 0;
+}
+
+.banner-canut-text {
+  @include text-style(caption, body, regular);
+  color: var(--wp--preset--color--text-secondary);
+  margin: 0;
+}
+
+// Shipping info box: light mint tint (success).
+.banner-canut.is-mint {
+  background-color: color-mix(in sRGB, var(--wp--preset--color--success) 12%, var(--wp--preset--color--bg-surface));
+}
+
+// Form error feedback (e.g. Contacto page submit failure).
+.banner-canut.is-error {
+  background-color: color-mix(in sRGB, var(--wp--preset--color--error) 12%, var(--wp--preset--color--bg-surface));
+
+  > svg {
+    color: var(--wp--preset--color--error);
+  }
+}
+
+// Help/contact banner: link-carrying, content spread edge-to-edge.
+.banner-canut.is-help {
+  align-items: center;
+  background-color: color-mix(in sRGB, var(--wp--preset--color--primary) 10%, var(--wp--preset--color--bg-surface));
+  justify-content: space-between;
+
+  .banner-canut-title {
+    @include text-style(small, body, medium);
+  }
+}
+
+.banner-canut-link {
+  @include text-style(small, body, bold);
+  border-bottom: 1px solid var(--wp--preset--color--text-primary);
+  color: var(--wp--preset--color--text-primary);
+  flex-shrink: 0;
+  padding-bottom: 1px;
+  text-decoration: none;
+}

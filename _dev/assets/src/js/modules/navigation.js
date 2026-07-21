@@ -5,7 +5,6 @@
 
 // Import functions needed for the navigation module
 import addMultipleEventListeners from './navigation/add-multiple-event-listeners';
-import calculateBurgerMenuPosition from './navigation/calculate-burger-menu-position';
 import a11yFocusTrap from './navigation/a11y-focus-trap';
 import calculateDropdownToggleHeight from './navigation/calculate-dropdown-toggle-height';
 import checkForSubmenuOverflow from './navigation/check-for-submenu-overflow';
@@ -91,11 +90,6 @@ const navMobile = () => {
       // Activate nav
       document.body.classList.toggle('js-nav-active');
 
-      // Scroll to top when triggering mobile navigation
-      // to ensure no gaps are between header and navigation
-      // Please note, if you use sticky-nav, comment out the next line
-      window.scrollTo(0, 0);
-
       // Toggle aria-expanded attribute, if it's false, change to true and vice versa
       if (document.getElementById('nav-toggle').getAttribute('aria-expanded') === 'false') {
         document.getElementById('nav-toggle').setAttribute('aria-expanded', 'true');
@@ -139,6 +133,14 @@ const navMobile = () => {
     navToggle,
   );
 
+  // Clicking the dimmed backdrop behind the drawer closes it, same as
+  // clicking the toggle itself - it's only clickable while the menu is
+  // open (see .js-nav-active .menu-items-overlay in _nav-mobile.scss).
+  const menuOverlay = document.getElementById('menu-items-overlay');
+  if (menuOverlay) {
+    menuOverlay.addEventListener('click', () => document.getElementById('nav-toggle').click());
+  }
+
   // Get all dropdown-toggles
   const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
 
@@ -151,9 +153,6 @@ const navMobile = () => {
       calculateDropdownToggleHeight,
     );
   });
-
-  // Calculate mobile nav-toggle position
-  calculateBurgerMenuPosition();
 };
 
 // Sticky navigation
@@ -237,9 +236,6 @@ export {
 
 // Reinit some things
 window.addEventListener('resize', () => {
-  // Center vertically the absolute positioned burger
-  calculateBurgerMenuPosition();
-
   // Center vertically the absolute positioned mobile dropdown toggles by setting fixed height
   calculateDropdownToggleHeight();
 

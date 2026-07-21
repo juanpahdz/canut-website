@@ -1,0 +1,28 @@
+// WordPress custom properties from theme.json (source of truth for every CANUT token)
+// stylelint-disable custom-property-pattern, csstools/value-no-unknown-custom-properties
+
+// Text style mixin
+// Applies a font-size/family/weight/line-height combo from theme.json in one call.
+// Font sizes come from theme.json as fluid clamp() values already, so no
+// media query is needed here for responsiveness.
+@mixin text-style($size, $family: body, $weight: regular, $line-height: null) {
+  font-family: var(--wp--preset--font-family--#{$family});
+  font-size: var(--wp--preset--font-size--#{$size});
+  font-weight: var(--wp--custom--font-weight--#{$weight});
+
+  @if $line-height {
+    line-height: var(--wp--custom--canut--line-height--#{$line-height});
+  }
+}
+
+// Radius mixin
+// $name: one of btn, sm, md, lg, full (see theme.json settings.custom.canut.radius)
+@mixin canut-radius($name) {
+  border-radius: var(--wp--custom--canut--radius--#{$name});
+}
+
+// Shadow mixin
+// $name: one of card, hover (see theme.json settings.shadow.presets)
+@mixin canut-shadow($name) {
+  box-shadow: var(--wp--preset--shadow--#{$name});
+}

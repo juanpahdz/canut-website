@@ -5,9 +5,19 @@
 // WooCommerce's own .button class already inherits the theme button style
 // from layout/_general.scss, so no button rules are needed here.
 .woocommerce-breadcrumb {
-  color: var(--wp--preset--color--black);
-  font-size: var(--wp--preset--font-size--body-s);
-  margin-bottom: var(--wp--preset--spacing--l);
+  @include text-style(small, body, regular);
+  color: var(--wp--preset--color--text-primary);
+  margin: 0 0 var(--wp--preset--spacing--space-md);
+
+  a {
+    color: var(--wp--preset--color--text-secondary);
+    text-decoration: none;
+
+    &:hover,
+    &:focus {
+      text-decoration: underline;
+    }
+  }
 }
 
 ul.products {

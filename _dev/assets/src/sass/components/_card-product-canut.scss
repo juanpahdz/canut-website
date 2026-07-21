@@ -1,0 +1,177 @@
+// CANUT product card
+// stylelint-disable custom-property-pattern, csstools/value-no-unknown-custom-properties
+@use '../variables' as *;
+
+.card-product-canut {
+  @include canut-radius(md);
+  @include canut-shadow(card);
+  background-color: var(--wp--preset--color--bg-surface);
+  overflow: hidden;
+  position: relative;
+  transition: box-shadow 200ms ease, transform 200ms ease;
+
+  &:hover {
+    @include canut-shadow(hover);
+    transform: translateY(-4px);
+  }
+}
+
+.card-product-canut-media {
+  aspect-ratio: 1;
+  // The element this class is applied to is an <a>, an inline element by
+  // default - aspect-ratio has no effect on inline boxes, so without this
+  // the image collapses to its line-box height and object-fit:cover never
+  // gets anything to crop against.
+  display: block;
+  position: relative;
+
+  img {
+    height: 100%;
+    object-fit: cover;
+    width: 100%;
+  }
+
+  .badge-canut {
+    left: var(--wp--preset--spacing--space-sm);
+    position: absolute;
+    top: var(--wp--preset--spacing--space-sm);
+  }
+}
+
+.card-product-canut-body {
+  align-items: flex-start;
+  display: flex;
+  gap: var(--wp--preset--spacing--space-sm);
+  justify-content: space-between;
+  padding: var(--wp--preset--spacing--space-sm);
+}
+
+.card-product-canut-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-xs);
+
+  > a {
+    color: var(--wp--preset--color--text-primary);
+    text-decoration: none;
+  }
+}
+
+.card-product-canut-name {
+  @include text-style(body, display, regular);
+  color: var(--wp--preset--color--text-primary);
+  margin: 0;
+}
+
+.card-product-canut-meta {
+  @include text-style(small, body, regular);
+  color: var(--wp--preset--color--text-secondary);
+  margin: 0;
+}
+
+.card-product-canut-price {
+  @include text-style(body, body, medium);
+  color: var(--wp--preset--color--accent);
+  margin: 0;
+}
+
+// "Comprar ahora" quick add-to-cart button in the card's top-right corner.
+.card-product-canut-action {
+  @include text-style(small, body, medium);
+  @include canut-radius(full);
+  align-items: center;
+  background-color: var(--wp--preset--color--primary);
+  border: 1px solid var(--wp--preset--color--primary);
+  color: var(--wp--preset--color--white);
+  cursor: pointer;
+  display: inline-flex;
+  flex-shrink: 0;
+  gap: var(--wp--preset--spacing--space-xs);
+  padding: var(--wp--preset--spacing--space-xs) var(--wp--preset--spacing--space-md);
+  position: relative;
+  text-decoration: none;
+  transition: background-color 150ms ease;
+  white-space: nowrap;
+
+  svg {
+    height: 1.1em;
+    width: 1.1em;
+  }
+
+  &:hover,
+  &:focus {
+    background-color: var(--wp--preset--color--primary-dark);
+  }
+
+  // WooCommerce's own add-to-cart.js toggles `.loading` while the AJAX
+  // request is in flight and `.added` right after it succeeds (see
+  // plugins/woocommerce/assets/js/frontend/add-to-cart.js) - reusing those
+  // instead of a parallel state means the drawer-opening listener
+  // (modules/cart-drawer.js) is the only JS this button needs.
+  &.loading {
+    color: transparent;
+    pointer-events: none;
+
+    .card-product-canut-action-label,
+    svg {
+      visibility: hidden;
+    }
+
+    &::before {
+      animation-duration: 700ms;
+      animation-iteration-count: infinite;
+      animation-name: card-product-canut-action-spin;
+      animation-timing-function: linear;
+      border: 2px solid var(--wp--preset--color--white);
+      border-radius: 50%;
+      border-right-color: transparent;
+      border-top-color: transparent;
+      content: '';
+      height: 1em;
+      left: 50%;
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 1em;
+    }
+  }
+
+  // Plays once whenever `.added` is (re)applied - confirms the add-to-cart
+  // request succeeded before the drawer (opened by modules/cart-drawer.js)
+  // slides in over it.
+  &.added {
+    animation-duration: 600ms;
+    animation-name: card-product-canut-action-added;
+    animation-timing-function: ease;
+  }
+}
+
+@keyframes card-product-canut-action-spin {
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes card-product-canut-action-added {
+  0%,
+  100% {
+    background-color: var(--wp--preset--color--primary);
+    transform: scale(1);
+  }
+
+  40% {
+    background-color: var(--wp--preset--color--success);
+    transform: scale(1.12);
+  }
+}
+
+// WooCommerce auto-inserts a "Ver carrito" link after the button once it
+// succeeds (same add-to-cart.js) - redundant now that a successful add opens
+// the cart drawer itself, and it would otherwise show up as a stray third
+// flex child next to the button. WooCommerce's own `.woocommerce
+// a.added_to_cart { display: inline-block }` outranks a plain two-class
+// selector here (ties on class count, then wins on the extra `a` type
+// selector), so this has to match `.wc-forward` too to come out ahead.
+.card-product-canut-body a.added_to_cart.wc-forward {
+  display: none;
+}

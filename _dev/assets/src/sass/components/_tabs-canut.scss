@@ -1,0 +1,68 @@
+// CANUT product-page tabs ("Lo que incluye" / "Especificaciones")
+// stylelint-disable custom-property-pattern, csstools/value-no-unknown-custom-properties
+@use '../variables' as *;
+
+.tabs-canut-nav {
+  @include canut-radius(full);
+  background-color: var(--wp--preset--color--bg-base);
+  display: inline-flex;
+  gap: var(--wp--preset--spacing--space-xs);
+  padding: var(--wp--preset--spacing--space-xs);
+}
+
+.tabs-canut-trigger {
+  @include text-style(small, body, medium);
+  @include canut-radius(full);
+  appearance: none;
+  background-color: transparent;
+  border: 0;
+  color: var(--wp--preset--color--text-secondary);
+  cursor: pointer;
+  padding: var(--wp--preset--spacing--space-xs) var(--wp--preset--spacing--space-md);
+  transition: background-color 150ms ease, color 150ms ease;
+
+  &.is-active {
+    @include canut-shadow(card);
+    background-color: var(--wp--preset--color--bg-surface);
+    color: var(--wp--preset--color--primary);
+  }
+}
+
+.tabs-canut-panel {
+  display: none;
+  margin-top: var(--wp--preset--spacing--space-md);
+
+  &.is-active {
+    display: block;
+  }
+}
+
+// Always 2 columns, even on the smallest phones, so "Lo que incluye" and
+// "Especificaciones" always read as a grid of mini cards rather than a list.
+.tabs-canut-chips {
+  display: grid;
+  gap: var(--wp--preset--spacing--space-sm);
+  grid-template-columns: repeat(2, 1fr);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tabs-canut-chip {
+  @include canut-radius(sm);
+  @include text-style(small, body, medium);
+  align-items: flex-start;
+  background-color: var(--wp--preset--color--bg-surface);
+  border: 1px solid var(--wp--preset--color--border);
+  color: var(--wp--preset--color--text-primary);
+  display: flex;
+  gap: var(--wp--preset--spacing--space-xs);
+  padding: var(--wp--preset--spacing--space-sm);
+
+  svg {
+    color: var(--wp--preset--color--accent);
+    flex-shrink: 0;
+    height: 1.5em;
+    width: 1.5em;
+  }
+}

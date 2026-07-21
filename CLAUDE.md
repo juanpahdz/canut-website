@@ -68,6 +68,13 @@ When deploying to production, copy/deploy the theme folder minus `_dev/` - nothi
 - Always explain why disabling stylelint rules in first comment line
 - Check prettier/stylelint config to enforce `//` comment style
 
+## Icons
+
+- Icon set is `@phosphor-icons/core`, installed at `_dev/node_modules/@phosphor-icons/core` (listed in `_dev/package.json`). Never hand-draw SVG paths or fetch icon markup from elsewhere - always pull from this package.
+- Use the `fill` weight (`_dev/node_modules/@phosphor-icons/core/assets/fill/<name>-fill.svg`): a single solid `<path>`, no thin stroke/line, `viewBox="0 0 256 256"`. This matches every icon already in the theme (`icon-check.svg`, `icon-chevron-down.svg`, `icon-copy.svg`, `icon-lock.svg`). Avoid `regular`/`bold`/`light`/`thin` weights - those render the icon as a thin stroked line, inconsistent with the rest of the theme.
+- Copy the source file into `assets/svg/icon-<name>.svg` at the theme root, keep `fill="currentColor"`, and add `aria-hidden="true"` on the root `<svg>` (existing icons don't carry semantic meaning on their own).
+- Inline icons server-side with `require get_theme_file_path( 'assets/svg/icon-<name>.svg' );` - this is the only pattern used in the theme, never `<img>` or an icon font.
+
 ## JavaScript conventions
 
 - ESLint for linting

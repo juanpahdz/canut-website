@@ -1,0 +1,356 @@
+// Shop / category archive page (WooCommerce archive-product.php override):
+// hero banner, filter bar, product grid, lifestyle break and trust banner.
+// stylelint-disable custom-property-pattern, csstools/value-no-unknown-custom-properties
+@use '../variables' as *;
+
+// 1. Hero banner --------------------------------------------------------------
+.shop-hero {
+  background-position: center;
+  background-size: cover;
+  position: relative;
+
+  &::after {
+    background-image: linear-gradient(to top, color-mix(in sRGB, var(--wp--preset--color--primary-dark) 55%, transparent) 0%, color-mix(in sRGB, var(--wp--preset--color--primary-dark) 15%, transparent) 100%);
+    content: '';
+    inset: 0;
+    position: absolute;
+  }
+}
+
+.shop-hero-content {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-xs);
+  padding-bottom: var(--wp--preset--spacing--space-lg);
+  padding-top: var(--wp--preset--spacing--space-lg);
+  position: relative;
+  text-align: center;
+  z-index: 1;
+}
+
+.shop-hero .woocommerce-breadcrumb {
+  @include text-style(small, body, regular);
+  color: color-mix(in sRGB, var(--wp--preset--color--white) 90%, transparent);
+  margin: 0 0 var(--wp--preset--spacing--space-xs);
+
+  a {
+    color: color-mix(in sRGB, var(--wp--preset--color--white) 75%, transparent);
+  }
+}
+
+.shop-hero-title {
+  @include text-style(heading-xl, display, light);
+  color: var(--wp--preset--color--white);
+  margin: 0;
+}
+
+.shop-hero-subtitle {
+  @include text-style(body-lg, body, regular);
+  color: color-mix(in sRGB, var(--wp--preset--color--white) 90%, transparent);
+  margin: 0;
+  max-width: 36rem;
+}
+
+// 2. Filter bar -----------------------------------------------------------------
+.shop-filter-bar {
+  background-color: color-mix(in sRGB, var(--wp--preset--color--bg-base) 95%, transparent);
+  border-bottom: 1px solid var(--wp--preset--color--border);
+}
+
+.shop-filter-bar-inner {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--wp--preset--spacing--space-sm);
+  justify-content: space-between;
+  padding-bottom: var(--wp--preset--spacing--space-sm);
+  padding-top: var(--wp--preset--spacing--space-sm);
+}
+
+// Not overflow-x: auto - setting only one axis forces the other to
+// "auto" too (CSS overflow computed-value rule), turning this into a
+// vertical scroll container as well and clipping each dropdown's
+// absolutely-positioned panel (.shop-filter-bar-panel, which extends below
+// the row) inside it instead of letting it float freely. Wrapping avoids
+// creating a scroll container at all - safe here since there are only
+// three short pills.
+.shop-filter-bar-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--wp--preset--spacing--space-sm);
+}
+
+// <details> disclosure wrapping each dropdown filter (Tamaño/Capacidad/Precio).
+.shop-filter-bar-dropdown {
+  position: relative;
+
+  // Chevron rotates open instead of the browser's default triangle marker.
+  > summary {
+    list-style: none;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    svg {
+      transition: transform 150ms ease;
+    }
+  }
+
+  &[open] > summary svg {
+    transform: rotate(180deg);
+  }
+}
+
+.shop-filter-bar-btn {
+  @include text-style(small, body, regular);
+  @include canut-radius(full);
+  align-items: center;
+  appearance: none;
+  background-color: transparent;
+  border: 1px solid var(--wp--preset--color--border);
+  color: var(--wp--preset--color--text-secondary);
+  cursor: pointer;
+  display: inline-flex;
+  gap: var(--wp--preset--spacing--space-xs);
+  padding: var(--wp--preset--spacing--space-xs) var(--wp--preset--spacing--space-md);
+  white-space: nowrap;
+
+  svg {
+    height: 0.55em;
+    width: 1em;
+  }
+}
+
+.shop-filter-bar-badge {
+  @include canut-radius(full);
+  background-color: var(--wp--preset--color--primary);
+  color: var(--wp--preset--color--white);
+  font-size: 0.7em;
+  line-height: 1;
+  min-width: 1.4em;
+  padding: 0.2em 0.4em;
+  text-align: center;
+}
+
+.shop-filter-bar-panel {
+  @include canut-radius(md);
+  @include canut-shadow(hover);
+  background-color: var(--wp--preset--color--bg-surface);
+  border: 1px solid var(--wp--preset--color--border);
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-sm);
+  left: 0;
+  margin-top: var(--wp--preset--spacing--space-xs);
+  min-width: 14rem;
+  padding: var(--wp--preset--spacing--space-md);
+  position: absolute;
+  top: 100%;
+  z-index: 10;
+}
+
+.shop-filter-bar-option {
+  @include text-style(small, body, regular);
+  align-items: center;
+  color: var(--wp--preset--color--text-primary);
+  cursor: pointer;
+  display: flex;
+  gap: var(--wp--preset--spacing--space-xs);
+}
+
+.shop-filter-bar-panel-price {
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.shop-filter-bar-price-field {
+  @include text-style(small, body, regular);
+  color: var(--wp--preset--color--text-secondary);
+  display: flex;
+  flex: 1 1 6rem;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-xs);
+
+  input {
+    @include canut-radius(sm);
+    border: 1px solid var(--wp--preset--color--border);
+    padding: var(--wp--preset--spacing--space-xs);
+    width: 100%;
+  }
+}
+
+.shop-filter-bar-apply {
+  order: 3;
+}
+
+.shop-filter-bar-clear {
+  @include text-style(small, body, regular);
+  color: var(--wp--preset--color--text-secondary);
+  text-decoration: underline;
+  white-space: nowrap;
+}
+
+.shop-filter-bar-count {
+  @include text-style(small, body, regular);
+  color: var(--wp--preset--color--text-secondary);
+  margin: 0;
+  white-space: nowrap;
+}
+
+// 3. Product grid -----------------------------------------------------------------
+.shop-product-grid {
+  display: grid;
+  gap: var(--wp--preset--spacing--space-md);
+  grid-template-columns: 1fr;
+  list-style: none;
+  margin: 0;
+  padding: var(--wp--preset--spacing--space-lg) 0;
+
+  @media (min-width: $breakpoint-tablet) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.shop-no-products {
+  @include text-style(body, body, regular);
+  color: var(--wp--preset--color--text-secondary);
+  padding: var(--wp--preset--spacing--space-lg) 0;
+  text-align: center;
+}
+
+// 4. Lifestyle break ----------------------------------------------------------------
+.shop-lifestyle-break {
+  color: var(--wp--preset--color--white);
+  min-height: 30rem;
+  overflow: hidden;
+  position: relative;
+
+  img {
+    height: 100%;
+    inset: 0;
+    object-fit: cover;
+    position: absolute;
+    width: 100%;
+  }
+
+  &::after {
+    background-color: color-mix(in sRGB, var(--wp--preset--color--black) 10%, transparent);
+    content: '';
+    inset: 0;
+    position: absolute;
+  }
+}
+
+.shop-lifestyle-break-content {
+  bottom: var(--wp--preset--spacing--space-md);
+  left: var(--wp--preset--spacing--space-md);
+  max-width: 32rem;
+  position: relative;
+  z-index: 1;
+}
+
+.shop-lifestyle-break-title {
+  @include text-style(heading-l, display, regular);
+  margin: 0 0 var(--wp--preset--spacing--space-xs);
+}
+
+.shop-lifestyle-break-text {
+  @include text-style(body-lg, body, regular);
+  color: color-mix(in sRGB, var(--wp--preset--color--white) 90%, transparent);
+  margin: 0;
+}
+
+// 5. Trust banner -----------------------------------------------------------------------
+.shop-trust-banner {
+  display: grid;
+  gap: var(--wp--preset--spacing--space-md);
+  grid-template-columns: 1fr;
+  padding: var(--wp--preset--spacing--space-lg) 0;
+
+  @media (min-width: $breakpoint-tablet-landscape) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.shop-trust-banner-item {
+  align-items: center;
+  display: flex;
+  gap: var(--wp--preset--spacing--space-md);
+}
+
+.shop-trust-banner-icon {
+  @include canut-radius(full);
+  align-items: center;
+  background-color: var(--canut-tint-deep);
+  color: var(--wp--preset--color--success);
+  display: flex;
+  flex-shrink: 0;
+  height: 3rem;
+  justify-content: center;
+  width: 3rem;
+
+  svg {
+    height: 1.25rem;
+    width: 1.25rem;
+  }
+}
+
+.shop-trust-banner-title {
+  @include text-style(heading-xs, display, medium);
+  color: var(--wp--preset--color--text-primary);
+  margin: 0;
+}
+
+.shop-trust-banner-text {
+  @include text-style(small, body, regular);
+  color: var(--wp--preset--color--text-secondary);
+  margin: 0;
+}
+
+// 6. Help / WhatsApp CTA -------------------------------------------------------------------
+.shop-help-cta {
+  color: var(--wp--preset--color--white);
+  overflow: hidden;
+  position: relative;
+
+  img {
+    height: 100%;
+    inset: 0;
+    object-fit: cover;
+    position: absolute;
+    width: 100%;
+  }
+
+  &::after {
+    background-color: color-mix(in sRGB, var(--wp--preset--color--primary-dark) 60%, transparent);
+    content: '';
+    inset: 0;
+    position: absolute;
+  }
+}
+
+.shop-help-cta-content {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-md);
+  margin: 0 auto;
+  max-width: 44rem;
+  padding: var(--wp--preset--spacing--space-xl) var(--wp--preset--spacing--space-md);
+  position: relative;
+  text-align: center;
+  z-index: 1;
+}
+
+.shop-help-cta-title {
+  @include text-style(heading-l, display, regular);
+  margin: 0;
+}
+
+.shop-help-cta-text {
+  @include text-style(body-lg, body, regular);
+  color: color-mix(in sRGB, var(--wp--preset--color--white) 85%, transparent);
+  margin: 0;
+}

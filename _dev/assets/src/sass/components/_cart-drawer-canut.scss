@@ -1,0 +1,223 @@
+// CANUT cart drawer: off-canvas panel opened from the header cart icon.
+// A <dialog>, shown via showModal() (modules/cart-drawer.js) so
+// Escape/backdrop-click and focus trapping come from the browser for free.
+// Slides in from the right on desktop; full-width/full-height on mobile.
+// stylelint-disable custom-property-pattern, csstools/value-no-unknown-custom-properties, scss/at-rule-no-unknown -- @starting-style (the open/close slide-in transition) isn't in stylelint's at-rule list yet
+@use '../variables' as *;
+
+.cart-drawer-canut {
+  background-color: var(--wp--preset--color--bg-base);
+  border: 0;
+  color: var(--wp--preset--color--text-primary);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  height: 100vh;
+  inset: 0 0 0 auto;
+  margin: 0;
+  max-height: none;
+  max-width: 26rem;
+  padding: 0;
+  position: fixed;
+  transform: translateX(100%);
+  transition: transform 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  width: 100%;
+
+  &[open] {
+    transform: translateX(0);
+
+    @starting-style {
+      transform: translateX(100%);
+    }
+  }
+
+  &::backdrop {
+    background-color: color-mix(in sRGB, var(--wp--preset--color--primary-dark) 60%, transparent);
+    opacity: 1;
+    transition: opacity 250ms ease;
+
+    @starting-style {
+      opacity: 0;
+    }
+  }
+
+  @media (max-width: $breakpoint-mobile) {
+    max-width: none;
+  }
+}
+
+.cart-drawer-canut-header {
+  align-items: center;
+  border-bottom: 1px solid var(--wp--preset--color--border);
+  display: flex;
+  flex-shrink: 0;
+  justify-content: space-between;
+  padding: var(--wp--preset--spacing--space-md);
+}
+
+.cart-drawer-canut-title {
+  @include text-style(h-4, display, medium, h-4);
+  color: var(--wp--preset--color--text-primary);
+  margin: 0;
+}
+
+.cart-drawer-canut-close {
+  background-color: transparent;
+  border: 0;
+  color: var(--wp--preset--color--text-secondary);
+  cursor: pointer;
+  padding: var(--wp--preset--spacing--space-xs);
+
+  svg {
+    height: 1.5rem;
+    width: 1.5rem;
+  }
+}
+
+.cart-drawer-canut-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-md);
+  overflow-y: auto;
+  padding: var(--wp--preset--spacing--space-md);
+}
+
+.cart-drawer-canut-items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-md);
+}
+
+.cart-drawer-canut-item {
+  align-items: flex-start;
+  display: flex;
+  gap: var(--wp--preset--spacing--space-sm);
+
+  img {
+    border-radius: var(--wp--custom--canut--radius--sm);
+    flex-shrink: 0;
+    height: 4.5rem;
+    object-fit: cover;
+    width: 4.5rem;
+  }
+}
+
+.cart-drawer-canut-item-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-xs);
+  min-width: 0;
+}
+
+.cart-drawer-canut-item-name {
+  @include text-style(small, body, bold);
+  color: var(--wp--preset--color--text-primary);
+  margin: 0;
+}
+
+.cart-drawer-canut-item-meta {
+  @include text-style(caption, body, regular);
+  color: var(--wp--preset--color--text-secondary);
+  margin: 0;
+}
+
+.cart-drawer-canut-item-row {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--wp--preset--spacing--space-xs);
+}
+
+.cart-drawer-canut-item-price {
+  @include text-style(small, body, bold);
+  color: var(--wp--preset--color--text-primary);
+}
+
+.cart-drawer-canut-stepper {
+  align-items: center;
+  display: flex;
+  gap: var(--wp--preset--spacing--space-xs);
+
+  button {
+    background-color: transparent;
+    border: 0;
+    color: var(--wp--preset--color--primary);
+    cursor: pointer;
+    display: inline-flex;
+    padding: 0;
+
+    &:disabled {
+      color: var(--wp--preset--color--border);
+      cursor: not-allowed;
+    }
+
+    svg {
+      height: 1.5rem;
+      width: 1.5rem;
+    }
+  }
+
+  output {
+    @include text-style(small, body, medium);
+    color: var(--wp--preset--color--text-primary);
+    min-width: 1.5em;
+    text-align: center;
+  }
+}
+
+.cart-drawer-canut-remove {
+  background-color: transparent;
+  border: 0;
+  color: var(--wp--preset--color--text-secondary);
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: var(--wp--preset--spacing--space-xs);
+
+  svg {
+    height: 1.1rem;
+    width: 1.1rem;
+  }
+
+  &:hover,
+  &:focus {
+    color: var(--wp--preset--color--error);
+  }
+}
+
+.cart-drawer-canut-empty {
+  @include text-style(body, body, regular);
+  color: var(--wp--preset--color--text-secondary);
+  margin: auto 0;
+  text-align: center;
+}
+
+.cart-drawer-canut-footer {
+  border-top: 1px solid var(--wp--preset--color--border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  gap: var(--wp--preset--spacing--space-xs);
+  padding: var(--wp--preset--spacing--space-md);
+}
+
+.cart-drawer-canut-summary-row {
+  @include text-style(small, body, regular);
+  color: var(--wp--preset--color--text-secondary);
+  display: flex;
+  justify-content: space-between;
+}
+
+.cart-drawer-canut-subtotal {
+  @include text-style(body-lg, display, medium);
+
+  // Visually separates the computed Total from the informational rows above
+  // it (Subtotal/Descuentos/Envío), matching the reference design.
+  border-top: 1px solid var(--wp--preset--color--border);
+  color: var(--wp--preset--color--text-primary);
+  display: flex;
+  justify-content: space-between;
+  margin: var(--wp--preset--spacing--space-xs) 0;
+  padding-top: var(--wp--preset--spacing--space-sm);
+}

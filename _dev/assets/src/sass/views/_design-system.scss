@@ -1,0 +1,343 @@
+// Internal design-system reference page (/sistema-de-diseno)
+// stylelint-disable custom-property-pattern, csstools/value-no-unknown-custom-properties
+@use '../variables' as *;
+
+.design-system-canut {
+  background-color: var(--wp--preset--color--bg-base);
+  color: var(--wp--preset--color--text-primary);
+  display: grid;
+  gap: var(--wp--preset--spacing--space-lg);
+  grid-template-columns: 1fr;
+
+  @media (min-width: $breakpoint-tablet-landscape) {
+    grid-template-columns: 13.75rem 1fr;
+  }
+}
+
+.design-system-canut-nav {
+  display: none;
+
+  ul {
+    display: flex;
+    flex-direction: column;
+    gap: var(--wp--preset--spacing--space-xs);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  a {
+    @include text-style(small, body, medium);
+    color: var(--wp--preset--color--text-secondary);
+    text-decoration: none;
+
+    &:hover,
+    &:focus {
+      color: var(--wp--preset--color--accent);
+    }
+  }
+
+  @media (min-width: $breakpoint-tablet-landscape) {
+    align-self: start;
+    display: block;
+    position: sticky;
+    top: var(--wp--preset--spacing--space-lg);
+  }
+}
+
+.design-system-canut-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-2-xl);
+  min-width: 0;
+}
+
+.design-system-canut-section {
+  scroll-margin-top: var(--wp--preset--spacing--space-md);
+
+  // Vertical rhythm between everything that follows the section title (intro
+  // text, demo rows, frames) - without this, consecutive rows/frames had no
+  // spacing of their own and sat flush against each other.
+  .design-system-canut-title ~ * {
+    margin-top: var(--wp--preset--spacing--space-md);
+  }
+}
+
+.design-system-canut-eyebrow {
+  @include text-style(caption, body, medium);
+  color: var(--wp--preset--color--accent);
+  display: block;
+  letter-spacing: var(--wp--custom--canut--letter-spacing--caption);
+  margin-bottom: var(--wp--preset--spacing--space-xs);
+  text-transform: uppercase;
+}
+
+.design-system-canut-title {
+  @include text-style(h-2, display, light, h-2);
+  color: var(--wp--preset--color--primary);
+  margin: 0 0 var(--wp--preset--spacing--space-md);
+}
+
+// Color swatches
+.design-system-canut-swatches {
+  display: grid;
+  gap: var(--wp--preset--spacing--space-sm);
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+}
+
+.design-system-canut-swatch {
+  @include canut-radius(sm);
+  overflow: hidden;
+
+  &-color {
+    height: 5rem;
+  }
+
+  &-meta {
+    @include text-style(caption, body, regular);
+    background-color: var(--wp--preset--color--bg-surface);
+    padding: var(--wp--preset--spacing--space-xs);
+  }
+
+  &-name {
+    color: var(--wp--preset--color--text-primary);
+    display: block;
+  }
+
+  &-value {
+    color: var(--wp--preset--color--text-secondary);
+    display: block;
+  }
+}
+
+// Typography samples
+.design-system-canut-type-sample {
+  border-bottom: 1px solid var(--wp--preset--color--border);
+  padding: var(--wp--preset--spacing--space-sm) 0;
+
+  &:last-child {
+    border-bottom: 0;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+.design-system-canut-type-label {
+  @include text-style(caption, body, medium);
+  color: var(--wp--preset--color--text-secondary);
+  display: block;
+  margin-bottom: var(--wp--preset--spacing--space-xs);
+}
+
+// Blog / prose preview — headings, paragraphs, lists and tables rendered
+// together as a real article would read, since the isolated token samples
+// above don't show how the rhythm holds up once everything is combined.
+.design-system-canut-prose {
+  max-width: 42rem;
+
+  // Single-direction margins: every child owns its top spacing only, so the
+  // rhythm is fully determined by the rules below instead of the browser's
+  // default (and inconsistent) bottom margins on h1-h4/p/ul/ol/table.
+  > * {
+    margin-bottom: 0;
+    margin-top: var(--wp--preset--spacing--space-md);
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    color: var(--wp--preset--color--primary);
+  }
+
+  // Heading top spacing tapers with level: h1 breaks the hardest from
+  // whatever precedes it, h4 barely more than a paragraph would.
+  h1 {
+    @include text-style(h-1, display, medium, h-1);
+    margin-top: var(--wp--preset--spacing--space-xl);
+  }
+
+  h2 {
+    @include text-style(h-2, display, regular, h-2);
+    margin-top: var(--wp--preset--spacing--space-lg);
+  }
+
+  h3 {
+    @include text-style(h-3, display, medium, h-3);
+    margin-top: var(--wp--preset--spacing--space-md);
+  }
+
+  h4 {
+    @include text-style(h-4, display, medium, h-4);
+    margin-top: var(--wp--preset--spacing--space-md);
+  }
+
+  p {
+    @include text-style(body, body, regular, body);
+    color: var(--wp--preset--color--text-secondary);
+
+    &.design-system-canut-prose-lead {
+      @include text-style(body-lg, body, regular, body-lg);
+    }
+
+    &.design-system-canut-prose-note {
+      @include text-style(small, body, regular, small);
+    }
+  }
+
+  // A paragraph reads as part of the heading above it when that heading is
+  // a minor one (h3/h4), so pull it in tight instead of using the default
+  // paragraph rhythm. h1/h2 keep the default space-md gap.
+  h3 + p,
+  h4 + p {
+    margin-top: var(--wp--preset--spacing--space-xs);
+  }
+
+  ul,
+  ol {
+    @include text-style(body, body, regular, body);
+    color: var(--wp--preset--color--text-secondary);
+    padding-left: var(--wp--preset--spacing--space-md);
+
+    li + li {
+      margin-top: var(--wp--preset--spacing--space-xs);
+    }
+  }
+
+  ul {
+    list-style: disc;
+  }
+
+  ol {
+    list-style: decimal;
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  th,
+  td {
+    @include text-style(small, body, regular, small);
+    border-bottom: 1px solid var(--wp--preset--color--border);
+    padding: var(--wp--preset--spacing--space-xs) var(--wp--preset--spacing--space-sm);
+    text-align: left;
+  }
+
+  th {
+    @include text-style(caption, body, medium);
+    color: var(--wp--preset--color--text-secondary);
+    letter-spacing: var(--wp--custom--canut--letter-spacing--caption);
+    text-transform: uppercase;
+  }
+}
+
+// Spacing bars
+.design-system-canut-spacing-row {
+  align-items: center;
+  display: flex;
+  gap: var(--wp--preset--spacing--space-sm);
+  margin-bottom: var(--wp--preset--spacing--space-xs);
+}
+
+.design-system-canut-spacing-label {
+  @include text-style(caption, body, medium);
+  color: var(--wp--preset--color--text-secondary);
+  flex-shrink: 0;
+  width: 9ch;
+}
+
+.design-system-canut-spacing-bar {
+  background-color: var(--wp--preset--color--accent);
+  height: 1rem;
+}
+
+// Radius / shadow demo boxes
+.design-system-canut-demo-grid {
+  display: grid;
+  gap: var(--wp--preset--spacing--space-md);
+  grid-template-columns: repeat(auto-fill, minmax(8.75rem, 1fr));
+}
+
+.design-system-canut-demo-box {
+  @include text-style(caption, body, medium);
+  align-items: center;
+  background-color: var(--wp--preset--color--bg-surface);
+  color: var(--wp--preset--color--text-secondary);
+  display: flex;
+  height: 6.25rem;
+  justify-content: center;
+}
+
+// Section-local layout helpers
+.design-system-canut-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--wp--preset--spacing--space-sm);
+}
+
+.design-system-canut-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-sm);
+}
+
+// Placeholder for product photography in live component demos
+.design-system-canut-placeholder-img {
+  @include text-style(caption, body, medium);
+  align-items: center;
+  background-color: var(--wp--preset--color--border);
+  color: var(--wp--preset--color--text-secondary);
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  width: 100%;
+}
+
+.design-system-canut-grid-2 {
+  display: grid;
+  gap: var(--wp--preset--spacing--space-lg);
+  grid-template-columns: 1fr;
+
+  @media (min-width: $breakpoint-tablet) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+// Demo-only frame widths, derived from $space-2xl so they still come
+// from the token scale rather than being written as raw pixel values.
+.design-system-canut-demo-frame {
+  max-width: calc(var(--wp--preset--spacing--space-2-xl) * 3);
+}
+
+.design-system-canut-demo-frame-sm {
+  max-width: calc(var(--wp--preset--spacing--space-2-xl) * 2);
+}
+
+// Thumbnail size shared by the checkout-summary product row and its
+// placeholder image (see components/_checkout-summary-canut.scss)
+.design-system-canut-thumb-sm {
+  border-radius: var(--wp--custom--canut--radius--sm);
+  flex-shrink: 0;
+  height: 4rem;
+  width: 4rem;
+}
+
+// Demo-only modifiers: force a component into a state that only shows
+// conditionally in production (e.g. the mobile sticky bar), so it can be
+// previewed regardless of viewport width.
+.is-demo-visible {
+  display: flex !important;
+  position: relative !important;
+}
+
+.is-demo-tight {
+  margin-bottom: 0;
+}

@@ -31,10 +31,21 @@
 
 // Views
 @use 'views/front-page';
+@use 'views/nosotros';
+@use 'views/contacto';
+@use 'views/archive-historia';
 @use 'views/search';
 @use 'views/404' as error404;
 @use 'views/single';
 @use 'views/comments';
+@use 'views/design-system';
+@use 'views/pagina-informativa';
+@use 'views/centro-de-ayuda';
+@use 'views/soporte';
+@use 'views/shop';
+@use 'views/product';
+@use 'views/checkout-canut';
+@use 'views/garantia';
 
 // Block variations
 @use 'block-variations';

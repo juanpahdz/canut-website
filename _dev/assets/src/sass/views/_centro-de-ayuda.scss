@@ -1,0 +1,285 @@
+// Centro de ayuda (page-centro-de-ayuda.php): hero search, category
+// sidebar, FAQ accordion cards and WhatsApp CTA band - plus the standalone
+// single-recurso_ayuda.php permalink for one resource.
+// stylelint-disable custom-property-pattern, csstools/value-no-unknown-custom-properties
+@use '../variables' as *;
+
+// 1. Hero + search ---------------------------------------------------------
+.help-center-hero {
+  padding: var(--wp--preset--spacing--space-xl) 0 var(--wp--preset--spacing--space-lg);
+}
+
+.help-center-hero-inner {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-md);
+  text-align: center;
+}
+
+.help-center-hero-title {
+  @include text-style(h-1, display, light);
+  color: var(--wp--preset--color--text-primary);
+  margin: 0;
+}
+
+.help-center-hero-subtitle {
+  @include text-style(body-lg, body, regular);
+  color: var(--wp--preset--color--text-secondary);
+  margin: 0;
+  max-width: 42rem;
+}
+
+// Reuses .input-canut (sass/components/_form-canut.scss) for the field
+// chrome itself - this only adds the search icon and the room for it.
+.help-center-search {
+  margin-top: var(--wp--preset--spacing--space-xs);
+  max-width: 36rem;
+  position: relative;
+  width: 100%;
+
+  svg {
+    color: var(--wp--preset--color--text-secondary);
+    height: 1.125em;
+    left: var(--wp--preset--spacing--space-sm);
+    pointer-events: none;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1.125em;
+  }
+}
+
+.help-center-search-input {
+  @include canut-radius(md);
+  // Clears the icon (positioned at space-sm, ~1.125em wide) plus a real gap
+  // before the text starts - space-md alone put the icon's own right edge
+  // past the text padding, so the two visually touched.
+  padding-left: calc(var(--wp--preset--spacing--space-md) * 2);
+}
+
+// 2. Layout: sidebar + categories ------------------------------------------
+.help-center-layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-lg);
+  padding-bottom: var(--wp--preset--spacing--space-xl);
+
+  @media (min-width: $breakpoint-tablet-landscape) {
+    align-items: start;
+    display: grid;
+    gap: var(--wp--preset--spacing--space-lg) var(--wp--preset--spacing--space-xl);
+    grid-template-columns: minmax(12.5rem, 16.625rem) 1fr;
+  }
+}
+
+.help-center-sidebar {
+  @media (min-width: $breakpoint-tablet-landscape) {
+    align-self: start;
+    position: sticky;
+    // Offsets by the sticky site header's real rendered height
+    // (--site-header-height, set by modules/sticky-header.js) instead of a
+    // fixed spacing value, or the sidebar scrolls up underneath it - same
+    // pattern as .informational-page-toc (_pagina-informativa.scss) and
+    // .product-gallery (_product.scss). Also adds --admin-bar-offset
+    // (_site-header.scss): the header itself sticks at `top: admin-bar-offset`
+    // while logged in, so its own height alone isn't the full distance from
+    // the real viewport top.
+    top: calc(var(--admin-bar-offset) + var(--site-header-height, 5rem) + var(--wp--preset--spacing--space-md));
+  }
+}
+
+.help-center-sidebar-heading {
+  @include text-style(small, body, semi-bold);
+  color: var(--wp--preset--color--text-secondary);
+  letter-spacing: var(--wp--custom--canut--letter-spacing--caption);
+  margin: 0 0 var(--wp--preset--spacing--space-xs);
+  padding: 0 var(--wp--preset--spacing--space-sm);
+  text-transform: uppercase;
+}
+
+.help-center-sidebar-nav {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: var(--wp--preset--spacing--space-xs);
+
+  @media (min-width: $breakpoint-tablet-landscape) {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+}
+
+.help-center-sidebar-link {
+  @include canut-radius(sm);
+  @include text-style(body, body, regular);
+  color: var(--wp--preset--color--text-primary);
+  padding: 0.75rem var(--wp--preset--spacing--space-sm);
+  text-decoration: none;
+  transition: background-color 150ms ease, color 150ms ease;
+
+  &:hover {
+    background-color: color-mix(in sRGB, var(--wp--preset--color--primary) 6%, transparent);
+  }
+
+  &.is-active {
+    background-color: var(--wp--preset--color--primary);
+    color: var(--wp--preset--color--white);
+    font-weight: var(--wp--custom--font-weight--semi-bold);
+  }
+}
+
+.help-center-categories {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-lg);
+}
+
+// 3. Category section: heading, FAQ cards, CTA band ------------------------
+.help-center-category {
+  // Offsets the sidebar's anchor jump (#categoria-{slug}) so a section
+  // heading doesn't land underneath the sticky site header - same reasoning
+  // as .help-center-sidebar's sticky `top` above (including --admin-bar-offset).
+  scroll-margin-top: calc(var(--admin-bar-offset) + var(--site-header-height, 5rem) + var(--wp--preset--spacing--space-md));
+}
+
+.help-center-category-heading {
+  align-items: center;
+  display: flex;
+  gap: var(--wp--preset--spacing--space-sm);
+  margin-bottom: var(--wp--preset--spacing--space-sm);
+
+  h2 {
+    @include text-style(h-2, display, regular);
+    color: var(--wp--preset--color--text-primary);
+    margin: 0;
+  }
+}
+
+.help-center-category-icon {
+  align-items: center;
+  background-color: color-mix(in sRGB, var(--wp--preset--color--accent) 12%, transparent);
+  border-radius: 50%;
+  color: var(--wp--preset--color--accent);
+  display: flex;
+  flex-shrink: 0;
+  height: 2.25rem;
+  justify-content: center;
+  width: 2.25rem;
+
+  svg {
+    height: 1.125em;
+    width: 1.125em;
+  }
+}
+
+.help-center-faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-sm);
+  margin-bottom: var(--wp--preset--spacing--space-md);
+
+  // FAQ items are styled as individual cards here (border, radius, shadow)
+  // rather than the flat bordered-list look .accordion-canut-item has by
+  // default elsewhere - scoped to this list so the shared component in
+  // sass/components/_accordion-canut.scss stays context-agnostic.
+  .accordion-canut-item {
+    @include canut-radius(md);
+    @include canut-shadow(card);
+    background-color: var(--wp--preset--color--bg-surface);
+    border: 1px solid var(--wp--preset--color--border);
+    overflow: hidden;
+
+    &.is-hidden {
+      display: none;
+    }
+  }
+
+  .accordion-canut-trigger {
+    padding: var(--wp--preset--spacing--space-sm) var(--wp--preset--spacing--space-md);
+  }
+
+  // The base component only pads the panel bottom (flat-list context
+  // elsewhere) - the WYSIWYG answer needs the same left/right breathing
+  // room as the trigger above it, or it reads as flush against the card edge.
+  .accordion-canut-panel {
+    padding: 0 var(--wp--preset--spacing--space-md) var(--wp--preset--spacing--space-md);
+  }
+}
+
+.help-center-cta-band {
+  @include canut-radius(md);
+  align-items: center;
+  background-color: var(--wp--preset--color--light);
+  border: 1px solid color-mix(in sRGB, var(--wp--preset--color--primary) 10%, transparent);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--wp--preset--spacing--space-sm);
+  justify-content: space-between;
+  padding: var(--wp--preset--spacing--space-md);
+}
+
+.help-center-cta-band-content {
+  h3 {
+    @include text-style(h-4, display, medium);
+    color: var(--wp--preset--color--text-primary);
+    margin: 0;
+  }
+
+  p {
+    @include text-style(body, body, regular);
+    color: var(--wp--preset--color--text-secondary);
+    margin: 0;
+  }
+}
+
+.help-center-empty {
+  @include text-style(body, body, regular);
+  color: var(--wp--preset--color--text-secondary);
+  padding: var(--wp--preset--spacing--space-lg) 0;
+  text-align: center;
+}
+
+// 4. Single recurso de ayuda (single-recurso_ayuda.php) ---------------------
+.single-recurso-ayuda-inner {
+  margin: 0 auto;
+  max-width: var(--wp--style--global--content-size);
+  padding: var(--wp--preset--spacing--space-xl) 0;
+}
+
+.single-recurso-ayuda-back {
+  @include text-style(small, body, medium);
+  align-items: center;
+  color: var(--wp--preset--color--text-secondary);
+  display: inline-flex;
+  gap: var(--wp--preset--spacing--space-xs);
+  text-decoration: none;
+
+  svg {
+    height: 0.75em;
+    transform: rotate(180deg);
+    width: 0.75em;
+  }
+
+  &:hover {
+    color: var(--wp--preset--color--text-primary);
+  }
+}
+
+.single-recurso-ayuda-category {
+  @include text-style(small, body, semi-bold);
+  color: var(--wp--preset--color--accent);
+  margin: var(--wp--preset--spacing--space-md) 0 0;
+  text-transform: uppercase;
+}
+
+.single-recurso-ayuda-title {
+  @include text-style(h-2, display, regular);
+  color: var(--wp--preset--color--text-primary);
+  margin: var(--wp--preset--spacing--space-xs) 0 var(--wp--preset--spacing--space-md);
+}
+
+.single-recurso-ayuda-content {
+  @include text-style(body, body, regular);
+  color: var(--wp--preset--color--text-secondary);
+}

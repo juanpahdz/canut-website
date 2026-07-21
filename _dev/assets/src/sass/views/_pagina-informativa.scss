@@ -1,0 +1,215 @@
+// Reusable "Página informativa" template (Términos de Servicio, Política de
+// Privacidad, Shipping Policy, Warranty, etc.) - hero + sticky table of
+// contents + numbered sections, all driven by the "secciones" repeater.
+// stylelint-disable custom-property-pattern, csstools/value-no-unknown-custom-properties
+@use '../variables' as *;
+
+.informational-page {
+  background-color: var(--wp--preset--color--light);
+}
+
+.informational-page-hero {
+  padding: var(--wp--preset--spacing--space-xl) 0 var(--wp--preset--spacing--space-lg);
+}
+
+.informational-page-breadcrumb {
+  align-items: center;
+  display: flex;
+  gap: var(--wp--preset--spacing--space-xs);
+  margin-bottom: var(--wp--preset--spacing--space-xs);
+
+  a {
+    @include text-style(16, body, regular);
+    color: var(--wp--preset--color--text-secondary);
+    text-decoration: none;
+
+    &:hover,
+    &:focus {
+      color: var(--wp--preset--color--accent);
+    }
+  }
+
+  span {
+    @include text-style(16, body, regular);
+    color: var(--wp--preset--color--text-secondary);
+  }
+
+  svg {
+    color: var(--wp--preset--color--text-secondary);
+    flex-shrink: 0;
+    height: 0.5rem;
+    width: 0.5rem;
+  }
+}
+
+.informational-page-title {
+  @include text-style(h-1, display, light, h-1);
+  color: var(--wp--preset--color--primary);
+  margin: 0 0 var(--wp--preset--spacing--space-sm);
+}
+
+.informational-page-subtitle {
+  @include text-style(16, body, regular);
+  color: var(--wp--preset--color--text-secondary);
+  margin: 0;
+  max-width: 42rem;
+}
+
+.informational-page-layout {
+  display: grid;
+  gap: var(--wp--preset--spacing--space-lg);
+  grid-template-columns: 1fr;
+  padding-bottom: var(--wp--preset--spacing--space-xl);
+
+  @media (min-width: $breakpoint-tablet-landscape) {
+    grid-template-columns: 15rem 1fr;
+  }
+}
+
+// Sidebar TOC - numbers/labels come from the repeater, current-section
+// state (.is-active) is toggled by modules/pagina-informativa.js as the
+// reader scrolls.
+.informational-page-toc {
+  border-right: 1px solid var(--wp--preset--color--border);
+  display: none;
+  padding-right: var(--wp--preset--spacing--space-md);
+
+  @media (min-width: $breakpoint-tablet-landscape) {
+    align-self: start;
+    display: block;
+    position: sticky;
+    top: calc(var(--site-header-height, 5rem) + var(--wp--preset--spacing--space-md));
+  }
+}
+
+.informational-page-toc-heading {
+  @include text-style(16, body, medium);
+  color: var(--wp--preset--color--text-secondary);
+  margin: 0 0 var(--wp--preset--spacing--space-sm);
+  opacity: 0.6;
+}
+
+.informational-page-toc-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-sm);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.informational-page-toc-link {
+  @include text-style(14, body, semi-bold);
+  border-left: 2px solid var(--wp--preset--color--border);
+  color: var(--wp--preset--color--text-secondary);
+  display: block;
+  padding-left: var(--wp--preset--spacing--space-sm);
+  text-decoration: none;
+
+  &:hover,
+  &:focus {
+    color: var(--wp--preset--color--text-primary);
+  }
+
+  &.is-active {
+    border-left-color: var(--wp--preset--color--accent-dark);
+    color: var(--wp--preset--color--accent-dark);
+  }
+}
+
+// Floats as a white card over the page's grey background, flush with the
+// wrap's right edge (only the left edge is "open", against the TOC divider).
+.informational-page-content {
+  @include canut-radius(md);
+  @include canut-shadow(card);
+  background-color: var(--wp--preset--color--bg-surface);
+  min-width: 0;
+  padding: var(--wp--preset--spacing--space-lg);
+}
+
+.informational-page-section {
+  // Offsets the anchor jump so a section title doesn't land underneath the
+  // sticky site header.
+  scroll-margin-top: calc(var(--site-header-height, 5rem) + var(--wp--preset--spacing--space-md));
+
+  & + & {
+    margin-top: var(--wp--preset--spacing--space-xl);
+  }
+}
+
+.informational-page-section-title {
+  @include text-style(h-2, display, regular, h-2);
+  color: var(--wp--preset--color--primary);
+  margin: 0 0 var(--wp--preset--spacing--space-md);
+}
+
+// WYSIWYG prose - the only structure editors can add per section, so every
+// element it can output (paragraphs, lists, links, images, quotes) needs a
+// rule here.
+.informational-page-section-body {
+  @include text-style(16, body, regular);
+  color: var(--wp--preset--color--text-secondary);
+
+  > * {
+    margin-bottom: 0;
+    margin-top: var(--wp--preset--spacing--space-md);
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  a {
+    color: var(--wp--preset--color--text-primary);
+    text-decoration-color: var(--wp--preset--color--border);
+    text-underline-offset: 2px;
+
+    &:hover,
+    &:focus {
+      color: var(--wp--preset--color--accent);
+    }
+  }
+
+  strong {
+    color: var(--wp--preset--color--text-primary);
+  }
+
+  ul,
+  ol {
+    padding-left: var(--wp--preset--spacing--space-md);
+
+    li + li {
+      margin-top: var(--wp--preset--spacing--space-xs);
+    }
+  }
+
+  ul {
+    list-style: disc;
+  }
+
+  ol {
+    list-style: decimal;
+  }
+
+  img {
+    @include canut-radius(sm);
+    height: auto;
+    width: 100%;
+  }
+
+  // Notice/callout box - matches .banner-canut.is-help's tint formula
+  // (color-mix over an existing token, no new hardcoded colors).
+  blockquote {
+    @include canut-radius(sm);
+    background-color: color-mix(in sRGB, var(--wp--preset--color--primary) 6%, var(--wp--preset--color--bg-surface));
+    border-left: 4px solid var(--wp--preset--color--primary);
+    border-radius: 0 var(--wp--custom--canut--radius--sm) var(--wp--custom--canut--radius--sm) 0;
+    font-style: italic;
+    margin: var(--wp--preset--spacing--space-md) 0 0;
+    padding: var(--wp--preset--spacing--space-sm) var(--wp--preset--spacing--space-md);
+
+    p {
+      margin: 0;
+    }
+  }
+}

@@ -1,0 +1,181 @@
+// CANUT design-system buttons (primary/secondary/checkout)
+// stylelint-disable custom-property-pattern, csstools/value-no-unknown-custom-properties
+@use '../variables' as *;
+
+// Hover caret, encoded inline so it can be used as a mask and take the
+// button's current text color instead of a color baked into the file.
+// Sourced from @phosphor-icons/core fill/caret-left-fill.svg.
+$button-canut-caret: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M168,48V208a8,8,0,0,1-13.66,5.66l-80-80a8,8,0,0,1,0-11.32l80-80A8,8,0,0,1,168,48Z'/%3E%3C/svg%3E");
+// The glyph itself is narrower than it's tall - fixing the mask to its real
+// proportions (instead of stretching it to a square box) keeps it crisp.
+$button-canut-caret-width: 0.6em;
+
+@keyframes button-canut-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.button-canut-base {
+  @include text-style(body, body, bold);
+  @include canut-radius(btn);
+  align-items: center;
+  appearance: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  display: inline-flex;
+  gap: var(--wp--preset--spacing--space-xs);
+  justify-content: center;
+  padding: var(--wp--preset--spacing--space-sm) calc(var(--wp--preset--spacing--space-sm) * 2);
+  position: relative;
+  text-decoration: none;
+  transition: all 150ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+  // Icons work on either side - just place an <svg> before or after the
+  // label in markup, this sizes whichever is used consistently.
+  svg {
+    flex-shrink: 0;
+    height: 1em;
+    width: 1em;
+  }
+
+  // Caret starts collapsed to 0 width with a matching negative margin, so it
+  // takes up no space and doesn't leave a gap from the flex `gap` above.
+  // The mask itself is a fixed size (not "contain") so it reveals from the
+  // left as the box grows instead of stretching/squishing to fit.
+  &::after {
+    background-color: currentColor;
+    content: '';
+    height: 1em;
+    margin-left: calc(var(--wp--preset--spacing--space-xs) * -1);
+    mask-image: $button-canut-caret;
+    mask-position: left center;
+    mask-repeat: no-repeat;
+    mask-size: $button-canut-caret-width 1em;
+    opacity: 0;
+    transform: translateX(-0.25em);
+    transition: margin-left 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94), width 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    width: 0;
+  }
+
+  &:hover::after,
+  &:focus::after {
+    margin-left: 0;
+    opacity: 1;
+    transform: translateX(0);
+    width: $button-canut-caret-width;
+  }
+
+  // Opt-out: add `is-no-arrow` alongside button-canut-base to disable it.
+  &.is-no-arrow::after {
+    content: none;
+  }
+
+  // Opt-in: add `is-full-width` to stretch the button, otherwise it fits its text.
+  &.is-full-width {
+    width: 100%;
+  }
+
+  // Loading state: text/icons/caret all read `currentColor`, so making the
+  // button's own color transparent hides them together without needing to
+  // wrap the label in markup. A spinner is then centered on top, using the
+  // per-variant --button-canut-spinner-color since currentColor is now
+  // transparent on this element. Pair with the `withButtonCanutLoading` JS
+  // helper (modules/button-canut.js), which also sets `disabled` so the
+  // button can't be clicked again while it's busy.
+  &.is-loading {
+    color: transparent;
+    cursor: not-allowed;
+    pointer-events: none;
+
+    &::before {
+      animation-duration: 700ms;
+      animation-iteration-count: infinite;
+      animation-name: button-canut-spin;
+      animation-timing-function: linear;
+      border: 2px solid var(--button-canut-spinner-color, currentColor);
+      border-radius: 50%;
+      border-right-color: transparent;
+      border-top-color: transparent;
+      content: '';
+      height: 1em;
+      left: 50%;
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 1em;
+    }
+
+    // The reveal caret has nothing to reveal while the label is hidden.
+    &::after {
+      content: none;
+    }
+  }
+}
+
+.button-canut-primary {
+  --button-canut-spinner-color: var(--wp--preset--color--white);
+  background-color: var(--wp--preset--color--accent);
+  border-color: var(--wp--preset--color--accent);
+  color: var(--wp--preset--color--white);
+
+  &:focus,
+  &:hover {
+    @include canut-shadow(hover);
+    background-color: var(--wp--preset--color--accent-dark);
+    border-color: var(--wp--preset--color--accent-dark);
+  }
+}
+
+.button-canut-secondary {
+  --button-canut-spinner-color: var(--wp--preset--color--primary);
+  background-color: transparent;
+  border-color: var(--wp--preset--color--primary);
+  color: var(--wp--preset--color--primary);
+
+  &:focus,
+  &:hover {
+    background-color: color-mix(in sRGB, var(--wp--preset--color--primary) 5%, transparent);
+  }
+}
+
+.button-canut-checkout {
+  --button-canut-spinner-color: var(--wp--preset--color--white);
+  background-color: var(--wp--preset--color--primary-dark);
+  border-color: var(--wp--preset--color--primary-dark);
+  color: var(--wp--preset--color--white);
+
+  &:focus,
+  &:hover {
+    @include canut-shadow(hover);
+  }
+}
+
+// Outline button for use on top of photography (hero, image overlays) where
+// button-canut-secondary's primary-colored border/text would be invisible.
+.button-canut-ghost {
+  --button-canut-spinner-color: var(--wp--preset--color--white);
+  background-color: transparent;
+  border-color: var(--wp--preset--color--white);
+  color: var(--wp--preset--color--white);
+
+  &:focus,
+  &:hover {
+    background-color: color-mix(in sRGB, var(--wp--preset--color--white) 15%, transparent);
+  }
+}
+
+// Solid white button for use on top of photography (final CTA) where
+// button-canut-checkout's dark background would blend into the image.
+.button-canut-light {
+  --button-canut-spinner-color: var(--wp--preset--color--primary-dark);
+  background-color: var(--wp--preset--color--white);
+  border-color: var(--wp--preset--color--white);
+  color: var(--wp--preset--color--primary-dark);
+
+  &:focus,
+  &:hover {
+    @include canut-shadow(hover);
+    background-color: color-mix(in sRGB, var(--wp--preset--color--white) 90%, transparent);
+  }
+}

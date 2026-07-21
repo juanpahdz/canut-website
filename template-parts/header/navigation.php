@@ -15,7 +15,17 @@ namespace Air_Light;
     <span class="hamburger" aria-hidden="true"></span>
   </button>
 
+  <div id="menu-items-overlay" class="menu-items-overlay"></div>
+
   <div id="menu-items-wrapper" class="menu-items-wrapper">
+
+    <p class="menu-items-wrapper-branding">
+      <a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home">
+        <span class="screen-reader-text"><?php bloginfo( 'name' ); ?></span>
+        <?php require get_theme_file_path( THEME_SETTINGS['logo'] ); ?>
+      </a>
+    </p>
+
     <?php wp_nav_menu( array(
       'theme_location' => 'primary',
       'container'      => false,
@@ -29,6 +39,13 @@ namespace Air_Light;
       'walker'         => new Nav_Walker(),
     ) );
     ?>
+
+    <div class="menu-items-wrapper-contact">
+      <a href="<?php echo esc_url( home_url( '/contacto/' ) ); ?>" class="button-canut-base button-canut-primary is-full-width">
+        <?php echo esc_html__( 'Contáctanos', 'air-light' ); ?>
+      </a>
+    </div>
+
   </div>
 
 </nav>

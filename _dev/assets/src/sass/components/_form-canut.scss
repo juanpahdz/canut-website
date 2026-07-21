@@ -1,0 +1,196 @@
+// CANUT form fields: label, text/select/textarea inputs, tooltip
+// stylelint-disable custom-property-pattern, csstools/value-no-unknown-custom-properties
+@use '../variables' as *;
+
+// Chevron used on <select> elements, encoded inline so it can be used as a
+// mask and take the field's current text color (same technique as the
+// button-canut hover caret). Sourced from @phosphor-icons/core
+// fill/caret-down-fill.svg (theme copy: assets/svg/icon-chevron-down.svg).
+$form-canut-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z'/%3E%3C/svg%3E");
+
+// Shared visual treatment for text inputs, selects and textareas.
+@mixin form-canut-field {
+  @include canut-radius(sm);
+  @include text-style(body, body, regular);
+  background-color: var(--wp--preset--color--bg-surface);
+  border: 1px solid var(--wp--preset--color--border);
+  color: var(--wp--preset--color--text-primary);
+  padding: var(--wp--preset--spacing--space-sm);
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+  width: 100%;
+
+  &::placeholder {
+    color: var(--wp--preset--color--text-secondary);
+    opacity: 1;
+  }
+
+  &:focus {
+    border-color: var(--wp--preset--color--accent);
+    box-shadow: 0 0 0 3px color-mix(in sRGB, var(--wp--preset--color--accent) 15%, transparent);
+    outline: none;
+  }
+}
+
+// Standalone utility classes, for markup that isn't going through
+// WooCommerce's own field renderer (e.g. the /sistema-de-diseno demo).
+.input-canut {
+  @include form-canut-field;
+}
+
+.select-canut {
+  @include form-canut-field;
+  appearance: none;
+  background-image: none;
+  padding-right: calc(var(--wp--preset--spacing--space-md) + var(--wp--preset--spacing--space-sm));
+  position: relative;
+}
+
+// The chevron can't live on the <select> itself (masks don't composite with
+// its own background), so this wraps it and positions an icon on top.
+.select-canut-wrap {
+  position: relative;
+
+  &::after {
+    background-color: var(--wp--preset--color--text-secondary);
+    content: '';
+    height: 1rem;
+    mask-image: $form-canut-chevron;
+    mask-position: center;
+    mask-repeat: no-repeat;
+    mask-size: contain;
+    pointer-events: none;
+    position: absolute;
+    right: var(--wp--preset--spacing--space-sm);
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1rem;
+  }
+}
+
+.textarea-canut {
+  @include form-canut-field;
+  min-height: 5.5rem;
+  resize: vertical;
+}
+
+.form-canut-label {
+  @include text-style(caption, body, semi-bold);
+  align-items: center;
+  color: var(--wp--preset--color--text-secondary);
+  display: flex;
+  gap: var(--wp--preset--spacing--space-xs);
+  letter-spacing: var(--wp--custom--canut--letter-spacing--caption);
+}
+
+// Real WooCommerce checkout fields: `.form-canut-group` is added to each
+// field's own wrapping <p class="form-row"> via the 'class' arg of
+// woocommerce_checkout_fields (see inc/hooks/checkout.php), so its default
+// <label> and <span class="woocommerce-input-wrapper"><input>/<select>/
+// <textarea></span> markup gets styled without needing `label_class`/
+// `input_class` on every field. This also survives wc-dropi-integration's
+// JS swapping #billing_city from an <input> to a <select> after load,
+// since only the element *inside* woocommerce-input-wrapper is replaced.
+.form-canut-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-xs);
+  width: 100%;
+
+  > label {
+    @include text-style(caption, body, semi-bold);
+    color: var(--wp--preset--color--text-secondary);
+    letter-spacing: var(--wp--custom--canut--letter-spacing--caption);
+
+    .required,
+    .optional {
+      display: none;
+    }
+  }
+
+  .woocommerce-input-wrapper {
+    position: relative;
+
+    input,
+    select,
+    textarea {
+      @include form-canut-field;
+    }
+
+    textarea {
+      min-height: 5.5rem;
+      resize: vertical;
+    }
+
+    &:has(select) {
+      input,
+      select {
+        appearance: none;
+        padding-right: calc(var(--wp--preset--spacing--space-md) + var(--wp--preset--spacing--space-sm));
+      }
+
+      &::after {
+        background-color: var(--wp--preset--color--text-secondary);
+        content: '';
+        height: 1rem;
+        mask-image: $form-canut-chevron;
+        mask-position: center;
+        mask-repeat: no-repeat;
+        mask-size: contain;
+        pointer-events: none;
+        position: absolute;
+        right: var(--wp--preset--spacing--space-sm);
+        top: 50%;
+        transform: translateY(-50%);
+        width: 1rem;
+      }
+    }
+  }
+}
+
+// Info icon + hover/focus bubble, e.g. next to the "Teléfono / WhatsApp"
+// label. CSS-only (no JS) so it also works for keyboard focus.
+.form-canut-tooltip {
+  display: inline-flex;
+  position: relative;
+
+  svg {
+    color: var(--wp--preset--color--text-secondary);
+    height: 1em;
+    width: 1em;
+  }
+
+  &:hover .form-canut-tooltip-bubble,
+  &:focus-within .form-canut-tooltip-bubble {
+    opacity: 1;
+    transform: translate(-50%, -4px);
+    visibility: visible;
+  }
+}
+
+.form-canut-tooltip-trigger {
+  background-color: transparent;
+  border: 0;
+  color: var(--wp--preset--color--text-secondary);
+  cursor: help;
+  display: inline-flex;
+  padding: 0;
+}
+
+.form-canut-tooltip-bubble {
+  @include canut-radius(sm);
+  @include text-style(caption, body, regular);
+  background-color: var(--wp--preset--color--primary-dark);
+  bottom: 100%;
+  color: var(--wp--preset--color--white);
+  left: 50%;
+  max-width: 12rem;
+  opacity: 0;
+  padding: var(--wp--preset--spacing--space-xs) var(--wp--preset--spacing--space-sm);
+  position: absolute;
+  text-align: center;
+  transform: translate(-50%, 0);
+  transition: opacity 150ms ease, transform 150ms ease;
+  visibility: hidden;
+  width: max-content;
+  z-index: 2;
+}

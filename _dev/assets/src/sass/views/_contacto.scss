@@ -1,0 +1,244 @@
+// Styles for the "Contacto" page (template-parts/contacto/*.php,
+// template-parts/blocks/contacto-canut.php).
+// WordPress custom properties from theme.json
+// stylelint-disable custom-property-pattern, csstools/value-no-unknown-custom-properties
+@use '../variables' as *;
+
+// 1. Hero -----------------------------------------------------------------
+.contacto-hero {
+  padding: var(--wp--preset--spacing--space-xl) var(--wp--preset--spacing--space-md) var(--wp--preset--spacing--space-lg);
+  text-align: center;
+}
+
+.contacto-hero-inner {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-sm);
+  margin: 0 auto;
+  max-width: 42rem;
+}
+
+.contacto-hero-title {
+  @include text-style(h-1, display, light);
+  color: var(--wp--preset--color--text-primary);
+  margin: 0;
+}
+
+.contacto-hero-text {
+  @include text-style(body, body, regular);
+  color: var(--wp--preset--color--text-secondary);
+  margin: 0;
+}
+
+// 2. Layout: form (left) + info (right) ------------------------------------
+.contacto-canut {
+  padding-bottom: var(--wp--preset--spacing--space-xl);
+}
+
+.contacto-canut-columns {
+  align-items: start;
+  display: grid;
+  gap: var(--wp--preset--spacing--space-md);
+  grid-template-columns: 1fr 1fr;
+
+  @media screen and (max-width: $breakpoint-tablet-landscape) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// 3. Form card --------------------------------------------------------------
+.contacto-form-card {
+  @include canut-radius(md);
+  @include canut-shadow(card);
+  background-color: var(--wp--preset--color--bg-surface);
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-md);
+  padding: var(--wp--preset--spacing--space-md);
+}
+
+.contacto-form-title {
+  @include text-style(h-3, display, medium);
+  color: var(--wp--preset--color--text-primary);
+  margin: 0;
+}
+
+.contacto-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-sm);
+}
+
+// Honeypot: hidden from sighted/mouse users and skipped in tab order, but
+// still present in markup and DOM-visible to simple bots that fill in every
+// field they can find.
+.contacto-form-hp {
+  height: 1px;
+  left: -625rem;
+  overflow: hidden;
+  position: absolute;
+  width: 1px;
+}
+
+.contacto-form-row {
+  display: flex;
+  gap: var(--wp--preset--spacing--space-sm);
+
+  @media screen and (max-width: $breakpoint-mobile) {
+    flex-direction: column;
+  }
+}
+
+.contacto-form-field {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-xs);
+  min-width: 0;
+}
+
+// 4. Info column: WhatsApp / atención / mapa --------------------------------
+.contacto-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-md);
+}
+
+.contacto-whatsapp-card {
+  @include canut-radius(md);
+  @include canut-shadow(card);
+  background-color: var(--wp--preset--color--bg-surface);
+  border-left: 4px solid var(--wp--preset--color--primary-dark);
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-sm);
+  padding: var(--wp--preset--spacing--space-md);
+}
+
+.contacto-whatsapp-heading {
+  align-items: center;
+  display: flex;
+  gap: var(--wp--preset--spacing--space-sm);
+
+  svg {
+    color: var(--wp--preset--color--text-primary);
+    flex-shrink: 0;
+    height: 1.25rem;
+    width: 1.25rem;
+  }
+
+  h3 {
+    @include text-style(h-4, display, medium);
+    color: var(--wp--preset--color--text-primary);
+    margin: 0;
+  }
+}
+
+.contacto-whatsapp-channels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--wp--preset--spacing--space-sm);
+
+  .button-canut-base {
+    flex: 1 1 auto;
+  }
+}
+
+.contacto-attention-card {
+  @include canut-radius(md);
+  @include canut-shadow(card);
+  background-color: color-mix(in sRGB, var(--wp--preset--color--bg-surface) 60%, transparent);
+  border: 1px solid color-mix(in sRGB, var(--wp--preset--color--border) 50%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-sm);
+  padding: var(--wp--preset--spacing--space-md);
+}
+
+.contacto-attention-heading {
+  @include text-style(caption, body, semi-bold);
+  color: var(--wp--preset--color--text-secondary);
+  letter-spacing: var(--wp--custom--canut--letter-spacing--caption);
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.contacto-attention-email {
+  align-items: center;
+  display: flex;
+  gap: var(--wp--preset--spacing--space-xs);
+  margin: 0;
+
+  svg {
+    color: var(--wp--preset--color--text-secondary);
+    flex-shrink: 0;
+    height: 1rem;
+    width: 1rem;
+  }
+
+  a {
+    @include text-style(small, body, regular);
+    color: var(--wp--preset--color--text-primary);
+  }
+}
+
+.contacto-attention-hours {
+  @include canut-radius(sm);
+  background-color: var(--canut-tint-soft);
+  padding: var(--wp--preset--spacing--space-sm);
+}
+
+.contacto-attention-hours-day {
+  @include text-style(small, body, medium);
+  color: var(--wp--preset--color--text-primary);
+  margin: 0;
+}
+
+.contacto-attention-hours-time {
+  @include text-style(small, body, regular);
+  color: var(--wp--preset--color--text-secondary);
+  margin: 0;
+}
+
+// 5. Map ---------------------------------------------------------------------
+.contacto-map {
+  @include canut-radius(md);
+  @include canut-shadow(card);
+  height: 16rem;
+  overflow: hidden;
+  position: relative;
+}
+
+.contacto-map-frame {
+  border: 0;
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+.contacto-map-button {
+  @include canut-radius(full);
+  @include canut-shadow(hover);
+  align-items: center;
+  background-color: var(--wp--preset--color--primary-dark);
+  bottom: var(--wp--preset--spacing--space-sm);
+  color: var(--wp--preset--color--white);
+  display: flex;
+  height: 2.75rem;
+  justify-content: center;
+  position: absolute;
+  right: var(--wp--preset--spacing--space-sm);
+  transition: background-color 150ms ease;
+  width: 2.75rem;
+
+  &:hover,
+  &:focus {
+    background-color: var(--wp--preset--color--primary);
+  }
+
+  svg {
+    height: 1.125rem;
+    width: 1.125rem;
+  }
+}

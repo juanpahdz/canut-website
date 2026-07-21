@@ -28,11 +28,25 @@ namespace Air_Light;
   <?php wp_body_open(); ?>
   <div id="page" class="site">
 
-    <header class="site-header">
-      <div class="site-header-inner">
-        <?php get_template_part( 'template-parts/header/branding' ); ?>
-        <?php get_template_part( 'template-parts/header/navigation' ); ?>
-      </div>
-    </header>
+    <?php if ( function_exists( 'is_checkout' ) && is_checkout() ) : ?>
+
+      <header class="site-header-checkout">
+        <a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home">
+          <span class="screen-reader-text"><?php bloginfo( 'name' ); ?></span>
+          <?php require get_theme_file_path( THEME_SETTINGS['logo'] ); ?>
+        </a>
+      </header>
+
+    <?php else : ?>
+
+      <header class="site-header">
+        <div class="site-header-inner">
+          <?php get_template_part( 'template-parts/header/branding' ); ?>
+          <?php get_template_part( 'template-parts/header/navigation' ); ?>
+          <?php get_template_part( 'template-parts/header/actions' ); ?>
+        </div>
+      </header>
+
+    <?php endif; ?>
 
     <div class="site-content">

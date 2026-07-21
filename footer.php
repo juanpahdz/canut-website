@@ -10,33 +10,118 @@
 
 namespace Air_Light;
 
+$footer_menu_columns = [
+  'footer_company' => __( 'Compañía', 'air-light' ),
+  'footer_support' => __( 'Soporte', 'air-light' ),
+];
+
+$social_links = [
+  [ 'label' => 'Instagram', 'url' => '#', 'icon' => 'instagram' ],
+  [ 'label' => 'TikTok', 'url' => '#', 'icon' => 'tiktok' ],
+  [ 'label' => 'WhatsApp', 'url' => 'https://wa.me/', 'icon' => 'whatsapp' ],
+];
+
+$payment_methods = [ 'PayPal', 'Visa', 'Mastercard', __( 'Efectivo', 'air-light' ) ];
+
 ?>
 
 </div><!-- #content -->
 
-<footer id="colophon" class="site-footer">
+<?php if ( function_exists( 'is_checkout' ) && is_checkout() ) : ?>
 
-  <div class="container">
-    <!-- Default footer content that you can safely remove from here... -->
-    <div class="site-info">
-      <a class="no-external-link-indicator powered-by-wordpress" href="<?php echo esc_url( __( 'http://wordpress.org/', 'air-light' ) ); ?>">
-        <svg class="wordpress-logo" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="42" height="42" fill="currentColor" aria-hidden="true"><path d="M21.469 6.825c.84 1.537 1.318 3.3 1.318 5.175 0 3.979-2.156 7.456-5.363 9.325l3.295-9.527c.615-1.54.82-2.771.82-3.864 0-.405-.026-.78-.07-1.11m-7.981.105c.647-.03 1.232-.105 1.232-.105.582-.075.514-.93-.067-.899 0 0-1.755.135-2.88.135-1.064 0-2.85-.15-2.85-.15-.585-.03-.661.855-.075.885 0 0 .54.061 1.125.09l1.68 4.605-2.37 7.08L5.354 6.9c.649-.03 1.234-.1 1.234-.1.585-.075.516-.93-.065-.896 0 0-1.746.138-2.874.138-.2 0-.438-.008-.69-.015C4.911 3.15 8.235 1.215 12 1.215c2.809 0 5.365 1.072 7.286 2.833-.046-.003-.091-.009-.141-.009-1.06 0-1.812.923-1.812 1.914 0 .89.513 1.643 1.06 2.531.411.72.89 1.643.89 2.977 0 .915-.354 1.994-.821 3.479l-1.075 3.585-3.9-11.61.001.014zM12 22.784c-1.059 0-2.081-.153-3.048-.437l3.237-9.406 3.315 9.087c.024.053.05.101.078.149-1.12.393-2.325.609-3.582.609M1.211 12c0-1.564.336-3.05.935-4.39L7.29 21.709C3.694 19.96 1.212 16.271 1.211 12M12 0C5.385 0 0 5.385 0 12s5.385 12 12 12 12-5.385 12-12S18.615 0 12 0"/></svg>
-        <span>
-          <?php // translators: %s: WordPress. ?>
-          <?php printf( esc_html__( 'Proudly powered by %s', 'air-light' ), 'WordPress' ); ?>.
-        </span>
-      </a>
-      <span class="theme-info">
-        <span>
-          <?php // translators: %1$s: air in italics, %2$s: theme version number. ?>
-          <?php printf( esc_html__( 'Lightweight like %1$s itself. You are using air-light by Dude version %2$s', 'air-light' ), '<i>air</i>', esc_attr( AIR_LIGHT_VERSION ) ); ?>.
-        </span>
-      </span>
+  <footer id="colophon" class="site-footer-checkout">
+    <div>
+      <p class="site-footer-checkout-brand"><?php bloginfo( 'name' ); ?></p>
+      <p class="site-footer-checkout-copyright">
+        <?php // translators: %s: current year. ?>
+        <?php printf( esc_html__( '© %s CANUT Pet Tech. Excelencia artesanal.', 'air-light' ), esc_html( gmdate( 'Y' ) ) ); ?>
+      </p>
     </div>
-    <!-- ...up until here -->
+    <ul class="site-footer-checkout-links">
+      <li><a href="<?php echo esc_url( function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : home_url( '/' ) ); ?>"><?php echo esc_html__( 'Soporte', 'air-light' ); ?></a></li>
+      <li><a href="https://wa.me/"><?php echo esc_html__( 'Política de devoluciones', 'air-light' ); ?></a></li>
+      <li><a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php echo esc_html__( 'Envíos', 'air-light' ); ?></a></li>
+    </ul>
+  </footer><!-- #colophon -->
+
+<?php else : ?>
+
+<footer id="colophon" class="site-footer site-footer-canut">
+
+  <div class="wrap-canut site-footer-canut-inner">
+
+    <div class="site-footer-canut-columns">
+
+      <div class="site-footer-canut-column site-footer-canut-brand">
+        <p class="site-footer-canut-logo">
+          <a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home">
+            <span class="screen-reader-text"><?php bloginfo( 'name' ); ?></span>
+            <?php require get_theme_file_path( THEME_SETTINGS['logo'] ); ?>
+          </a>
+        </p>
+        <p class="site-footer-canut-tagline">
+          <?php echo esc_html__( 'Excelencia artesanal en tecnología para mascotas.', 'air-light' ); ?>
+        </p>
+        <ul class="site-footer-canut-social">
+          <?php foreach ( $social_links as $social ) : ?>
+            <li>
+              <a href="<?php echo esc_url( $social['url'] ); ?>" aria-label="<?php echo esc_attr( $social['label'] ); ?>" target="_blank" rel="noopener noreferrer">
+                <?php require get_theme_file_path( 'assets/svg/icon-' . $social['icon'] . '.svg' ); ?>
+              </a>
+            </li>
+          <?php endforeach; ?>
+        </ul>
+      </div>
+
+      <?php foreach ( $footer_menu_columns as $location => $title ) :
+        if ( ! has_nav_menu( $location ) ) {
+          continue;
+        }
+      ?>
+        <div class="site-footer-canut-column">
+          <h4 class="site-footer-canut-heading"><?php echo esc_html( $title ); ?></h4>
+          <?php wp_nav_menu( [
+            'theme_location' => $location,
+            'container'      => false,
+            'depth'          => 1,
+            'items_wrap'     => '<ul class="site-footer-canut-links">%3$s</ul>',
+            'walker'         => new Footer_Nav_Walker(),
+          ] ); ?>
+        </div>
+      <?php endforeach; ?>
+
+      <div class="site-footer-canut-column">
+        <h4 class="site-footer-canut-heading"><?php echo esc_html__( 'Ubicación', 'air-light' ); ?></h4>
+        <p class="site-footer-canut-address">
+          <?php echo esc_html__( 'Showroom Medellín, Colombia', 'air-light' ); ?><br>
+          <?php echo esc_html__( 'Calle 10 # 32-45, El Poblado', 'air-light' ); ?>
+        </p>
+        <p class="site-footer-canut-note">
+          <?php echo esc_html__( 'Envíos a todo el país. Garantía certificada.', 'air-light' ); ?>
+        </p>
+      </div>
+
+    </div>
+
+    <div class="site-footer-canut-bottom">
+      <p class="site-footer-canut-copyright">
+        <?php // translators: %s: current year. ?>
+        <?php printf( esc_html__( '© %s CANUT Pet Tech. Excelencia artesanal.', 'air-light' ), esc_html( gmdate( 'Y' ) ) ); ?>
+      </p>
+      <ul class="site-footer-canut-payments">
+        <?php foreach ( $payment_methods as $payment ) : ?>
+          <li><?php echo esc_html( $payment ); ?></li>
+        <?php endforeach; ?>
+      </ul>
+    </div>
+
   </div>
 
 </footer><!-- #colophon -->
+
+<?php endif; ?>
+
+<?php get_template_part( 'template-parts/cart/drawer' ); ?>
 
 </div><!-- #page -->
 

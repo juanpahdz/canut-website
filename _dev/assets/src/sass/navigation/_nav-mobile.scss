@@ -1,7 +1,9 @@
 // stylelint-disable custom-property-pattern, csstools/value-no-unknown-custom-properties
 @use '../variables' as *;
 @use '../helpers' as *;
-// stylelint-disable a11y/no-display-none, plugin/file-max-lines, scss/operator-no-newline-after
+// declaration-block-no-duplicate-properties: the drawer's height is set
+// twice on purpose, a vh fallback followed by the dvh progressive enhancement.
+// stylelint-disable a11y/no-display-none, plugin/file-max-lines, scss/operator-no-newline-after, declaration-block-no-duplicate-properties
 // Import nav-toggle
 @use 'nav-toggle';
 
@@ -9,22 +11,28 @@
 :root {
   // Site-header and general mobile navigation elements
   --color-background-nav-mobile-header: var(--wp--preset--color--white);
-  --color-background-nav-mobile-header-active: var(--wp--preset--color--black);
-  --width-navigation: 100vw;
+  // Header goes to the same dark green as the scrolled home header while the
+  // drawer is open (on every page, not just home) - keeps the white
+  // hamburger-to-X icon (see _nav-toggle.scss) legible everywhere, instead
+  // of white-on-white on the default white header.
+  --color-background-nav-mobile-header-active: var(--wp--preset--color--primary-dark);
+  // Off-canvas drawer width - ~80% of the viewport, capped so it doesn't
+  // get too wide on tablets just under $breakpoint-nav.
+  --width-navigation: min(80vw, 25rem);
 
-  // Affecting to both main and sub-levels
-  --color-background-menu-items: var(--wp--preset--color--black);
-  --color-background-menu-items-active: var(--wp--preset--color--black);
-  --color-separator-nav-mobile: rgb(255 255 255 / 0.1);
-  --color-current-menu-item: var(--wp--preset--color--white);
-  --color-dropdown-toggle-mobile: var(--wp--preset--color--white);
+  // Affecting to both main and sub-levels - white, same as the rest of the site
+  --color-background-menu-items: var(--wp--preset--color--white);
+  --color-background-menu-items-active: var(--wp--preset--color--white);
+  --color-separator-nav-mobile: var(--wp--preset--color--border);
+  --color-current-menu-item: var(--wp--preset--color--primary);
+  --color-dropdown-toggle-mobile: var(--wp--preset--color--black);
 
   // Main level items on mobile
   --typography-size-main-level-mobile: 0.9375rem;
   --typography-weight-main-level-mobile: 600;
   --padding-main-level-vertical-mobile: 0.75rem;
-  --color-main-level-menu-item-hover-focus-mobile: var(--wp--preset--color--white);
-  --color-main-level-menu-item-mobile: var(--wp--preset--color--white);
+  --color-main-level-menu-item-hover-focus-mobile: var(--wp--preset--color--primary);
+  --color-main-level-menu-item-mobile: var(--wp--preset--color--black);
 
   // Sub-menu items on mobile
   --typography-size-sub-menu-mobile: 0.9375rem;
@@ -32,7 +40,7 @@
   --margin-left-sub-menu: 0.625rem;
   --padding-sub-menu-vertical-mobile: 0.5rem;
   --padding-sub-menu-horizontal-mobile: var(--wp--preset--spacing--m);
-  --color-sub-menu-mobile: rgb(255 255 255 / 0.8);
+  --color-sub-menu-mobile: color-mix(in sRGB, var(--wp--preset--color--black) 70%, transparent);
 }
 
 // Navigation core functionality
@@ -76,25 +84,89 @@
   .menu-items-wrapper {
     backface-visibility: hidden;
     background-color: var(--color-background-menu-items);
-    // Real height is calculated in JS so this is a fallback
-    height: calc(100vh - 7.2rem);
+    display: flex;
+    flex-direction: column;
+    // Dynamic viewport height keeps the drawer from underrunning/overrunning
+    // mobile browser chrome that shows/hides on scroll; 100vh is the
+    // fallback for browsers without dvh support. Offset by --admin-bar-offset
+    // (0 normally) so the drawer starts below the WP admin bar instead of
+    // being hidden underneath it - the toolbar is always fixed on top
+    // (z-index 99999) regardless of this drawer's own z-index.
+    height: calc(100vh - var(--admin-bar-offset));
+    height: calc(100dvh - var(--admin-bar-offset));
+    // Hide mobile navigation by default while enabling use of animations
+    left: 0;
     overflow: auto;
     // Add padding to ensure all nav elements are visible on all devices and browsers for example iOS Safari
     padding-bottom: 7.5rem;
     pointer-events: none;
-    // Hide mobile navigation by default while enabling use of animations
     position: fixed;
-    right: 0;
-    top: 0;
-    transform: translate3d(100%, 0, 0);
-    transition: opacity 180ms ease-in-out;
+    top: var(--admin-bar-offset);
+    transform: translate3d(-100%, 0, 0);
+    transition: opacity 180ms ease-in-out, transform 320ms cubic-bezier(0.19, 1, 0.22, 1);
     visibility: hidden;
     width: var(--width-navigation);
-    z-index: 5;
+    // Sits above the header's own content (.site-header-inner is 15) so the
+    // drawer covers the logo/cart while open, but stays below the toggle
+    // button itself (99999, see _nav-toggle.scss) so the X remains clickable.
+    z-index: 60;
+  }
+
+  // Dims the page (and the sliver of header not covered by the drawer)
+  // while the drawer is open - same tone/opacity as the cart drawer's own
+  // ::backdrop (_cart-drawer-canut.scss), for a consistent feel between the
+  // two off-canvas panels. Sits below the drawer (60) and the toggle
+  // (99999) but above everything else, so clicking it can close the menu.
+  .menu-items-overlay {
+    background-color: color-mix(in sRGB, var(--wp--preset--color--primary-dark) 60%, transparent);
+    inset: 0;
+    opacity: 0;
+    position: fixed;
+    transition: opacity 320ms ease-in-out;
+    visibility: hidden;
+    z-index: 55;
+  }
+
+  // Matches the real header's own rendered height (--site-header-height,
+  // set by modules/sticky-header.js) instead of an arbitrary padding value,
+  // so the logo lands exactly where the real header's did - the drawer
+  // reads as sliding in "over" the header rather than starting fresh below
+  // it. No border-bottom here: the first .menu-item a below already carries
+  // a border-top as the separator, so adding one here would double it up.
+  .menu-items-wrapper-branding {
+    align-items: center;
+    display: flex;
+    flex-shrink: 0;
+    height: var(--site-header-height, 5.5rem);
+    margin: 0;
+    padding: 0 var(--padding-sub-menu-horizontal-mobile);
+
+    // Not .site-title - this is a separate logo, drawn on the drawer's own
+    // white background rather than the header, so it always keeps its
+    // natural colors and never needs the .js-nav-active white-fill override.
+    a {
+      align-items: center;
+      display: flex;
+    }
+
+    // Same sizing as the real header's logo (.site-title svg in
+    // _site-header.scss) so it doesn't visibly change size on open.
+    svg {
+      height: clamp(1.375rem, 1.15rem + 0.9vw, 1.75rem);
+      width: auto;
+    }
   }
 
   .menu-items {
     margin: 16px 0 0;
+  }
+
+  // Pinned to the very bottom of the drawer when content is short; simply
+  // follows the nav when it's tall enough to need scrolling.
+  .menu-items-wrapper-contact {
+    flex-shrink: 0;
+    margin-top: auto;
+    padding: var(--wp--preset--spacing--space-md) var(--padding-sub-menu-horizontal-mobile);
   }
 
   // Main level mobile navigation links
@@ -130,6 +202,12 @@
   .sub-menu {
     margin-left: 0;
     padding-left: 0;
+  }
+
+  // Product image is a desktop-only preview - mobile keeps plain text links
+  // (see .dropdown-item-media in _nav-desktop.scss for the desktop version).
+  .dropdown-item-media {
+    display: none;
   }
 
   .sub-menu .sub-menu a {
@@ -177,7 +255,7 @@
 
     // Make svg not clickable so that it won't interfere with the menu item
     svg {
-      background-image: url('data:image/svg+xml, %3Csvg xmlns="http://www.w3.org/2000/svg" style="width: var(--dropdown-toggle-size); height: var(--dropdown-toggle-size);" width="10" height="10" viewBox="0 0 10 10"%3E%3Cpath fill="none" stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 1.5v7M1.5 5h7"/%3E%3C/svg%3E%0A');
+      background-image: url('data:image/svg+xml, %3Csvg xmlns="http://www.w3.org/2000/svg" style="width: var(--dropdown-toggle-size); height: var(--dropdown-toggle-size);" width="10" height="10" viewBox="0 0 10 10"%3E%3Cpath fill="none" stroke="%23000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 1.5v7M1.5 5h7"/%3E%3C/svg%3E%0A');
       background-size: 100%;
       height: var(--dropdown-toggle-size);
       pointer-events: none;
@@ -196,7 +274,7 @@
 
   .dropdown-toggle.toggled-on {
     svg {
-      background-image: url('data:image/svg+xml, %3Csvg xmlns="http://www.w3.org/2000/svg" style="width: var(--dropdown-toggle-size); height: var(--dropdown-toggle-size);" width="10" height="10" viewBox="0 0 10 10"%3E%3Cpath fill="none" stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M1.5 5h7"/%3E%3C/svg%3E%0A');
+      background-image: url('data:image/svg+xml, %3Csvg xmlns="http://www.w3.org/2000/svg" style="width: var(--dropdown-toggle-size); height: var(--dropdown-toggle-size);" width="10" height="10" viewBox="0 0 10 10"%3E%3Cpath fill="none" stroke="%23000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M1.5 5h7"/%3E%3C/svg%3E%0A');
 
       // Rotate 180 degrees
       transform: rotate(-180deg);
@@ -221,12 +299,25 @@
     overflow: hidden;
 
     .menu-items-wrapper {
+      @include canut-shadow(hover);
       background-color: var(--color-background-menu-items-active);
       opacity: 1;
       pointer-events: all;
       transform: translate3d(0, 0, 0);
       visibility: visible;
       width: var(--width-navigation);
+    }
+
+    .menu-items-overlay {
+      opacity: 1;
+      pointer-events: all;
+      visibility: visible;
+    }
+  }
+
+  @media screen and (max-width: $breakpoint-mobile) {
+    .menu-items-wrapper-branding svg {
+      height: 1.125rem;
     }
   }
 
@@ -240,11 +331,4 @@
   // .js-nav-active .site-footer {
   //   transform: translate3d(calc(var(--width-navigation) * -1), 0, 0);
   // }
-}
-
-// This offsets the menu position in mobile viewports for logged in users
-@media screen and (max-width: 782px) {
-  .logged-in.admin-bar .menu-items-wrapper {
-    margin-top: 46px;
-  }
 }

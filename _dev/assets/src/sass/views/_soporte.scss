@@ -1,0 +1,253 @@
+// Soporte (page-soporte.php): hero, "Crea tu pregunta" form + "Últimas
+// preguntas" sidebar, Centro de ayuda bridge band and static FAQ accordion.
+// stylelint-disable custom-property-pattern, csstools/value-no-unknown-custom-properties
+@use '../variables' as *;
+
+// 1. Hero -------------------------------------------------------------------
+.soporte-hero {
+  padding: var(--wp--preset--spacing--space-xl) 0 var(--wp--preset--spacing--space-lg);
+}
+
+.soporte-hero-inner {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-md);
+  text-align: center;
+}
+
+.soporte-hero-title {
+  @include text-style(h-1, display, light);
+  color: var(--wp--preset--color--text-primary);
+  margin: 0;
+}
+
+.soporte-hero-subtitle {
+  @include text-style(body-lg, body, regular);
+  color: var(--wp--preset--color--text-secondary);
+  margin: 0;
+  max-width: 42rem;
+}
+
+// 2. Layout: form + sidebar ---------------------------------------------------
+.soporte-layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-lg);
+  padding-bottom: var(--wp--preset--spacing--space-xl);
+
+  @media (min-width: $breakpoint-tablet-landscape) {
+    align-items: start;
+    display: grid;
+    gap: var(--wp--preset--spacing--space-xl);
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  }
+}
+
+// 3. Question form card -------------------------------------------------------
+.soporte-form-card {
+  @include canut-radius(md);
+  @include canut-shadow(card);
+  background-color: var(--wp--preset--color--bg-surface);
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-md);
+  padding: var(--wp--preset--spacing--space-md);
+}
+
+.soporte-form-heading {
+  h2 {
+    @include text-style(h-3, display, medium);
+    color: var(--wp--preset--color--text-primary);
+    margin: 0 0 var(--wp--preset--spacing--space-xs);
+  }
+
+  p {
+    @include text-style(small, body, regular);
+    color: var(--wp--preset--color--text-secondary);
+    margin: 0;
+  }
+}
+
+.soporte-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-sm);
+}
+
+// Honeypot: hidden from sighted/mouse users and skipped in tab order, but
+// still present in markup and DOM-visible to simple bots that fill in every
+// field they can find - same technique as .contacto-form-hp (_contacto.scss).
+.soporte-form-hp {
+  height: 1px;
+  left: -625rem;
+  overflow: hidden;
+  position: absolute;
+  width: 1px;
+}
+
+.soporte-form-row {
+  display: grid;
+  gap: var(--wp--preset--spacing--space-sm);
+  grid-template-columns: 1fr 1fr;
+
+  @media (max-width: $breakpoint-tablet) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.soporte-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-xs);
+}
+
+// 4. Recent questions sidebar --------------------------------------------------
+.soporte-recent-heading {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--wp--preset--spacing--space-sm);
+
+  h2 {
+    @include text-style(h-4, display, medium);
+    color: var(--wp--preset--color--text-primary);
+    margin: 0;
+  }
+}
+
+.soporte-recent-link {
+  @include text-style(caption, body, semi-bold);
+  color: var(--wp--preset--color--accent);
+  letter-spacing: var(--wp--custom--canut--letter-spacing--caption);
+  text-decoration: none;
+  text-transform: uppercase;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.soporte-recent-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-sm);
+}
+
+.soporte-recent-card {
+  @include canut-radius(md);
+  @include canut-shadow(card);
+  background-color: var(--wp--preset--color--bg-surface);
+  display: flex;
+  gap: var(--wp--preset--spacing--space-sm);
+  padding: var(--wp--preset--spacing--space-md);
+}
+
+.soporte-recent-avatar {
+  @include text-style(body, body, bold);
+  align-items: center;
+  border-radius: 50%;
+  color: var(--wp--preset--color--text-primary);
+  display: flex;
+  flex-shrink: 0;
+  height: 2.5rem;
+  justify-content: center;
+  width: 2.5rem;
+
+  &.is-mint {
+    background-color: color-mix(in sRGB, var(--wp--preset--color--success) 25%, var(--wp--preset--color--white));
+  }
+
+  &.is-peach {
+    background-color: color-mix(in sRGB, var(--wp--preset--color--accent) 25%, var(--wp--preset--color--white));
+    color: var(--wp--preset--color--accent-dark);
+  }
+
+  &.is-grey {
+    background-color: var(--wp--preset--color--light);
+  }
+}
+
+.soporte-recent-content {
+  h3 {
+    @include text-style(body, body, semi-bold);
+    color: var(--wp--preset--color--text-primary);
+    margin: 0 0 var(--wp--preset--spacing--space-xs);
+  }
+
+  p {
+    @include text-style(small, body, regular);
+    color: var(--wp--preset--color--text-secondary);
+    margin: 0;
+  }
+}
+
+.soporte-recent-answer-link {
+  @include text-style(small, body, semi-bold);
+  align-items: center;
+  color: var(--wp--preset--color--accent);
+  display: inline-flex;
+  gap: 0.25rem;
+  margin-top: var(--wp--preset--spacing--space-xs);
+  text-decoration: none;
+
+  svg {
+    height: 1.125em;
+    width: 1.125em;
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// 5. Centro de ayuda bridge band ------------------------------------------------
+.soporte-bridge {
+  @include canut-radius(lg);
+  align-items: center;
+  background-color: var(--wp--preset--color--primary);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--wp--preset--spacing--space-md);
+  justify-content: space-between;
+  margin: 0 auto var(--wp--preset--spacing--space-xl);
+  max-width: var(--wp--style--global--wide-size);
+  padding: var(--wp--preset--spacing--space-lg);
+}
+
+.soporte-bridge-content {
+  h2 {
+    @include text-style(h-2, display, regular);
+    color: color-mix(in sRGB, var(--wp--preset--color--white) 90%, var(--wp--preset--color--success));
+    margin: 0 0 var(--wp--preset--spacing--space-xs);
+  }
+
+  p {
+    @include text-style(body-lg, body, regular);
+    color: color-mix(in sRGB, var(--wp--preset--color--white) 75%, var(--wp--preset--color--primary-dark) 25%);
+    margin: 0;
+    max-width: 34rem;
+  }
+}
+
+.soporte-bridge-link {
+  background-color: color-mix(in sRGB, var(--wp--preset--color--success) 25%, var(--wp--preset--color--white));
+  border-color: transparent;
+  flex-shrink: 0;
+}
+
+// 6. Static FAQ accordion --------------------------------------------------------
+.soporte-faq-inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-lg);
+  max-width: 48rem;
+  padding: var(--wp--preset--spacing--space-xl) 0;
+}
+
+.soporte-faq-title {
+  @include text-style(h-3, display, medium);
+  color: var(--wp--preset--color--text-primary);
+  margin: 0;
+  text-align: center;
+}

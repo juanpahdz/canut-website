@@ -5,6 +5,8 @@
   --hamburger-layer-height: 2px;
   --hamburger-width: 2rem;
   --hamburger-color: var(--wp--preset--color--black);
+  // The X forms once the full-height drawer is open and covering the
+  // header - always white so it stays legible against the drawer.
   --hamburger-color-active: var(--wp--preset--color--white);
   background-color: var(--hamburger-color);
   flex-shrink: 0;

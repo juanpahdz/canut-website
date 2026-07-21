@@ -16,7 +16,18 @@
     },
     "shadow": {
       "defaultPresets": false,
-      "presets": []
+      "presets": [
+        {
+          "slug": "card",
+          "shadow": "0 4px 16px rgba(34, 61, 46, 0.08)",
+          "name": "Card"
+        },
+        {
+          "slug": "hover",
+          "shadow": "0 8px 24px rgba(34, 61, 46, 0.14)",
+          "name": "Hover"
+        }
+      ]
     },
     "layout": {
       "contentSize": "800px",
@@ -65,6 +76,36 @@
           "slug": "3xl",
           "name": "3XL",
           "size": "clamp(6rem, 4.8571rem + 5.7143vw, 10rem)"
+        },
+        {
+          "slug": "space-xs",
+          "name": "Space XS",
+          "size": "8px"
+        },
+        {
+          "slug": "space-sm",
+          "name": "Space SM",
+          "size": "16px"
+        },
+        {
+          "slug": "space-md",
+          "name": "Space MD",
+          "size": "24px"
+        },
+        {
+          "slug": "space-lg",
+          "name": "Space LG",
+          "size": "48px"
+        },
+        {
+          "slug": "space-xl",
+          "name": "Space XL",
+          "size": "96px"
+        },
+        {
+          "slug": "space-2xl",
+          "name": "Space 2XL",
+          "size": "128px"
         }
       ]
     },
@@ -89,6 +130,61 @@
           "slug": "light",
           "color": "#f5f5f5",
           "name": "Light"
+        },
+        {
+          "slug": "primary",
+          "color": "#223D2E",
+          "name": "Primary"
+        },
+        {
+          "slug": "primary-dark",
+          "color": "#1A2F23",
+          "name": "Primary dark"
+        },
+        {
+          "slug": "accent",
+          "color": "#B16B3A",
+          "name": "Accent"
+        },
+        {
+          "slug": "accent-dark",
+          "color": "#8F5228",
+          "name": "Accent dark"
+        },
+        {
+          "slug": "bg-base",
+          "color": "#FAF8F5",
+          "name": "Background base"
+        },
+        {
+          "slug": "bg-surface",
+          "color": "#FFFFFF",
+          "name": "Background surface"
+        },
+        {
+          "slug": "text-primary",
+          "color": "#223D2E",
+          "name": "Text primary"
+        },
+        {
+          "slug": "text-secondary",
+          "color": "#5C6B62",
+          "name": "Text secondary"
+        },
+        {
+          "slug": "border",
+          "color": "#E4DFD8",
+          "name": "Border"
+        },
+        {
+          "slug": "success",
+          "color": "#4A7A5E",
+          "name": "Success"
+        },
+        {
+          "slug": "error",
+          "color": "#B4483C",
+          "name": "Error"
         }
       ]
     },
@@ -115,6 +211,132 @@
               "fontStyle": "normal",
               "fontDisplay": "swap",
               "src": ["file:./assets/fonts/monasansvf.woff2"]
+            }
+          ]
+        },
+        {
+          "slug": "display",
+          "fontFamily": "'Manrope', sans-serif",
+          "name": "Manrope",
+          "fontFace": [
+            {
+              "fontFamily": "Manrope",
+              "fontWeight": "200",
+              "fontStyle": "normal",
+              "fontDisplay": "swap",
+              "src": ["file:./assets/fonts/Manrope-ExtraLight.ttf"]
+            },
+            {
+              "fontFamily": "Manrope",
+              "fontWeight": "300",
+              "fontStyle": "normal",
+              "fontDisplay": "swap",
+              "src": ["file:./assets/fonts/Manrope-Light.ttf"]
+            },
+            {
+              "fontFamily": "Manrope",
+              "fontWeight": "400",
+              "fontStyle": "normal",
+              "fontDisplay": "swap",
+              "src": ["file:./assets/fonts/Manrope-Regular.ttf"]
+            },
+            {
+              "fontFamily": "Manrope",
+              "fontWeight": "500",
+              "fontStyle": "normal",
+              "fontDisplay": "swap",
+              "src": ["file:./assets/fonts/Manrope-Medium.ttf"]
+            },
+            {
+              "fontFamily": "Manrope",
+              "fontWeight": "600",
+              "fontStyle": "normal",
+              "fontDisplay": "swap",
+              "src": ["file:./assets/fonts/Manrope-SemiBold.ttf"]
+            },
+            {
+              "fontFamily": "Manrope",
+              "fontWeight": "700",
+              "fontStyle": "normal",
+              "fontDisplay": "swap",
+              "src": ["file:./assets/fonts/Manrope-Bold.ttf"]
+            },
+            {
+              "fontFamily": "Manrope",
+              "fontWeight": "800",
+              "fontStyle": "normal",
+              "fontDisplay": "swap",
+              "src": ["file:./assets/fonts/Manrope-ExtraBold.ttf"]
+            }
+          ]
+        },
+        {
+          "slug": "body",
+          "fontFamily": "'Inter', sans-serif",
+          "name": "Inter",
+          "fontFace": [
+            {
+              "fontFamily": "Inter",
+              "fontWeight": "100",
+              "fontStyle": "normal",
+              "fontDisplay": "swap",
+              "src": ["file:./assets/fonts/Inter_18pt-Thin.ttf"]
+            },
+            {
+              "fontFamily": "Inter",
+              "fontWeight": "200",
+              "fontStyle": "normal",
+              "fontDisplay": "swap",
+              "src": ["file:./assets/fonts/Inter_18pt-ExtraLight.ttf"]
+            },
+            {
+              "fontFamily": "Inter",
+              "fontWeight": "300",
+              "fontStyle": "normal",
+              "fontDisplay": "swap",
+              "src": ["file:./assets/fonts/Inter_18pt-Light.ttf"]
+            },
+            {
+              "fontFamily": "Inter",
+              "fontWeight": "400",
+              "fontStyle": "normal",
+              "fontDisplay": "swap",
+              "src": ["file:./assets/fonts/Inter_18pt-Regular.ttf"]
+            },
+            {
+              "fontFamily": "Inter",
+              "fontWeight": "500",
+              "fontStyle": "normal",
+              "fontDisplay": "swap",
+              "src": ["file:./assets/fonts/Inter_18pt-Medium.ttf"]
+            },
+            {
+              "fontFamily": "Inter",
+              "fontWeight": "600",
+              "fontStyle": "normal",
+              "fontDisplay": "swap",
+              "src": ["file:./assets/fonts/Inter_18pt-SemiBold.ttf"]
+            },
+            {
+              "fontFamily": "Inter",
+              "fontWeight": "700",
+              "fontStyle": "normal",
+              "fontDisplay": "swap",
+              "src": ["file:./assets/fonts/Inter_18pt-Bold.ttf"]
+            },
+            {
+              "fontFamily": "Inter",
+              "fontWeight": "800",
+              "fontStyle": "normal",
+              "fontDisplay": "swap",
+              "src": ["file:./assets/fonts/Inter_18pt-ExtraBold.ttf"]
+            },
+            {
+              "fontFamily": "Inter",
+              "fontWeight": "900",
+              "fontStyle": "normal",
+              "fontDisplay": "swap",
+              "src": ["file:./assets/fonts/Inter_18pt-Black.ttf"]
             }
           ]
         }
@@ -183,20 +405,93 @@
           "slug": "heading-xxl",
           "size": "clamp(2.5rem, 1.4286rem + 2.8571vw, 4rem)",
           "name": "Heading XXL"
+        },
+        {
+          "slug": "h-1",
+          "size": "40px",
+          "name": "CANUT H1",
+          "fluid": { "min": "32px", "max": "40px" }
+        },
+        {
+          "slug": "h-2",
+          "size": "32px",
+          "name": "CANUT H2",
+          "fluid": { "min": "26px", "max": "32px" }
+        },
+        {
+          "slug": "h-3",
+          "size": "24px",
+          "name": "CANUT H3",
+          "fluid": { "min": "20px", "max": "24px" }
+        },
+        {
+          "slug": "h-4",
+          "size": "20px",
+          "name": "CANUT H4",
+          "fluid": { "min": "18px", "max": "20px" }
+        },
+        {
+          "slug": "body-lg",
+          "size": "20px",
+          "name": "CANUT Body LG",
+          "fluid": { "min": "18px", "max": "20px" }
+        },
+        {
+          "slug": "body",
+          "size": "18px",
+          "name": "CANUT Body",
+          "fluid": { "min": "16px", "max": "18px" }
+        },
+        {
+          "slug": "small",
+          "size": "15px",
+          "name": "CANUT Small",
+          "fluid": { "min": "14px", "max": "15px" }
+        },
+        {
+          "slug": "caption",
+          "size": "12px",
+          "name": "CANUT Caption",
+          "fluid": { "min": "11px", "max": "12px" }
         }
       ]
     },
     "custom": {
       "fontWeight": {
+        "extra-light": 200,
+        "light": 300,
         "regular": 400,
         "medium": 500,
         "semi-bold": 600,
-        "bold": 700
+        "bold": 700,
+        "extra-bold": 800
       },
       "lineHeight": {
         "none": 1,
         "body": 1.7,
         "heading": 1.5
+      },
+      "canut": {
+        "radius": {
+          "btn": "6px",
+          "sm": "8px",
+          "md": "16px",
+          "lg": "24px",
+          "full": "999px"
+        },
+        "lineHeight": {
+          "h-1": 1.2,
+          "h-2": 1.25,
+          "h-3": 1.35,
+          "h-4": 1.4,
+          "bodyLg": 1.5,
+          "body": 1.55,
+          "small": 1.45,
+          "caption": 1.3
+        },
+        "letterSpacing": {
+          "caption": "0.04em"
+        }
       }
     }
   },

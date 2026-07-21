@@ -1,0 +1,18 @@
+// Historia archive ("Ver todas" from the front page carousel).
+// stylelint-disable custom-property-pattern, csstools/value-no-unknown-custom-properties
+@use '../variables' as *;
+
+.historia-archive-title {
+  @include text-style(h-2, display, regular);
+  color: var(--wp--preset--color--text-primary);
+  margin: 0 0 var(--wp--preset--spacing--space-lg);
+}
+
+.historia-archive-inner {
+  padding-bottom: var(--wp--preset--spacing--space-xl);
+  padding-top: var(--wp--preset--spacing--space-xl);
+
+  .navigation.pagination {
+    margin-top: var(--wp--preset--spacing--space-lg);
+  }
+}

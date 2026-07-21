@@ -33,10 +33,35 @@
   margin-right: auto;
   max-width: 100%;
 
-  // Prevent longer dropdowns from cutting out on too low pages
+  // No overflow here: the mobile nav dropdown is position: fixed and clips
+  // itself independently (navigation/_nav-mobile.scss), and `overflow`
+  // anywhere in an ancestor chain breaks `position: sticky` for every
+  // descendant (e.g. the product gallery in views/_product.scss).
   min-height: 100vh;
-  overflow: hidden;
   position: relative;
+}
+
+// Tinted section backgrounds used across CANUT homepage sections and the
+// footer, derived from existing color tokens via color-mix so no new raw
+// hex values are introduced.
+:root {
+  --canut-tint-soft: color-mix(in sRGB, var(--wp--preset--color--success) 8%, var(--wp--preset--color--bg-base) 92%);
+  --canut-tint-deep: color-mix(in sRGB, var(--wp--preset--color--success) 14%, var(--wp--preset--color--bg-base) 86%);
+}
+
+// Content wrap used across CANUT homepage sections, the header and the
+// footer: the section/header/footer background can stay full-width, this
+// only constrains the inner text/content to the theme's wide-size (1440px),
+// same horizontal math as .container but without its fixed vertical padding
+// so each section can set its own using the canut spacing tokens.
+.wrap-canut {
+  margin-left: auto;
+  margin-right: auto;
+  // prettier-ignore
+  max-width: calc(var(--wp--style--global--wide-size) + var(--wp--style--root--padding-right) + var(--wp--style--root--padding-left));
+  padding-left: var(--wp--style--root--padding-left);
+  padding-right: var(--wp--style--root--padding-right);
+  width: 100%;
 }
 
 // Containers

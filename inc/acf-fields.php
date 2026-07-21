@@ -14,3 +14,13 @@
 namespace Air_Light;
 
 // require get_theme_file_path( '/inc/acf-fields/your-field-group.php' );
+require get_theme_file_path( '/inc/acf-fields/homepage-canut.php' );
+require get_theme_file_path( '/inc/acf-fields/historia.php' );
+require get_theme_file_path( '/inc/acf-fields/product-canut.php' );
+require get_theme_file_path( '/inc/acf-fields/categoria-ayuda.php' );
+require get_theme_file_path( '/inc/acf-fields/recurso-ayuda.php' );
+require get_theme_file_path( '/inc/acf-fields/pregunta-soporte.php' );
+require get_theme_file_path( '/inc/acf-fields/nosotros-canut.php' );
+require get_theme_file_path( '/inc/acf-fields/pagina-informativa.php' );
+require get_theme_file_path( '/inc/acf-fields/contacto-canut.php' );
+require get_theme_file_path( '/inc/acf-fields/garantia-canut.php' );

@@ -13,6 +13,7 @@
     "@hint/hint-button-type": "^3.0.23",
     "@hint/hint-compat-api": "^4.5.8",
     "@parcel/transformer-sass": "^2.15.4",
+    "@phosphor-icons/core": "^2.1.1",
     "@wordpress/babel-preset-default": "^8.29.0",
     "@wordpress/scripts": "^30.27.0",
     "browser-sync": "^3.0.4",

@@ -305,8 +305,20 @@ class Nav_Walker extends \Walker_Nav_Menu {
       }
     }
 
+    // Sub-menu items linking to a WooCommerce product show its featured image
+    // instead of plain text (CSS hides the image again on mobile).
+    $product_thumbnail = '';
+    if ( $depth > 0 && 'product' === $item->object && function_exists( 'wc_get_product' ) ) {
+      $product_thumbnail = get_the_post_thumbnail( $item->object_id, 'thumbnail', array( 'class' => 'dropdown-item-thumbnail' ) );
+    }
+
     // Put the item contents into $output.
-    $item_output .= isset( $args->link_before ) ? $args->link_before . $title . $args->link_after : '';
+    $item_output .= isset( $args->link_before ) ? $args->link_before : '';
+    if ( $product_thumbnail ) {
+      $item_output .= '<span class="dropdown-item-media">' . $product_thumbnail . '</span>';
+    }
+    $item_output .= '<span class="dropdown-item-label">' . $title . '</span>';
+    $item_output .= isset( $args->link_after ) ? $args->link_after : '';
 
     /*
      * This is the end of the internal nav item. We need to close the
