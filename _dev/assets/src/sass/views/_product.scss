@@ -30,8 +30,10 @@
     flex-direction: row;
     position: sticky;
     // Offset below the sticky site header (height set as a custom property
-    // by modules/sticky-header.js) so the gallery never scrolls under it.
-    top: calc(var(--site-header-height, 0px) + var(--wp--preset--spacing--space-md));
+    // by modules/sticky-header.js), plus the admin bar offset the header
+    // itself is pushed down by (see layout/_site-header.scss), so the
+    // gallery never scrolls under either.
+    top: calc(var(--admin-bar-offset, 0px) + var(--site-header-height, 0px) + var(--wp--preset--spacing--space-md));
   }
 }
 

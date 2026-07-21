@@ -97,8 +97,6 @@
     // Hide mobile navigation by default while enabling use of animations
     left: 0;
     overflow: auto;
-    // Add padding to ensure all nav elements are visible on all devices and browsers for example iOS Safari
-    padding-bottom: 7.5rem;
     pointer-events: none;
     position: fixed;
     top: var(--admin-bar-offset);
@@ -162,11 +160,14 @@
   }
 
   // Pinned to the very bottom of the drawer when content is short; simply
-  // follows the nav when it's tall enough to need scrolling.
+  // follows the nav when it's tall enough to need scrolling. Bottom padding
+  // is a flat 20px (not --wp--preset--spacing--space-md, like the other
+  // sides) so the button sits close to the drawer's actual bottom edge
+  // instead of floating with a large gap underneath it.
   .menu-items-wrapper-contact {
     flex-shrink: 0;
     margin-top: auto;
-    padding: var(--wp--preset--spacing--space-md) var(--padding-sub-menu-horizontal-mobile);
+    padding: var(--wp--preset--spacing--space-md) var(--padding-sub-menu-horizontal-mobile) 20px;
   }
 
   // Main level mobile navigation links

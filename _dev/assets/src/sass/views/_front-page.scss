@@ -65,6 +65,45 @@ $canut-on-dark-muted: color-mix(in sRGB, var(--wp--preset--color--white) 75%, va
   max-width: 36rem;
 }
 
+// Registered so the browser can animate the angle itself (a plain custom
+// property can't be interpolated - without this the gradient would just
+// jump between 0deg/360deg with no visible rotation).
+@property --home-hero-cta-angle {
+  inherits: false;
+  initial-value: 0deg;
+  syntax: '<angle>';
+}
+
+@keyframes home-hero-cta-spin {
+  to {
+    --home-hero-cta-angle: 360deg;
+  }
+}
+
+// Hero CTA: a green conic-gradient ring continuously rotating around the
+// border only (two-background-layer trick - inner layer stays transparent
+// so the hero photo/ghost fill always shows through, outer layer paints
+// only the border-box), overriding button-canut-ghost's plain white
+// border. The fill itself is untouched, including on hover/focus - it
+// keeps button-canut-ghost's own translucent-white tint.
+.home-hero-cta {
+  --home-hero-cta-angle: 0deg;
+  animation-duration: 2.5s;
+  animation-iteration-count: infinite;
+  animation-name: home-hero-cta-spin;
+  animation-timing-function: linear;
+  background-clip: padding-box, border-box;
+  background-image: linear-gradient(transparent, transparent),
+    conic-gradient(
+      from var(--home-hero-cta-angle),
+      transparent 0%,
+      var(--wp--preset--color--success) 20%,
+      transparent 40%
+    );
+  background-origin: border-box;
+  border: 2px solid transparent;
+}
+
 // 2. Trust band ---------------------------------------------------------
 .home-trust-band {
   background-color: var(--canut-tint-soft);

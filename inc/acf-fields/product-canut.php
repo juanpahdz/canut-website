@@ -507,13 +507,6 @@ acf_add_local_field_group( [
       'rows'          => 2,
       'default_value' => '¿No estás seguro de cuál modelo se adapta mejor a tu mascota? Chatea con nuestros expertos en cuidado animal.',
     ],
-    [
-      'key'          => 'field_pc_help_cta_whatsapp_number',
-      'label'        => __( 'Número de WhatsApp', 'air-light' ),
-      'name'         => 'help_cta_whatsapp_number',
-      'type'         => 'text',
-      'instructions' => __( 'Solo dígitos con código de país, ej. 573001234567. Déjalo vacío para usar el enlace genérico de WhatsApp.', 'air-light' ),
-    ],
 
   ],
   'location' => [

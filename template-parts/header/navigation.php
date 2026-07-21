@@ -41,7 +41,7 @@ namespace Air_Light;
     ?>
 
     <div class="menu-items-wrapper-contact">
-      <a href="<?php echo esc_url( home_url( '/contacto/' ) ); ?>" class="button-canut-base button-canut-primary is-full-width">
+      <a href="<?php echo esc_url( home_url( '/contacto/' ) ); ?>" class="button-canut-base button-canut-secondary is-full-width">
         <?php echo esc_html__( 'Contáctanos', 'air-light' ); ?>
       </a>
     </div>

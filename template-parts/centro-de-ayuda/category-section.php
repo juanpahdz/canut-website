@@ -51,7 +51,7 @@ $cta_title = get_field( 'cta_titulo', $term_ref ) ?: sprintf(
 );
 $cta_description  = get_field( 'cta_descripcion', $term_ref ) ?: __( 'Habla con un especialista en tecnología CANUT ahora mismo.', 'air-light' );
 $cta_message      = get_field( 'cta_whatsapp_mensaje', $term_ref );
-$cta_whatsapp_url = 'https://wa.me/' . ( $cta_message ? '?text=' . rawurlencode( $cta_message ) : '' );
+$cta_whatsapp_url = get_whatsapp_url( 'soporte', $cta_message );
 
 ?>
 

@@ -1,0 +1,47 @@
+// stylelint-disable custom-property-pattern, csstools/value-no-unknown-custom-properties
+@use '../variables' as *;
+
+// Floating WhatsApp CTA, fixed bottom-right on every page (see footer.php,
+// hidden on checkout to match its distraction-free header/footer). Links to
+// the global Ventas number set in Ajustes > WhatsApp (inc/hooks/whatsapp.php).
+.whatsapp-float {
+  @include canut-radius(full);
+  @include canut-shadow(card);
+  align-items: center;
+  background-color: var(--wp--preset--color--primary-dark);
+  bottom: var(--wp--preset--spacing--space-md);
+  color: var(--wp--preset--color--white);
+  display: flex;
+  height: 3.5rem;
+  justify-content: center;
+  position: fixed;
+  right: var(--wp--preset--spacing--space-md);
+  transition: background-color 150ms ease, transform 150ms ease;
+  width: 3.5rem;
+  z-index: 40;
+
+  svg {
+    height: 1.75rem;
+    width: 1.75rem;
+  }
+
+  &:hover,
+  &:focus {
+    background-color: var(--wp--preset--color--primary);
+    transform: scale(1.05);
+  }
+}
+
+@media screen and (max-width: $breakpoint-mobile) {
+  .whatsapp-float {
+    bottom: var(--wp--preset--spacing--space-sm);
+    height: 3rem;
+    right: var(--wp--preset--spacing--space-sm);
+    width: 3rem;
+
+    svg {
+      height: 1.5rem;
+      width: 1.5rem;
+    }
+  }
+}

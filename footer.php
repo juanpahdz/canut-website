@@ -18,7 +18,7 @@ $footer_menu_columns = [
 $social_links = [
   [ 'label' => 'Instagram', 'url' => '#', 'icon' => 'instagram' ],
   [ 'label' => 'TikTok', 'url' => '#', 'icon' => 'tiktok' ],
-  [ 'label' => 'WhatsApp', 'url' => 'https://wa.me/', 'icon' => 'whatsapp' ],
+  [ 'label' => 'WhatsApp', 'url' => get_whatsapp_url( 'ventas' ), 'icon' => 'whatsapp' ],
 ];
 
 $payment_methods = [ 'PayPal', 'Visa', 'Mastercard', __( 'Efectivo', 'air-light' ) ];
@@ -126,6 +126,18 @@ $payment_methods = [ 'PayPal', 'Visa', 'Mastercard', __( 'Efectivo', 'air-light'
 </div><!-- #page -->
 
 <?php wp_footer(); ?>
+
+<?php if ( ! ( function_exists( 'is_checkout' ) && is_checkout() ) ) : ?>
+  <a
+    href="<?php echo esc_url( get_whatsapp_url( 'ventas' ) ); ?>"
+    class="whatsapp-float"
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="<?php esc_attr_e( 'Escríbenos por WhatsApp', 'air-light' ); ?>"
+  >
+    <?php require get_theme_file_path( 'assets/svg/icon-whatsapp.svg' ); ?>
+  </a>
+<?php endif; ?>
 
 <a
   href="#page"

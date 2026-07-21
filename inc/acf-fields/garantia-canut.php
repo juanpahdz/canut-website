@@ -280,15 +280,6 @@ acf_add_local_field_group( [
       'name'  => 'cta_button_label',
       'type'  => 'text',
       'default_value' => 'Escríbenos por WhatsApp',
-      'wrapper' => [ 'width' => '50' ],
-    ],
-    [
-      'key'          => 'field_gc_cta_whatsapp_number',
-      'label'        => __( 'Número de WhatsApp', 'air-light' ),
-      'name'         => 'cta_whatsapp_number',
-      'type'         => 'text',
-      'instructions' => __( 'Formato internacional, ej. 573000000000 (sin +, espacios ni guiones).', 'air-light' ),
-      'wrapper'      => [ 'width' => '50' ],
     ],
 
   ],

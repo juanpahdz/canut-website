@@ -168,15 +168,10 @@ if ( ! $trust_signals ) {
   ];
 }
 
-$cta_whatsapp_number = get_field( 'cta_whatsapp_number' );
-$cta_whatsapp_url    = $cta_whatsapp_number
-  ? 'https://wa.me/' . preg_replace( '/\D/', '', $cta_whatsapp_number )
-  : 'https://wa.me/';
-
 get_template_part( 'template-parts/garantia/trust-cta', '', [
   'signals'      => $trust_signals,
   'cta_title'    => get_field( 'cta_title' ) ?: __( '¿Tienes dudas sobre tu proceso?', 'air-light' ),
   'cta_text'     => get_field( 'cta_text' ) ?: __( 'Nuestro equipo de soporte está listo para ayudarte vía WhatsApp.', 'air-light' ),
   'cta_button_label' => get_field( 'cta_button_label' ) ?: __( 'Escríbenos por WhatsApp', 'air-light' ),
-  'cta_button_url'   => $cta_whatsapp_url,
+  'cta_button_url'   => get_whatsapp_url( 'soporte' ),
 ] );

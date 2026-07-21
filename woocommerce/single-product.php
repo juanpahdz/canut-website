@@ -50,11 +50,11 @@ while ( have_posts() ) :
     : wc_placeholder_img_src( 'large' );
 
   $buy_now_url = add_query_arg( 'add-to-cart', $product->get_id(), wc_get_checkout_url() );
-  $whatsapp_url = add_query_arg( 'text', rawurlencode( sprintf(
+  $whatsapp_url = get_whatsapp_url( 'ventas', sprintf(
     /* translators: %s: product name. */
     __( 'Hola, quiero comprar %s', 'air-light' ),
     html_entity_decode( get_the_title(), ENT_QUOTES )
-  ) ), 'https://wa.me/' );
+  ) );
 
   /**
    * ACF-backed content for the marketing sections below, each falling back
@@ -264,12 +264,9 @@ while ( have_posts() ) :
     ];
   }
 
-  $help_cta_title           = $field( 'help_cta_title' ) ?: __( 'Nuestro equipo te ayuda a elegir el comedero ideal', 'air-light' );
-  $help_cta_text            = $field( 'help_cta_text' ) ?: __( '¿No estás seguro de cuál modelo se adapta mejor a tu mascota? Chatea con nuestros expertos en cuidado animal.', 'air-light' );
-  $help_cta_whatsapp_number = $field( 'help_cta_whatsapp_number' );
-  $help_cta_whatsapp_url    = $help_cta_whatsapp_number
-    ? 'https://wa.me/' . preg_replace( '/\D/', '', $help_cta_whatsapp_number )
-    : 'https://wa.me/';
+  $help_cta_title        = $field( 'help_cta_title' ) ?: __( 'Nuestro equipo te ayuda a elegir el comedero ideal', 'air-light' );
+  $help_cta_text         = $field( 'help_cta_text' ) ?: __( '¿No estás seguro de cuál modelo se adapta mejor a tu mascota? Chatea con nuestros expertos en cuidado animal.', 'air-light' );
+  $help_cta_whatsapp_url = get_whatsapp_url( 'soporte' );
 
   ?>
 

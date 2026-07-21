@@ -21,17 +21,20 @@ $whatsapp_channels = [];
 if ( have_rows( 'whatsapp_channels' ) ) {
   while ( have_rows( 'whatsapp_channels' ) ) {
     the_row();
+    $channel_type = get_sub_field( 'channel_type' ) ?: 'ventas';
     $whatsapp_channels[] = [
       'icon'         => get_sub_field( 'icon' ) ?: 'phone',
       'label'        => get_sub_field( 'label' ),
-      'phone_number' => get_sub_field( 'phone_number' ),
+      'phone_number' => 'personalizado' === $channel_type
+        ? get_sub_field( 'phone_number' )
+        : get_whatsapp_number( $channel_type ),
     ];
   }
 }
 if ( ! $whatsapp_channels ) {
   $whatsapp_channels = [
-    [ 'icon' => 'phone', 'label' => __( 'Canal Ventas', 'air-light' ), 'phone_number' => '573000000000' ],
-    [ 'icon' => 'headset', 'label' => __( 'Soporte Técnico', 'air-light' ), 'phone_number' => '573000000000' ],
+    [ 'icon' => 'phone', 'label' => __( 'Canal Ventas', 'air-light' ), 'phone_number' => get_whatsapp_number( 'ventas' ) ],
+    [ 'icon' => 'headset', 'label' => __( 'Soporte Técnico', 'air-light' ), 'phone_number' => get_whatsapp_number( 'soporte' ) ],
   ];
 }
 

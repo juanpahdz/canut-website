@@ -27,6 +27,12 @@ add_action( 'widgets_init', __NAMESPACE__ . '\widgets_init' );
 add_action( 'pre_get_posts', __NAMESPACE__ . '\historia_archive_posts_per_page' );
 
 /**
+ * WhatsApp numbers (Ventas/Soporte options page + get_whatsapp_url() helper)
+ */
+require get_theme_file_path( 'inc/hooks/whatsapp.php' );
+add_action( 'acf/init', __NAMESPACE__ . '\register_whatsapp_options_page' );
+
+/**
  * Scripts and styles associated hooks
  */
 require get_theme_file_path( 'inc/hooks/scripts-styles.php' );

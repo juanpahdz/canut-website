@@ -34,7 +34,7 @@ $cta_url   = $args['cta_url'] ?? '#featured-product';
   <div class="wrap-canut home-hero-content">
     <h1 class="home-hero-title"><?php echo esc_html( $title ); ?></h1>
     <p class="home-hero-subtitle"><?php echo esc_html( $subtitle ); ?></p>
-    <a href="<?php echo esc_url( $cta_url ); ?>" class="button-canut-base button-canut-ghost">
+    <a href="<?php echo esc_url( $cta_url ); ?>" class="button-canut-base button-canut-ghost home-hero-cta">
       <?php echo esc_html( $cta_label ); ?>
     </a>
   </div>

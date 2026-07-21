@@ -31,4 +31,5 @@ function register_acf_field_groups() {
   require get_theme_file_path( '/inc/acf-fields/pagina-informativa.php' );
   require get_theme_file_path( '/inc/acf-fields/contacto-canut.php' );
   require get_theme_file_path( '/inc/acf-fields/garantia-canut.php' );
+  require get_theme_file_path( '/inc/acf-fields/ajustes-whatsapp.php' );
 } // end register_acf_field_groups

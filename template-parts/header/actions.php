@@ -12,7 +12,7 @@ namespace Air_Light;
 <div class="header-actions-canut">
 
   <a
-    href="<?php echo esc_url( 'https://wa.me/' ); ?>"
+    href="<?php echo esc_url( get_whatsapp_url( 'ventas' ) ); ?>"
     class="header-actions-canut-whatsapp"
     target="_blank"
     rel="noopener noreferrer"
