@@ -14,6 +14,7 @@ $image    = $args['image'] ?? [
   'url' => get_theme_file_uri( 'assets/images/homepage/hero-dog-feeder.jpg' ),
   'alt' => __( 'Perro descansando junto a un comedero inteligente CANUT', 'air-light' ),
 ];
+$video    = $args['video'] ?? null;
 $title    = $args['title'] ?? __( 'Tu perro siempre come a tiempo', 'air-light' );
 $subtitle = $args['subtitle'] ?? __( 'Tecnología y diseño artesanal creados para el bienestar de quien más te quiere.', 'air-light' );
 $cta_label = $args['cta_label'] ?? __( 'Comprar ahora', 'air-light' );
@@ -23,12 +24,18 @@ $cta_url   = $args['cta_url'] ?? '#featured-product';
 
 <section class="home-hero">
   <div class="home-hero-media">
-    <img
-      src="<?php echo esc_url( $image['url'] ); ?>"
-      alt="<?php echo esc_attr( $image['alt'] ); ?>"
-      loading="eager"
-      fetchpriority="high"
-    >
+    <?php if ( ! empty( $video['url'] ) ) : ?>
+      <video autoplay muted loop playsinline preload="auto" poster="<?php echo esc_url( $image['url'] ); ?>">
+        <source src="<?php echo esc_url( $video['url'] ); ?>" <?php echo $video['mime_type'] ? 'type="' . esc_attr( $video['mime_type'] ) . '"' : ''; ?>>
+      </video>
+    <?php else : ?>
+      <img
+        src="<?php echo esc_url( $image['url'] ); ?>"
+        alt="<?php echo esc_attr( $image['alt'] ); ?>"
+        loading="eager"
+        fetchpriority="high"
+      >
+    <?php endif; ?>
   </div>
 
   <div class="wrap-canut home-hero-content">

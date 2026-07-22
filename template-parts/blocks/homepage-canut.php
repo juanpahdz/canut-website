@@ -37,6 +37,7 @@ function homepage_canut_image( $image, $fallback_file, $fallback_alt ) {
 
 get_template_part( 'template-parts/front-page/hero', '', [
   'image'      => homepage_canut_image( get_field( 'hero_image' ), 'hero-dog-feeder.jpg', __( 'Perro descansando junto a un comedero inteligente CANUT', 'air-light' ) ),
+  'video'      => get_field( 'hero_video' ),
   'title'      => get_field( 'hero_title' ) ?: __( 'Tu perro siempre come a tiempo', 'air-light' ),
   'subtitle'   => get_field( 'hero_subtitle' ) ?: __( 'Tecnología y diseño artesanal creados para el bienestar de quien más te quiere.', 'air-light' ),
   'cta_label'  => get_field( 'hero_cta_label' ) ?: __( 'Comprar ahora', 'air-light' ),
@@ -85,6 +86,25 @@ if ( function_exists( 'wc_get_product' ) ) {
   }
 }
 
+$featured_specs = [];
+if ( have_rows( 'featured_specs' ) ) {
+  while ( have_rows( 'featured_specs' ) ) {
+    the_row();
+    $featured_specs[] = [
+      'icon'  => get_sub_field( 'icon' ) ?: 'check',
+      'label' => get_sub_field( 'label' ),
+    ];
+  }
+}
+if ( ! $featured_specs ) {
+  $featured_specs = [
+    [ 'icon' => 'camera', 'label' => __( 'Cámara HD integrada', 'air-light' ) ],
+    [ 'icon' => 'wifi-high', 'label' => __( 'Conexión WiFi', 'air-light' ) ],
+    [ 'icon' => 'scales', 'label' => __( 'Porciones precisas', 'air-light' ) ],
+    [ 'icon' => 'battery-full', 'label' => __( 'Batería de respaldo', 'air-light' ) ],
+  ];
+}
+
 if ( $featured_product instanceof \WC_Product ) {
   $featured_product_image_id = $featured_product->get_image_id();
 
@@ -99,13 +119,14 @@ if ( $featured_product instanceof \WC_Product ) {
     'title'                => $featured_product->get_name(),
     'description'          => $featured_product->get_short_description() ? wp_strip_all_tags( $featured_product->get_short_description() ) : null,
     'price'                => $featured_product->get_price_html(),
+    'specs'                => $featured_specs,
     'cta_primary_label'    => get_field( 'featured_cta_primary_label' ) ?: __( 'Lo quiero ya', 'air-light' ),
     'cta_primary_url'      => add_query_arg( 'add-to-cart', $featured_product->get_id(), wc_get_checkout_url() ),
     'cta_secondary_label'  => get_field( 'featured_cta_secondary_label' ) ?: __( 'Especificaciones', 'air-light' ),
     'cta_secondary_url'    => $featured_product->get_permalink(),
   ] );
 } else {
-  get_template_part( 'template-parts/front-page/featured-product' );
+  get_template_part( 'template-parts/front-page/featured-product', '', [ 'specs' => $featured_specs ] );
 }
 
 $how_it_works_steps = [];

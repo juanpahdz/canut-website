@@ -38,6 +38,7 @@ function nosotros_canut_image( $image, $fallback_file, $fallback_alt ) {
 
 get_template_part( 'template-parts/nosotros/hero', '', [
   'image'   => nosotros_canut_image( get_field( 'hero_image' ), 'hero-manifesto.png', __( 'Perro descansando junto a una cama CANUT en una sala de estar', 'air-light' ) ),
+  'video'   => get_field( 'hero_video' ),
   'eyebrow' => get_field( 'hero_eyebrow' ) ?: __( 'Nuestro manifiesto', 'air-light' ),
   'title'   => get_field( 'hero_title' ) ?: __( 'Por qué existe CANUT', 'air-light' ),
   'text'    => get_field( 'hero_text' ) ?: __( 'Nacimos de una obsesión silenciosa: la tranquilidad de saber, sin ninguna duda, que ellos están recibiendo lo mejor. No es solo comida; es el compromiso con su longevidad.', 'air-light' ),

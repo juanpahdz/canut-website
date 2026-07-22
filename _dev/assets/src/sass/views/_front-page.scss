@@ -24,7 +24,8 @@ $canut-on-dark-muted: color-mix(in sRGB, var(--wp--preset--color--white) 75%, va
   position: absolute;
   width: 100%;
 
-  img {
+  img,
+  video {
     height: 100%;
     object-fit: cover;
     width: 100%;
@@ -259,7 +260,7 @@ $canut-on-dark-muted: color-mix(in sRGB, var(--wp--preset--color--white) 75%, va
   align-items: center;
   display: grid;
   gap: var(--wp--preset--spacing--space-lg);
-  grid-template-columns: 7fr 5fr;
+  grid-template-columns: 5fr 7fr;
 
   @media screen and (max-width: $breakpoint-tablet-landscape) {
     grid-template-columns: 1fr;
@@ -269,24 +270,22 @@ $canut-on-dark-muted: color-mix(in sRGB, var(--wp--preset--color--white) 75%, va
 .home-featured-product-media img {
   @include canut-radius(lg);
   @include canut-shadow(card);
-  // A full portrait crop (e.g. 3/4) centre-crops out whichever side of the
-  // photo the product itself sits on - these are wide lifestyle shots
-  // (product + pet in a room), not product-centred studio photos, so the
-  // subject is often off to one edge rather than centred. 4/3 is still
-  // taller than the original 654/357 (~1.83:1) without cropping that
-  // aggressively.
-  aspect-ratio: 4 / 3;
+  // Portrait crop so the product itself reads as the subject rather than
+  // the room around it - the media column is narrower than the content
+  // column (see grid-template-columns above) specifically to support this
+  // taller ratio without the image dominating the layout.
+  aspect-ratio: 3 / 4;
   display: block;
   object-fit: cover;
   width: 100%;
 }
 
 .home-featured-product-eyebrow {
-  @include text-style(body, body, semi-bold);
+  @include text-style(caption, body, medium);
   color: var(--wp--preset--color--accent-dark);
   display: block;
-  letter-spacing: 0.1em;
-  margin-bottom: var(--wp--preset--spacing--space-sm);
+  letter-spacing: var(--wp--custom--canut--letter-spacing--caption);
+  margin-bottom: var(--wp--preset--spacing--space-xs);
   text-transform: uppercase;
 }
 
@@ -300,6 +299,32 @@ $canut-on-dark-muted: color-mix(in sRGB, var(--wp--preset--color--white) 75%, va
   @include text-style(body, body, regular);
   color: var(--wp--preset--color--text-secondary);
   margin: 0 0 var(--wp--preset--spacing--space-md);
+}
+
+.home-featured-product-specs {
+  display: grid;
+  gap: var(--wp--preset--spacing--space-sm) var(--wp--preset--spacing--space-md);
+  grid-template-columns: repeat(2, 1fr);
+  margin: 0 0 var(--wp--preset--spacing--space-lg);
+
+  @media screen and (max-width: $breakpoint-mobile) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.home-featured-product-specs-item {
+  @include text-style(small, body, medium);
+  align-items: center;
+  color: var(--wp--preset--color--text-primary);
+  display: flex;
+  gap: var(--wp--preset--spacing--space-sm);
+
+  svg {
+    color: var(--wp--preset--color--accent-dark);
+    flex-shrink: 0;
+    height: 1.5rem;
+    width: 1.5rem;
+  }
 }
 
 .home-featured-product-price {

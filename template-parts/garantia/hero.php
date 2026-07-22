@@ -17,6 +17,7 @@ $image           = $args['image'] ?? [
   'url' => get_theme_file_uri( 'assets/images/homepage/hero-dog-feeder.jpg' ),
   'alt' => __( 'Comedero CANUT en un ambiente doméstico', 'air-light' ),
 ];
+$video           = $args['video'] ?? null;
 $highlight_title = $args['highlight_title'] ?? __( 'Compromiso Canut', 'air-light' );
 $highlight_text  = $args['highlight_text'] ?? __( 'Artesanía de alto rendimiento garantizada.', 'air-light' );
 
@@ -24,12 +25,18 @@ $highlight_text  = $args['highlight_text'] ?? __( 'Artesanía de alto rendimient
 
 <section class="garantia-hero">
   <div class="garantia-hero-media">
-    <img
-      src="<?php echo esc_url( $image['url'] ); ?>"
-      alt="<?php echo esc_attr( $image['alt'] ); ?>"
-      loading="eager"
-      fetchpriority="high"
-    >
+    <?php if ( ! empty( $video['url'] ) ) : ?>
+      <video autoplay muted loop playsinline preload="auto" poster="<?php echo esc_url( $image['url'] ); ?>">
+        <source src="<?php echo esc_url( $video['url'] ); ?>" <?php echo $video['mime_type'] ? 'type="' . esc_attr( $video['mime_type'] ) . '"' : ''; ?>>
+      </video>
+    <?php else : ?>
+      <img
+        src="<?php echo esc_url( $image['url'] ); ?>"
+        alt="<?php echo esc_attr( $image['alt'] ); ?>"
+        loading="eager"
+        fetchpriority="high"
+      >
+    <?php endif; ?>
   </div>
 
   <div class="wrap-canut garantia-hero-wrap">

@@ -38,6 +38,7 @@ get_template_part( 'template-parts/garantia/hero', '', [
   'title'           => get_field( 'hero_title' ) ?: __( 'Garantía', 'air-light' ),
   'text'            => get_field( 'hero_text' ) ?: __( 'Tu comedero CANUT está respaldado por nuestra promesa de excelencia y durabilidad. Diseñamos para la eternidad, cuidando cada detalle para el bienestar de tu mascota.', 'air-light' ),
   'image'           => garantia_canut_image( get_field( 'hero_image' ) ),
+  'video'           => get_field( 'hero_video' ),
   'highlight_title' => get_field( 'hero_highlight_title' ) ?: __( 'Compromiso Canut', 'air-light' ),
   'highlight_text'  => get_field( 'hero_highlight_text' ) ?: __( 'Artesanía de alto rendimiento garantizada.', 'air-light' ),
 ] );

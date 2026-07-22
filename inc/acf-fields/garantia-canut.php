@@ -70,6 +70,16 @@ acf_add_local_field_group( [
       'type'          => 'image',
       'return_format' => 'array',
       'preview_size'  => 'medium',
+      'instructions'  => __( 'Se usa sola si no hay video, y como poster (fotograma inicial) mientras el video carga.', 'air-light' ),
+    ],
+    [
+      'key'           => 'field_gc_hero_video',
+      'label'         => __( 'Video de fondo (opcional)', 'air-light' ),
+      'name'          => 'hero_video',
+      'type'          => 'file',
+      'return_format' => 'array',
+      'mime_types'    => 'mp4,webm,mov',
+      'instructions'  => __( 'Si se sube, reemplaza la imagen de fondo: se reproduce en loop automático, sin sonido y sin controles. Deja vacío para usar solo la imagen.', 'air-light' ),
     ],
     [
       'key'   => 'field_gc_hero_highlight_title',

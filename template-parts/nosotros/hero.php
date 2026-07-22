@@ -14,6 +14,7 @@ $image   = $args['image'] ?? [
   'url' => get_theme_file_uri( 'assets/images/nosotros/hero-manifesto.png' ),
   'alt' => __( 'Perro descansando junto a una cama CANUT en una sala de estar', 'air-light' ),
 ];
+$video   = $args['video'] ?? null;
 $eyebrow = $args['eyebrow'] ?? __( 'Nuestro manifiesto', 'air-light' );
 $title   = $args['title'] ?? __( 'Por qué existe CANUT', 'air-light' );
 $text    = $args['text'] ?? __( 'Nacimos de una obsesión silenciosa: la tranquilidad de saber, sin ninguna duda, que ellos están recibiendo lo mejor. No es solo comida; es el compromiso con su longevidad.', 'air-light' );
@@ -22,12 +23,18 @@ $text    = $args['text'] ?? __( 'Nacimos de una obsesión silenciosa: la tranqui
 
 <section class="nosotros-hero">
   <div class="nosotros-hero-media">
-    <img
-      src="<?php echo esc_url( $image['url'] ); ?>"
-      alt="<?php echo esc_attr( $image['alt'] ); ?>"
-      loading="eager"
-      fetchpriority="high"
-    >
+    <?php if ( ! empty( $video['url'] ) ) : ?>
+      <video autoplay muted loop playsinline preload="auto" poster="<?php echo esc_url( $image['url'] ); ?>">
+        <source src="<?php echo esc_url( $video['url'] ); ?>" <?php echo $video['mime_type'] ? 'type="' . esc_attr( $video['mime_type'] ) . '"' : ''; ?>>
+      </video>
+    <?php else : ?>
+      <img
+        src="<?php echo esc_url( $image['url'] ); ?>"
+        alt="<?php echo esc_attr( $image['alt'] ); ?>"
+        loading="eager"
+        fetchpriority="high"
+      >
+    <?php endif; ?>
   </div>
 
   <div class="wrap-canut">
