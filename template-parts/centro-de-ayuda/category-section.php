@@ -91,7 +91,7 @@ $cta_whatsapp_url = get_whatsapp_url( 'soporte', $cta_message );
     </div>
     <a
       href="<?php echo esc_url( $cta_whatsapp_url ); ?>"
-      class="button-canut-base button-canut-secondary help-center-cta-band-link"
+      class="button-canut-base button-canut-secondary help-center-cta-band-link is-no-arrow"
       target="_blank"
       rel="noopener noreferrer"
     >

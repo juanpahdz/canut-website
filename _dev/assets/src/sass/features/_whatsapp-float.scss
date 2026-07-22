@@ -1,24 +1,37 @@
 // stylelint-disable custom-property-pattern, csstools/value-no-unknown-custom-properties
 @use '../variables' as *;
 
-// Floating WhatsApp CTA, fixed bottom-right on every page (see footer.php,
-// hidden on checkout to match its distraction-free header/footer). Links to
-// the global Ventas number set in Ajustes > WhatsApp (inc/hooks/whatsapp.php).
+// Fixed bottom-right wrapper for the floating WhatsApp CTA and its speech
+// bubble (see footer.php, hidden on checkout to match its existing
+// distraction-free header/footer). Positioning lives here rather than on
+// .whatsapp-float itself so the bubble can anchor off the same box.
+.whatsapp-float-wrap {
+  bottom: var(--wp--preset--spacing--space-md);
+  position: fixed;
+  right: var(--wp--preset--spacing--space-md);
+  z-index: 40;
+}
+
+// Links to the global Ventas number set in Ajustes > WhatsApp
+// (inc/hooks/whatsapp.php).
 .whatsapp-float {
   @include canut-radius(full);
   @include canut-shadow(card);
+
+  // WhatsApp's own brand green, not the theme palette - this is their
+  // official icon/button colour and should stay recognisable as WhatsApp
+  // regardless of the site's own primary colour.
+  --whatsapp-float-color: #25d366;
+  --whatsapp-float-color-hover: #1da851;
   align-items: center;
-  background-color: var(--wp--preset--color--primary-dark);
-  bottom: var(--wp--preset--spacing--space-md);
+  background-color: var(--whatsapp-float-color);
   color: var(--wp--preset--color--white);
   display: flex;
   height: 3.5rem;
   justify-content: center;
-  position: fixed;
-  right: var(--wp--preset--spacing--space-md);
+  position: relative;
   transition: background-color 150ms ease, transform 150ms ease;
   width: 3.5rem;
-  z-index: 40;
 
   svg {
     height: 1.75rem;
@@ -27,21 +40,84 @@
 
   &:hover,
   &:focus {
-    background-color: var(--wp--preset--color--primary);
+    background-color: var(--whatsapp-float-color-hover);
     transform: scale(1.05);
   }
 }
 
+// Speech-bubble nudge cycling through the messages set in Ajustes >
+// WhatsApp (whatsapp_bubble_messages), one at a time (see
+// modules/whatsapp-float-bubble.js). Only one .whatsapp-float-bubble-message
+// carries .is-current at a time - the others stay in the DOM so the JS has
+// no server round-trip to do between messages, just class toggles.
+.whatsapp-float-bubble {
+  @include canut-radius(md);
+  @include canut-shadow(card);
+  background-color: var(--wp--preset--color--white);
+  bottom: calc(100% + var(--wp--preset--spacing--space-xs));
+  color: var(--wp--preset--color--text-primary);
+  max-width: 14rem;
+  opacity: 0;
+  padding: var(--wp--preset--spacing--space-xs) var(--wp--preset--spacing--space-sm);
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  transform: translateY(0.5rem) scale(0.95);
+  transition: opacity 250ms ease, transform 250ms ease;
+
+  // Speech-bubble tail pointing down toward the button below it.
+  &::after {
+    background-color: var(--wp--preset--color--white);
+    bottom: -0.25rem;
+    content: '';
+    height: 0.625rem;
+    position: absolute;
+    right: 1.375rem;
+    transform: rotate(45deg);
+    width: 0.625rem;
+  }
+
+  &.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+  }
+
+  // The animation itself (not the messages) is the part that must yield to
+  // reduced motion - hide the whole bubble rather than have text snap in
+  // and out with no transition.
+  @media (prefers-reduced-motion: reduce) {
+    display: none;
+  }
+}
+
+.whatsapp-float-bubble-message {
+  @include text-style(14, body, regular);
+  display: none;
+  line-height: 1.4;
+
+  &.is-current {
+    display: block;
+  }
+}
+
 @media screen and (max-width: $breakpoint-mobile) {
-  .whatsapp-float {
+  .whatsapp-float-wrap {
     bottom: var(--wp--preset--spacing--space-sm);
-    height: 3rem;
     right: var(--wp--preset--spacing--space-sm);
+  }
+
+  .whatsapp-float {
+    height: 3rem;
     width: 3rem;
 
     svg {
       height: 1.5rem;
       width: 1.5rem;
     }
+  }
+
+  .whatsapp-float-bubble {
+    max-width: 11rem;
   }
 }

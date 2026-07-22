@@ -30,9 +30,11 @@ $text    = $args['text'] ?? __( 'Nacimos de una obsesión silenciosa: la tranqui
     >
   </div>
 
-  <div class="wrap-canut nosotros-hero-content">
-    <span class="nosotros-hero-eyebrow"><?php echo esc_html( $eyebrow ); ?></span>
-    <h1 class="nosotros-hero-title"><?php echo esc_html( $title ); ?></h1>
-    <p class="nosotros-hero-text"><?php echo esc_html( $text ); ?></p>
+  <div class="wrap-canut">
+    <div class="nosotros-hero-content">
+      <span class="nosotros-hero-eyebrow"><?php echo esc_html( $eyebrow ); ?></span>
+      <h1 class="nosotros-hero-title"><?php echo esc_html( $title ); ?></h1>
+      <p class="nosotros-hero-text"><?php echo esc_html( $text ); ?></p>
+    </div>
   </div>
 </section>

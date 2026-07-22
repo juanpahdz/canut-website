@@ -50,6 +50,16 @@ while ( have_posts() ) :
     : wc_placeholder_img_src( 'large' );
 
   $buy_now_url = add_query_arg( 'add-to-cart', $product->get_id(), wc_get_checkout_url() );
+
+  /**
+   * If this product is already in the cart, "Comprar ahora" turns into
+   * "Finalizar compra" and goes straight to checkout instead of adding
+   * another unit and opening the drawer - same server-rendered state
+   * pattern as $already_in_cart in woocommerce/content-product.php.
+   */
+  $already_in_cart = function_exists( 'WC' ) && WC()->cart
+    && WC()->cart->find_product_in_cart( WC()->cart->generate_cart_id( $product->get_id() ) );
+
   $whatsapp_url = get_whatsapp_url( 'ventas', sprintf(
     /* translators: %s: product name. */
     __( 'Hola, quiero comprar %s', 'air-light' ),
@@ -421,12 +431,27 @@ while ( have_posts() ) :
       <?php endif; ?>
 
       <div class="product-purchase">
-        <a
-          href="<?php echo esc_url( $buy_now_url ); ?>"
-          class="button-canut-base button-canut-primary is-full-width"
-        >
-          <?php esc_html_e( 'Comprar ahora', 'air-light' ); ?>
-        </a>
+        <?php if ( $product->is_purchasable() && $product->is_in_stock() && $product->supports( 'ajax_add_to_cart' ) ) : ?>
+          <a
+            href="<?php echo esc_url( $already_in_cart ? wc_get_checkout_url() : $product->add_to_cart_url() ); ?>"
+            data-quantity="1"
+            data-product_id="<?php echo esc_attr( $product->get_id() ); ?>"
+            data-product_sku="<?php echo esc_attr( $product->get_sku() ); ?>"
+            data-added-label="<?php esc_attr_e( 'Finalizar compra', 'air-light' ); ?>"
+            data-added-aria-label="<?php esc_attr_e( 'Finalizar compra', 'air-light' ); ?>"
+            data-added-href="<?php echo esc_url( wc_get_checkout_url() ); ?>"
+            class="button-canut-base button-canut-primary is-full-width ajax_add_to_cart add_to_cart_button<?php echo $already_in_cart ? ' wc-interactive' : ''; ?>"
+          >
+            <span data-action-label><?php echo esc_html( $already_in_cart ? __( 'Finalizar compra', 'air-light' ) : __( 'Comprar ahora', 'air-light' ) ); ?></span>
+          </a>
+        <?php else : ?>
+          <a
+            href="<?php echo esc_url( $buy_now_url ); ?>"
+            class="button-canut-base button-canut-primary is-full-width"
+          >
+            <?php esc_html_e( 'Comprar ahora', 'air-light' ); ?>
+          </a>
+        <?php endif; ?>
         <a
           href="<?php echo esc_url( $whatsapp_url ); ?>"
           target="_blank"
@@ -595,7 +620,7 @@ while ( have_posts() ) :
       <div class="product-help-cta-inner">
         <h2 class="product-help-cta-title"><?php echo esc_html( $help_cta_title ); ?></h2>
         <p class="product-help-cta-text"><?php echo esc_html( $help_cta_text ); ?></p>
-        <a href="<?php echo esc_url( $help_cta_whatsapp_url ); ?>" class="button-canut-base button-canut-light" target="_blank" rel="noopener noreferrer">
+        <a href="<?php echo esc_url( $help_cta_whatsapp_url ); ?>" class="button-canut-base button-canut-light is-no-arrow" target="_blank" rel="noopener noreferrer">
           <?php require get_theme_file_path( 'assets/svg/icon-whatsapp.svg' ); ?>
           <?php esc_html_e( 'Hablar con un asesor', 'air-light' ); ?>
         </a>

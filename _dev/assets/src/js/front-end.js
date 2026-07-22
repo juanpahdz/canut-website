@@ -29,6 +29,7 @@ import initCartDrawer from './modules/cart-drawer';
 import initPaginaInformativaToc from './modules/pagina-informativa';
 import initHelpCenterCanut from './modules/help-center-canut';
 import initShopFilters from './modules/shop-filters';
+import initWhatsappFloatBubble from './modules/whatsapp-float-bubble';
 // Define Javascript is active by changing the body class
 document.body.classList.remove('no-js');
 document.body.classList.add('js');
@@ -59,6 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initPaginaInformativaToc();
   initHelpCenterCanut();
   initShopFilters();
+  initWhatsappFloatBubble();
 
   // Uncomment if you like to use a sticky navigation
   // navSticky();

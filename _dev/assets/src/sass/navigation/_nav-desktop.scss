@@ -4,7 +4,7 @@
 // stylelint-disable a11y/no-display-none, plugin/file-max-lines, selector-max-specificity, selector-max-class
 .site-header ul {
   // Affecting to both main and sub-levels
-  --color-current: var(--wp--preset--color--black);
+  --color-current: var(--wp--preset--color--success);
   --color-current-dropdown: var(--wp--preset--color--primary-dark);
   --dropdown-toggle-size: 0.75rem;
 

@@ -53,14 +53,15 @@ const initCartDrawer = () => {
   // .ajax_add_to_cart button) fires this on document.body once its own AJAX
   // request succeeds and has already swapped in the fresh drawer content via
   // the woocommerce_add_to_cart_fragments filter (inc/hooks/cart-drawer.php).
-  // Besides opening the dialog, this turns the button itself into a "Ver
-  // carrito" link (data-added-label/data-added-aria-label, set in
-  // woocommerce/content-product.php) rather than leaving WooCommerce's own
-  // "Ver carrito" text it inserts right after the button (sass hides that
-  // one - a second, separate link next to the button would be redundant).
-  // Adding .wc-interactive opts the button out of add-to-cart.js's own
-  // delegated click handler (`.add_to_cart_button:not(.wc-interactive)`), so
-  // the click listener below can take over for anything after this point.
+  // Besides opening the dialog, this turns the button itself into its
+  // "added" state (data-added-label/data-added-aria-label/data-added-href,
+  // set in woocommerce/content-product.php and woocommerce/single-product.php)
+  // rather than leaving WooCommerce's own "Ver carrito" text it inserts right
+  // after the button (sass hides that one - a second, separate link next to
+  // the button would be redundant). Adding .wc-interactive opts the button
+  // out of add-to-cart.js's own delegated click handler
+  // (`.add_to_cart_button:not(.wc-interactive)`), so the click listener below
+  // can take over for anything after this point.
   if (window.jQuery) {
     window.jQuery(document.body).on('added_to_cart', (event, fragments, cartHash, $button) => {
       if (!dialog.open) dialog.showModal();
@@ -69,21 +70,25 @@ const initCartDrawer = () => {
 
       if (!button || !button.dataset.addedLabel) return;
 
-      const label = button.querySelector('.card-product-canut-action-label');
+      const label = button.querySelector('[data-action-label]');
 
       if (label) label.textContent = button.dataset.addedLabel;
       if (button.dataset.addedAriaLabel) button.setAttribute('aria-label', button.dataset.addedAriaLabel);
+      if (button.dataset.addedHref) button.href = button.dataset.addedHref;
 
       button.classList.add('wc-interactive');
     });
   }
 
-  // Once a button has flipped to "Ver carrito" (above), clicking it again
-  // should just reopen the drawer instead of adding another unit.
+  // Once a button has flipped to its "added" state (above), clicking it
+  // again should just reopen the drawer (card-product-canut's "Ver
+  // carrito") - unless it carries data-added-href (single-product.php's
+  // "Finalizar compra"), in which case it should navigate to checkout via
+  // its own href instead of being intercepted.
   document.body.addEventListener('click', (event) => {
     const button = event.target.closest('.wc-interactive[data-added-label]');
 
-    if (!button) return;
+    if (!button || button.dataset.addedHref) return;
 
     event.preventDefault();
     dialog.showModal();

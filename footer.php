@@ -23,6 +23,8 @@ $social_links = [
 
 $payment_methods = [ 'PayPal', 'Visa', 'Mastercard', __( 'Efectivo', 'air-light' ) ];
 
+$whatsapp_bubble_messages = get_whatsapp_bubble_messages();
+
 ?>
 
 </div><!-- #content -->
@@ -128,15 +130,24 @@ $payment_methods = [ 'PayPal', 'Visa', 'Mastercard', __( 'Efectivo', 'air-light'
 <?php wp_footer(); ?>
 
 <?php if ( ! ( function_exists( 'is_checkout' ) && is_checkout() ) ) : ?>
-  <a
-    href="<?php echo esc_url( get_whatsapp_url( 'ventas' ) ); ?>"
-    class="whatsapp-float"
-    target="_blank"
-    rel="noopener noreferrer"
-    aria-label="<?php esc_attr_e( 'Escríbenos por WhatsApp', 'air-light' ); ?>"
-  >
-    <?php require get_theme_file_path( 'assets/svg/icon-whatsapp.svg' ); ?>
-  </a>
+  <div class="whatsapp-float-wrap">
+    <?php if ( $whatsapp_bubble_messages ) : ?>
+      <div class="whatsapp-float-bubble" data-whatsapp-float-bubble aria-hidden="true">
+        <?php foreach ( $whatsapp_bubble_messages as $whatsapp_bubble_message ) : ?>
+          <span class="whatsapp-float-bubble-message"><?php echo esc_html( $whatsapp_bubble_message ); ?></span>
+        <?php endforeach; ?>
+      </div>
+    <?php endif; ?>
+    <a
+      href="<?php echo esc_url( get_whatsapp_url( 'ventas' ) ); ?>"
+      class="whatsapp-float"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="<?php esc_attr_e( 'Escríbenos por WhatsApp', 'air-light' ); ?>"
+    >
+      <?php require get_theme_file_path( 'assets/svg/icon-whatsapp.svg' ); ?>
+    </a>
+  </div>
 <?php endif; ?>
 
 <a

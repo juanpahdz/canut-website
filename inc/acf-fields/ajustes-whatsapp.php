@@ -34,6 +34,42 @@ acf_add_local_field_group( [
       'instructions' => __( 'Solo dígitos con código de país, ej. 573001234567 (sin +, espacios ni guiones). Usado en garantía, centro de ayuda y el CTA de ayuda del producto.', 'air-light' ),
       'wrapper'      => [ 'width' => '50' ],
     ],
+    [
+      'key'           => 'field_whatsapp_bubble_enabled',
+      'label'         => __( 'Mensajes animados', 'air-light' ),
+      'name'          => 'whatsapp_bubble_enabled',
+      'type'          => 'true_false',
+      'instructions'  => __( 'Muestra, de a uno por turno, los mensajes de abajo en una burbuja animada sobre el botón flotante de WhatsApp para invitar a los visitantes a escribir.', 'air-light' ),
+      'default_value' => 1,
+      'ui'            => 1,
+    ],
+    [
+      'key'               => 'field_whatsapp_bubble_messages',
+      'label'             => __( 'Mensajes', 'air-light' ),
+      'name'              => 'whatsapp_bubble_messages',
+      'type'              => 'repeater',
+      'min'               => 0,
+      'max'               => 6,
+      'layout'            => 'table',
+      'button_label'      => __( 'Agregar mensaje', 'air-light' ),
+      'conditional_logic' => [
+        [
+          [
+            'field'    => 'field_whatsapp_bubble_enabled',
+            'operator' => '==',
+            'value'    => '1',
+          ],
+        ],
+      ],
+      'sub_fields'        => [
+        [
+          'key'   => 'field_whatsapp_bubble_message',
+          'label' => __( 'Mensaje', 'air-light' ),
+          'name'  => 'message',
+          'type'  => 'text',
+        ],
+      ],
+    ],
   ],
   'location' => [
     [

@@ -81,7 +81,7 @@ $already_in_cart = function_exists( 'WC' ) && WC()->cart
         class="card-product-canut-action ajax_add_to_cart add_to_cart_button<?php echo $already_in_cart ? ' wc-interactive' : ''; ?>"
       >
         <?php require get_theme_file_path( 'assets/svg/icon-shopping-bag.svg' ); ?>
-        <span class="card-product-canut-action-label"><?php echo esc_html( $already_in_cart ? __( 'Ver carrito', 'air-light' ) : __( 'Comprar ahora', 'air-light' ) ); ?></span>
+        <span class="card-product-canut-action-label" data-action-label><?php echo esc_html( $already_in_cart ? __( 'Ver carrito', 'air-light' ) : __( 'Comprar ahora', 'air-light' ) ); ?></span>
       </a>
     <?php else : ?>
       <a

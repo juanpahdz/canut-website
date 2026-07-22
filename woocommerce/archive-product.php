@@ -273,7 +273,7 @@ $remaining_rows  = $product_rows;
   <div class="shop-help-cta-content">
     <h2 class="shop-help-cta-title"><?php esc_html_e( '¿No sabes cuál elegir?', 'air-light' ); ?></h2>
     <p class="shop-help-cta-text"><?php esc_html_e( 'Nuestros expertos están listos para asesorarte de forma personalizada para encontrar el comedero perfecto según las necesidades de tu mascota.', 'air-light' ); ?></p>
-    <a href="<?php echo esc_url( get_whatsapp_url( 'ventas' ) ); ?>" class="button-canut-base button-canut-primary" target="_blank" rel="noopener noreferrer">
+    <a href="<?php echo esc_url( get_whatsapp_url( 'ventas' ) ); ?>" class="button-canut-base button-canut-primary is-no-arrow" target="_blank" rel="noopener noreferrer">
       <?php require get_theme_file_path( 'assets/svg/icon-whatsapp.svg' ); ?>
       <?php esc_html_e( 'Consultar por WhatsApp', 'air-light' ); ?>
     </a>

@@ -65,3 +65,28 @@ function get_whatsapp_url( $type = 'ventas', $message = '' ) {
 
   return $url;
 } // end get_whatsapp_url
+
+/**
+ * Messages shown, one at a time, in the animated bubble above the floating
+ * WhatsApp button (see footer.php, modules/whatsapp-float-bubble.js).
+ * Editable from Ajustes > WhatsApp; returns an empty array if the "Mensajes
+ * animados" toggle is off, no messages have been added yet, or ACF isn't
+ * active.
+ *
+ * @return string[]
+ */
+function get_whatsapp_bubble_messages() {
+  if ( ! function_exists( 'get_field' ) || ! get_field( 'whatsapp_bubble_enabled', 'option' ) ) {
+    return [];
+  }
+
+  $rows = get_field( 'whatsapp_bubble_messages', 'option' );
+
+  if ( ! $rows ) {
+    return [];
+  }
+
+  return array_values( array_filter( array_map( function( $row ) {
+    return trim( (string) ( $row['message'] ?? '' ) );
+  }, $rows ) ) );
+} // end get_whatsapp_bubble_messages

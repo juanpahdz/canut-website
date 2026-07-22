@@ -71,6 +71,11 @@ add_action( 'after_setup_theme', function() {
       'airdev.test',
       'airwptheme.com',
       'localhost',
+      // WhatsApp CTAs already carry their own icon (icon-whatsapp.svg) -
+      // exclude wa.me so the generic external-link arrow isn't appended
+      // on top of it (footer float button, header CTA, product/garantía/
+      // centro de ayuda WhatsApp links, contacto page channels).
+      'wa.me',
     ],
 
     /**
