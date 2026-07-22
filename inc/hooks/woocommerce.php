@@ -120,3 +120,37 @@ function register_shop_filter_attributes() {
     }
   }
 } // end register_shop_filter_attributes
+
+/**
+ * WooCommerce's own "Product gallery" admin metabox
+ * (WC_Meta_Box_Product_Images::output()) renders each gallery attachment
+ * with wp_get_attachment_image( $id, 'thumbnail' ) to build its preview
+ * list, and rewrites `_product_image_gallery` on every metabox render to
+ * drop any attachment that call returns empty for. A video attachment has
+ * no image representation unless it was given a poster frame, so
+ * without this filter every video added to the gallery (see
+ * woocommerce/single-product.php, which already renders gallery videos on
+ * the frontend) silently vanishes the moment the product is saved.
+ *
+ * Fall back to the generic mime-type icon core itself uses for
+ * wp_get_attachment_image_src( $id, $size, $icon = true ) - a fallback
+ * WooCommerce's metabox never asks for - so the src comes back non-empty
+ * and the attachment survives the save. Scoped to admin only; the frontend
+ * gallery template deliberately keeps rendering real <video> markup.
+ */
+add_filter( 'wp_get_attachment_image_src', __NAMESPACE__ . '\admin_video_gallery_thumbnail_fallback', 10, 4 );
+function admin_video_gallery_thumbnail_fallback( $image, $attachment_id, $size, $icon ) {
+  if ( $image || $icon || ! is_admin() ) {
+    return $image;
+  }
+
+  $mime_type = get_post_mime_type( $attachment_id );
+
+  if ( ! $mime_type || ! str_starts_with( $mime_type, 'video/' ) ) {
+    return $image;
+  }
+
+  $icon_src = wp_mime_type_icon( $attachment_id, '.svg' );
+
+  return $icon_src ? [ $icon_src, 48, 64, false ] : $image;
+} // end admin_video_gallery_thumbnail_fallback
