@@ -32,8 +32,12 @@ $nosotros-accent-soft: color-mix(in sRGB, var(--wp--preset--color--accent) 20%, 
     width: 100%;
   }
 
+  // The manifesto photo (hero-manifesto.png) is a bright, light-toned room,
+  // so a 60%-opacity tint let too much of it show through behind the white
+  // title/text - darken the left edge closer to opaque and carry the fade
+  // out further right so it still covers the full text column at any width.
   &::after {
-    background-image: linear-gradient(to right, color-mix(in sRGB, var(--wp--preset--color--primary-dark) 60%, transparent) 0%, transparent 60%);
+    background-image: linear-gradient(to right, color-mix(in sRGB, var(--wp--preset--color--primary-dark) 88%, transparent) 0%, transparent 75%);
     content: '';
     inset: 0;
     position: absolute;

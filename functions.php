@@ -42,6 +42,7 @@ add_action( 'after_setup_theme', function() {
      */
     'default_featured_image'  => null,
     'logo'                    => '/assets/svg/logo.svg',
+    'logo_white'              => '/assets/svg/logo-white.svg',
 
     /**
      * Custom setting group settings when using Air setting groups plugin.

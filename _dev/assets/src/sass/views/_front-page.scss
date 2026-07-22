@@ -342,6 +342,14 @@ $canut-on-dark-muted: color-mix(in sRGB, var(--wp--preset--color--white) 75%, va
   display: flex;
   flex-wrap: wrap;
   gap: var(--wp--preset--spacing--space-md);
+
+  @media screen and (max-width: $breakpoint-mobile) {
+    flex-direction: column;
+
+    .button-canut-base {
+      width: 100%;
+    }
+  }
 }
 
 // 5. Cómo funciona ------------------------------------------------------

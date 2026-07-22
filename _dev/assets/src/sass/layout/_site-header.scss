@@ -117,11 +117,6 @@
   }
 }
 
-.home .site-title svg path {
-  fill: var(--wp--preset--color--white);
-  transition: fill 200ms ease;
-}
-
 // The logo's own fill colors (dark green + orange, see assets/svg/logo.svg)
 // blend into the dark green active header (see .js-nav-active .site-header
 // in _nav-mobile.scss) - force white while the drawer is open, on every page.
