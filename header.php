@@ -19,6 +19,11 @@ namespace Air_Light;
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <link rel="profile" href="http://gmpg.org/xfn/11">
 
+  <link rel="icon" href="<?php echo esc_url( get_theme_file_uri( 'assets/svg/favicon.svg' ) ); ?>" type="image/svg+xml">
+  <link rel="icon" href="<?php echo esc_url( get_theme_file_uri( 'assets/images/favicon/favicon-32x32.png' ) ); ?>" sizes="32x32" type="image/png">
+  <link rel="icon" href="<?php echo esc_url( get_theme_file_uri( 'assets/images/favicon/favicon-16x16.png' ) ); ?>" sizes="16x16" type="image/png">
+  <link rel="apple-touch-icon" href="<?php echo esc_url( get_theme_file_uri( 'assets/images/favicon/apple-touch-icon.png' ) ); ?>">
+
   <?php wp_head(); ?>
 </head>
 
