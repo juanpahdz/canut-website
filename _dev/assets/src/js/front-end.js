@@ -26,6 +26,7 @@ import initGalleryStripVideoFallback from './modules/gallery-strip-video-fallbac
 import initFaqImageSync from './modules/faq-image-sync';
 import initAccordionCanut from './modules/accordion-canut';
 import initCartDrawer from './modules/cart-drawer';
+import initIframeModalCanut from './modules/iframe-modal-canut';
 import initPaginaInformativaToc from './modules/pagina-informativa';
 import initHelpCenterCanut from './modules/help-center-canut';
 import initShopFilters from './modules/shop-filters';
@@ -57,6 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initFaqImageSync();
   initAccordionCanut();
   initCartDrawer();
+  initIframeModalCanut();
   initPaginaInformativaToc();
   initHelpCenterCanut();
   initShopFilters();

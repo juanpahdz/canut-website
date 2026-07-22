@@ -40,7 +40,7 @@ foreach ( $secciones as $index => $seccion ) {
       <nav class="informational-page-breadcrumb" aria-label="<?php esc_attr_e( 'Migas de pan', 'air-light' ); ?>">
         <a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php esc_html_e( 'Inicio', 'air-light' ); ?></a>
         <?php if ( $etiqueta_migas ) : ?>
-          <?php require get_theme_file_path( 'assets/svg/icon-caret-right.svg' ); ?>
+          <?php require get_theme_file_path( 'assets/svg/icon-chevron-down.svg' ); ?>
           <span><?php echo esc_html( $etiqueta_migas ); ?></span>
         <?php endif; ?>
       </nav>

@@ -319,6 +319,8 @@ $nosotros-accent-soft: color-mix(in sRGB, var(--wp--preset--color--accent) 20%, 
 
   svg {
     height: 0.9em;
+    // icon-chevron-down.svg points down by default - rotate to point right.
+    transform: rotate(-90deg);
     width: 0.9em;
   }
 }

@@ -269,7 +269,13 @@ $canut-on-dark-muted: color-mix(in sRGB, var(--wp--preset--color--white) 75%, va
 .home-featured-product-media img {
   @include canut-radius(lg);
   @include canut-shadow(card);
-  aspect-ratio: 654 / 357;
+  // A full portrait crop (e.g. 3/4) centre-crops out whichever side of the
+  // photo the product itself sits on - these are wide lifestyle shots
+  // (product + pet in a room), not product-centred studio photos, so the
+  // subject is often off to one edge rather than centred. 4/3 is still
+  // taller than the original 654/357 (~1.83:1) without cropping that
+  // aggressively.
+  aspect-ratio: 4 / 3;
   display: block;
   object-fit: cover;
   width: 100%;

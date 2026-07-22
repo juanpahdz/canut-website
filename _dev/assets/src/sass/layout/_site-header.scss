@@ -1,12 +1,18 @@
-// WordPress uses custom properties with double dashes from theme.json that don't match kebab-case
-// stylelint-disable custom-property-pattern, csstools/value-no-unknown-custom-properties
+// WordPress uses custom properties with double dashes from theme.json that don't match kebab-case,
+// and --admin-bar-offset's default needs an explicit `0px` (not unitless `0`) since it's added to
+// other lengths inside calc() elsewhere (_product.scss, _centro-de-ayuda.scss)
+// stylelint-disable custom-property-pattern, csstools/value-no-unknown-custom-properties, length-zero-no-unit
 @use '../variables' as *;
 
 // The WP admin bar is fixed at the real viewport top (32px tall, 46px below
 // 782px) - offset the sticky/fixed header by that amount so it doesn't
 // render underneath it while scrolling.
 :root {
-  --admin-bar-offset: 0;
+  // Needs an explicit unit: consumers like .product-gallery's sticky `top`
+  // (_product.scss) add this to other length values inside calc(), and a
+  // unitless 0 there makes the whole calc() invalid (mixing <number> and
+  // <length>), which silently falls back to `top: auto` and breaks sticky.
+  --admin-bar-offset: 0px;
 }
 
 .admin-bar {

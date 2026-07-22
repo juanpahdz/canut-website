@@ -40,9 +40,9 @@ $whatsapp_bubble_messages = get_whatsapp_bubble_messages();
       </p>
     </div>
     <ul class="site-footer-checkout-links">
-      <li><a href="<?php echo esc_url( function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : home_url( '/' ) ); ?>"><?php echo esc_html__( 'Soporte', 'air-light' ); ?></a></li>
-      <li><a href="https://wa.me/"><?php echo esc_html__( 'Política de devoluciones', 'air-light' ); ?></a></li>
-      <li><a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php echo esc_html__( 'Envíos', 'air-light' ); ?></a></li>
+      <li><a href="<?php echo esc_url( get_permalink( get_page_by_path( 'soporte' ) ) ); ?>" data-canut-iframe-modal><?php echo esc_html__( 'Soporte', 'air-light' ); ?></a></li>
+      <li><a href="<?php echo esc_url( get_permalink( get_page_by_path( 'politica-de-devoluciones-y-reembolsos' ) ) ); ?>" data-canut-iframe-modal><?php echo esc_html__( 'Política de devoluciones', 'air-light' ); ?></a></li>
+      <li><a href="<?php echo esc_url( get_permalink( get_page_by_path( 'politica-de-envios' ) ) ); ?>" data-canut-iframe-modal><?php echo esc_html__( 'Envíos', 'air-light' ); ?></a></li>
     </ul>
   </footer><!-- #colophon -->
 
@@ -95,8 +95,7 @@ $whatsapp_bubble_messages = get_whatsapp_bubble_messages();
       <div class="site-footer-canut-column">
         <h4 class="site-footer-canut-heading"><?php echo esc_html__( 'Ubicación', 'air-light' ); ?></h4>
         <p class="site-footer-canut-address">
-          <?php echo esc_html__( 'Showroom Medellín, Colombia', 'air-light' ); ?><br>
-          <?php echo esc_html__( 'Calle 10 # 32-45, El Poblado', 'air-light' ); ?>
+          <?php echo esc_html__( 'Disponibles en toda Colombia', 'air-light' ); ?>
         </p>
         <p class="site-footer-canut-note">
           <?php echo esc_html__( 'Envíos a todo el país. Garantía certificada.', 'air-light' ); ?>
@@ -124,6 +123,8 @@ $whatsapp_bubble_messages = get_whatsapp_bubble_messages();
 <?php endif; ?>
 
 <?php get_template_part( 'template-parts/cart/drawer' ); ?>
+
+<?php get_template_part( 'template-parts/modal/iframe-modal' ); ?>
 
 </div><!-- #page -->
 

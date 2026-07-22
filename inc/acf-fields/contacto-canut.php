@@ -4,8 +4,8 @@
  * (template-parts/blocks/contacto-canut.php).
  *
  * One block holds every "Contacto" section (hero, formulario, WhatsApp,
- * atención/correo, ubicación) so editing the page means filling in this
- * single block's fields, tab by tab.
+ * atención/correo) so editing the page means filling in this single
+ * block's fields, tab by tab.
  *
  * @package air-light
  */
@@ -200,35 +200,6 @@ acf_add_local_field_group( [
       'type'  => 'text',
       'default_value' => '8:00 am - 6:00 pm',
       'wrapper' => [ 'width' => '50' ],
-    ],
-
-    // Ubicación
-    [
-      'key'   => 'field_cc_tab_location',
-      'label' => __( '5. Ubicación', 'air-light' ),
-      'type'  => 'tab',
-    ],
-    [
-      'key'          => 'field_cc_address',
-      'label'        => __( 'Dirección', 'air-light' ),
-      'name'         => 'address',
-      'type'         => 'text',
-      'default_value' => 'Showroom Medellín, Colombia — Calle 10 # 32-45, El Poblado',
-    ],
-    [
-      'key'          => 'field_cc_map_embed_url',
-      'label'        => __( 'URL de mapa incrustado (Google Maps)', 'air-light' ),
-      'name'         => 'map_embed_url',
-      'type'         => 'url',
-      'instructions' => __( 'Google Maps > Compartir > Insertar un mapa > copiar solo la URL de src="".', 'air-light' ),
-      'default_value' => 'https://www.google.com/maps?q=Calle+10+%23+32-45,+El+Poblado,+Medell%C3%ADn,+Colombia&output=embed',
-    ],
-    [
-      'key'   => 'field_cc_map_link_url',
-      'label' => __( 'Enlace "Ver en Google Maps"', 'air-light' ),
-      'name'  => 'map_link_url',
-      'type'  => 'url',
-      'default_value' => 'https://www.google.com/maps/search/?api=1&query=Calle+10+%23+32-45,+El+Poblado,+Medell%C3%ADn,+Colombia',
     ],
 
   ],

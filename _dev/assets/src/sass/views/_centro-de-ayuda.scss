@@ -257,7 +257,8 @@
 
   svg {
     height: 0.75em;
-    transform: rotate(180deg);
+    // icon-chevron-down.svg points down by default - rotate to point left.
+    transform: rotate(90deg);
     width: 0.75em;
   }
 

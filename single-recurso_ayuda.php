@@ -27,7 +27,7 @@ $back_url = $primary_term ? $hub_url . '#categoria-' . $primary_term->slug : $hu
   <div class="wrap-canut single-recurso-ayuda-inner">
 
     <a href="<?php echo esc_url( $back_url ); ?>" class="single-recurso-ayuda-back">
-      <?php require get_theme_file_path( 'assets/svg/icon-caret-right.svg' ); ?>
+      <?php require get_theme_file_path( 'assets/svg/icon-chevron-down.svg' ); ?>
       <?php esc_html_e( 'Centro de ayuda', 'air-light' ); ?>
     </a>
 

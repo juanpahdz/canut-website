@@ -102,6 +102,21 @@ require get_theme_file_path( 'inc/hooks/woocommerce.php' );
 add_filter( 'loop_shop_columns', __NAMESPACE__ . '\woocommerce_loop_columns' );
 
 /**
+ * Product structured data (JSON-LD) extras, read from per-product fields on
+ * "Página de producto CANUT" (see inc/acf-fields/product-canut.php)
+ */
+require get_theme_file_path( 'inc/hooks/structured-data.php' );
+
+/**
+ * Ajustes > Scripts: custom head/body/footer markup
+ */
+require get_theme_file_path( 'inc/hooks/custom-scripts.php' );
+add_action( 'acf/init', __NAMESPACE__ . '\register_custom_scripts_options_page' );
+add_action( 'wp_head', __NAMESPACE__ . '\output_custom_head_scripts', 999 );
+add_action( 'wp_body_open', __NAMESPACE__ . '\output_custom_body_scripts', 999 );
+add_action( 'wp_footer', __NAMESPACE__ . '\output_custom_footer_scripts', 999 );
+
+/**
  * Checkout page (CANUT redesign)
  */
 require get_theme_file_path( 'inc/hooks/checkout.php' );

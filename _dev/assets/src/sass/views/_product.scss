@@ -25,6 +25,12 @@
   display: flex;
   flex-direction: column;
   gap: var(--wp--preset--spacing--space-xs);
+  // A grid item's automatic min-width defaults to its content's min-content
+  // size, not 0 - so on a product with many photos, the mobile thumbnail
+  // strip's full unscrolled width (every thumb side by side) was winning out
+  // over its own `overflow-x: auto` and forcing this whole column (and the
+  // page) wider than the viewport instead of scrolling internally.
+  min-width: 0;
 
   @media (min-width: $breakpoint-desktop) {
     flex-direction: row;
@@ -37,15 +43,43 @@
   }
 }
 
+// Wraps the thumbnail rail plus its desktop-only scroll arrows. On mobile
+// it's a transparent pass-through (`display: contents`) so the rail and
+// arrow buttons lay out exactly as if this wrapper wasn't there - the
+// arrows themselves stay hidden below desktop regardless (see
+// .product-gallery-thumbs-arrow).
+.product-gallery-thumbs-wrap {
+  display: contents;
+
+  @media (min-width: $breakpoint-desktop) {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    gap: var(--wp--preset--spacing--space-xs);
+    // Matches .product-gallery-track's desktop height so the rail scrolls
+    // internally alongside the main image instead of growing past it and
+    // pushing the rest of the page down when there are many photos.
+    height: 40rem;
+    order: 0;
+    width: 4.5rem;
+  }
+}
+
 // Thumbnail rail: swaps the active slide on click. On mobile it renders as a
 // horizontal scroll strip below the main image/dots (the track itself is
 // also swipeable, Instagram-style, but the strip makes it visually obvious
-// there are more photos); on desktop it's a vertical rail beside the image.
+// there are more photos); on desktop it's a vertical rail beside the image,
+// scrolling internally (via the arrow buttons in .product-gallery-thumbs-wrap)
+// instead of growing past its fixed height.
 .product-gallery-thumbs {
   display: flex;
   gap: var(--wp--preset--spacing--space-xs);
   order: 1;
   overflow-x: auto;
+  // Settle on a full thumb (with its margin intact) instead of resting
+  // mid-thumb when there are more of them than fit on screen - pairs with
+  // modules/product-gallery.js scrolling the active one into view.
+  scroll-snap-type: x proximity;
   scrollbar-width: none;
 
   &::-webkit-scrollbar {
@@ -53,11 +87,54 @@
   }
 
   @media (min-width: $breakpoint-desktop) {
+    flex: 1;
     flex-direction: column;
-    flex-shrink: 0;
-    order: 0;
-    overflow: visible;
-    width: 4.5rem;
+    min-height: 0;
+    overflow-y: auto;
+    scroll-snap-type: y proximity;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+}
+
+// Hidden by default (mobile, and desktop when the rail doesn't overflow);
+// modules/product-gallery.js measures the rail's scrollHeight vs clientHeight
+// and toggles .has-overflow on the wrapper so a short gallery keeps the
+// plain vertical list with no dead arrow buttons.
+.product-gallery-thumbs-arrow {
+  @include canut-radius(sm);
+  align-items: center;
+  appearance: none;
+  background-color: var(--canut-tint-soft);
+  border: 0;
+  color: var(--wp--preset--color--text-secondary);
+  cursor: pointer;
+  display: none;
+  flex-shrink: 0;
+  height: 1.75rem;
+  justify-content: center;
+  width: 100%;
+
+  svg {
+    height: 1rem;
+    width: 1rem;
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.35;
+  }
+
+  &.is-prev svg {
+    transform: rotate(180deg);
+  }
+
+  @media (min-width: $breakpoint-desktop) {
+    .product-gallery-thumbs-wrap.has-overflow & {
+      display: flex;
+    }
   }
 }
 
@@ -73,14 +150,31 @@
   opacity: 0.6;
   overflow: hidden;
   padding: 0;
+  position: relative;
+  scroll-snap-align: center;
   transition: opacity 150ms ease, border-color 150ms ease;
   width: 3.5rem;
 
-  img {
+  img,
+  video {
     display: block;
     height: 100%;
     object-fit: cover;
     width: 100%;
+  }
+
+  // Play-icon overlay identifying a video thumb (the <video> itself has no
+  // controls here - clicking the thumb switches the main slide like any
+  // other thumbnail, playback only happens on the main track).
+  &.is-video svg {
+    color: var(--wp--preset--color--white);
+    filter: drop-shadow(0 0 0.15rem color-mix(in sRGB, var(--wp--preset--color--black) 60%, transparent));
+    height: 1.25rem;
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 1.25rem;
   }
 
   &.is-active,
@@ -100,14 +194,25 @@
   min-width: 0;
 }
 
-// Fixed height on every breakpoint (not aspect-ratio, which would scale
-// with width) so the crop stays predictable; each slide's image covers it.
+// Positions the prev/next nav arrows over the track without them scrolling
+// away with it (an absolutely-positioned child of the track itself would be
+// measured against its scrollable content box and scroll along with it on
+// mobile's swipeable carousel); sized purely by the track's own aspect-ratio.
+.product-gallery-track-wrap {
+  position: relative;
+}
+
+// Mobile: real product photos are shot 3:4 (portrait, taller than wide) -
+// size the track from that ratio so it scales with the column's actual
+// width instead of cropping to whatever shape a fixed height leaves.
+// Desktop: back to a fixed height (not aspect-ratio) so the crop stays
+// predictable regardless of the column's width; each slide's image covers it.
 .product-gallery-track {
   @include canut-radius(md);
   @include canut-shadow(card);
+  aspect-ratio: 3 / 4;
   background-color: var(--canut-tint-soft);
   display: flex;
-  height: 24rem;
   overflow-x: auto;
   overflow-y: hidden;
   scroll-snap-type: x mandatory;
@@ -118,9 +223,58 @@
   }
 
   @media (min-width: $breakpoint-desktop) {
-    height: 34rem;
+    aspect-ratio: auto;
+    height: 40rem;
     overflow: hidden;
     scroll-snap-type: none;
+  }
+}
+
+// Prev/next arrows for the main slide, doubling up on the thumbnail rail
+// (desktop) and swipe/dots (mobile) as another way to move through the
+// gallery, right on top of the photo itself on both.
+.product-gallery-nav {
+  @include canut-radius(full);
+  align-items: center;
+  background-color: color-mix(in sRGB, var(--wp--preset--color--white) 85%, transparent);
+  border: 0;
+  color: var(--wp--preset--color--text-primary);
+  cursor: pointer;
+  display: flex;
+  height: 2.25rem;
+  justify-content: center;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: background-color 150ms ease;
+  width: 2.25rem;
+  z-index: 1;
+
+  svg {
+    height: 1rem;
+    width: 1rem;
+  }
+
+  // icon-chevron-down.svg points down by default - rotate to point left/right.
+  &.is-prev {
+    left: var(--wp--preset--spacing--space-sm);
+
+    svg {
+      transform: rotate(90deg);
+    }
+  }
+
+  &.is-next {
+    right: var(--wp--preset--spacing--space-sm);
+
+    svg {
+      transform: rotate(-90deg);
+    }
+  }
+
+  &:hover,
+  &:focus {
+    background-color: var(--wp--preset--color--white);
   }
 }
 
@@ -135,11 +289,18 @@
   scroll-snap-align: start;
   width: 100%;
 
-  img {
+  img,
+  video {
     display: block;
     height: 100%;
     object-fit: cover;
     width: 100%;
+  }
+
+  // Video slides play in place with native controls instead of opening the
+  // zoom lightbox, so the pointer shouldn't hint at that behaviour.
+  &.is-video {
+    cursor: default;
   }
 
   // Desktop: only the active slide shows, thumbnails switch between them.
@@ -204,7 +365,8 @@
   object-fit: contain;
 }
 
-.product-gallery-lightbox-close {
+.product-gallery-lightbox-close,
+.product-gallery-lightbox-nav {
   @include canut-radius(full);
   align-items: center;
   background-color: color-mix(in sRGB, var(--wp--preset--color--white) 15%, transparent);
@@ -215,13 +377,44 @@
   height: 2.75rem;
   justify-content: center;
   position: absolute;
-  right: var(--wp--preset--spacing--space-md);
-  top: var(--wp--preset--spacing--space-md);
   width: 2.75rem;
 
   svg {
     height: 1.25rem;
     width: 1.25rem;
+  }
+}
+
+.product-gallery-lightbox-close {
+  right: var(--wp--preset--spacing--space-md);
+  top: var(--wp--preset--spacing--space-md);
+}
+
+// Prev/next through the same product's other photos while zoomed in,
+// mirroring .product-gallery-nav on the (now covered) main slide.
+.product-gallery-lightbox-nav {
+  top: 50%;
+  transform: translateY(-50%);
+
+  // icon-chevron-down.svg points down by default - rotate to point left/right.
+  &.is-prev {
+    left: var(--wp--preset--spacing--space-md);
+
+    svg {
+      transform: rotate(90deg);
+    }
+  }
+
+  &.is-next {
+    right: var(--wp--preset--spacing--space-md);
+
+    svg {
+      transform: rotate(-90deg);
+    }
+  }
+
+  &:disabled {
+    display: none;
   }
 }
 
@@ -442,8 +635,10 @@
   text-decoration: none;
 
   svg {
-    height: 0.7em;
-    width: 1em;
+    height: 0.8em;
+    // icon-chevron-down.svg points down by default - rotate to point right.
+    transform: rotate(-90deg);
+    width: 0.8em;
   }
 }
 

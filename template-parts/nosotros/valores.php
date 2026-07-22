@@ -55,7 +55,7 @@ $cards   = $args['cards'] ?? [];
             <?php if ( ! empty( $card['link_label'] ) ) : ?>
               <span class="nosotros-card-link">
                 <?php echo esc_html( $card['link_label'] ); ?>
-                <?php require get_theme_file_path( 'assets/svg/icon-caret-right.svg' ); ?>
+                <?php require get_theme_file_path( 'assets/svg/icon-chevron-down.svg' ); ?>
               </span>
             <?php endif; ?>
 

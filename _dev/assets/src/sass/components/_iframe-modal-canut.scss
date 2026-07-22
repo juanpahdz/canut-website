@@ -1,0 +1,100 @@
+// CANUT iframe modal: loads a page's content in-place (Soporte / Política de
+// devoluciones / Envíos links in the checkout footer, footer.php) instead of
+// navigating to it. A <dialog>, shown via showModal()
+// (modules/iframe-modal-canut.js) so Escape/backdrop-click and focus
+// trapping come from the browser for free.
+// stylelint-disable custom-property-pattern, csstools/value-no-unknown-custom-properties, scss/at-rule-no-unknown -- @starting-style (the open/close fade-in transition) isn't in stylelint's at-rule list yet, and var(--wp--preset--color--*) tokens aren't resolvable by stylelint's value parser
+@use '../variables' as *;
+
+.iframe-modal-canut {
+  background-color: var(--wp--preset--color--bg-base);
+  border: 0;
+  border-radius: var(--wp--custom--canut--radius--md);
+  color: var(--wp--preset--color--text-primary);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  height: min(85vh, 56rem);
+  margin: auto;
+  max-width: 48rem;
+  opacity: 1;
+  padding: 0;
+  transform: translateY(0);
+  transition: opacity 200ms ease, transform 200ms ease;
+  width: 90vw;
+
+  // The browser's own UA stylesheet only hides a <dialog> via a plain
+  // `dialog { display: none }` (no `:not([open])`), so this component's own
+  // `display: flex` above - a class selector - outranks it on specificity
+  // and would otherwise stay visible, covering the page, even when closed.
+  // `:not([open])` here adds enough specificity to win back control of
+  // `display` for the closed state without needing `!important`.
+  &:not([open]) {
+    display: none;
+  }
+
+  @starting-style {
+    &[open] {
+      opacity: 0;
+      transform: translateY(0.5rem);
+    }
+  }
+
+  &::backdrop {
+    background-color: color-mix(in sRGB, var(--wp--preset--color--primary-dark) 60%, transparent);
+    opacity: 1;
+    transition: opacity 200ms ease;
+
+    @starting-style {
+      opacity: 0;
+    }
+  }
+
+  @media (max-width: $breakpoint-mobile) {
+    height: 100vh;
+    inset: 0;
+    margin: 0;
+    max-height: none;
+    max-width: none;
+    width: 100vw;
+  }
+}
+
+.iframe-modal-canut-header {
+  align-items: center;
+  border-bottom: 1px solid var(--wp--preset--color--border);
+  display: flex;
+  flex-shrink: 0;
+  justify-content: space-between;
+  padding: var(--wp--preset--spacing--space-md);
+}
+
+.iframe-modal-canut-title {
+  @include text-style(h-4, display, medium, h-4);
+  color: var(--wp--preset--color--text-primary);
+  margin: 0;
+}
+
+.iframe-modal-canut-close {
+  background-color: transparent;
+  border: 0;
+  color: var(--wp--preset--color--text-secondary);
+  cursor: pointer;
+  padding: var(--wp--preset--spacing--space-xs);
+
+  svg {
+    height: 1.5rem;
+    width: 1.5rem;
+  }
+}
+
+.iframe-modal-canut-body {
+  flex: 1;
+  overflow: hidden;
+
+  iframe {
+    border: 0;
+    height: 100%;
+    width: 100%;
+  }
+}

@@ -3,9 +3,12 @@
 @use '../variables' as *;
 
 // Hover caret, encoded inline so it can be used as a mask and take the
-// button's current text color instead of a color baked into the file.
-// Sourced from @phosphor-icons/core fill/caret-left-fill.svg.
-$button-canut-caret: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M168,48V208a8,8,0,0,1-13.66,5.66l-80-80a8,8,0,0,1,0-11.32l80-80A8,8,0,0,1,168,48Z'/%3E%3C/svg%3E");
+// button's current text color instead of a color baked into the file. Same
+// chevron glyph as assets/svg/icon-chevron-down.svg (used for accordions and
+// every gallery/nav arrow), rotated 90deg to point left - swapped from the
+// old solid caret-left-fill triangle so every directional arrow on the site
+// reads as the same thin chevron.
+$button-canut-caret: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cg transform='rotate(90 128 128)'%3E%3Cpath d='M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z'/%3E%3C/g%3E%3C/svg%3E");
 // The glyph itself is narrower than it's tall - fixing the mask to its real
 // proportions (instead of stretching it to a square box) keeps it crisp.
 $button-canut-caret-width: 0.6em;

@@ -49,6 +49,22 @@ while ( have_posts() ) :
     ? wp_get_attachment_image_url( $gallery_image_ids[0], 'large' )
     : wc_placeholder_img_src( 'large' );
 
+  /**
+   * A gallery attachment can be a video (WooCommerce's own "Add product
+   * gallery images" media frame allows picking any media type, not just
+   * images), so branch by mime type instead of assuming every ID is an
+   * image.
+   */
+  $gallery_items = array_map( function ( $image_id ) {
+    $mime_type = get_post_mime_type( $image_id );
+
+    return [
+      'id'       => $image_id,
+      'is_video' => $mime_type && str_starts_with( $mime_type, 'video/' ),
+      'mime'     => $mime_type,
+    ];
+  }, $gallery_image_ids );
+
   $buy_now_url = add_query_arg( 'add-to-cart', $product->get_id(), wc_get_checkout_url() );
 
   /**
@@ -287,44 +303,84 @@ while ( have_posts() ) :
   <div class="wrap-canut product-main">
 
     <div class="product-gallery" data-product-gallery>
-      <?php if ( count( $gallery_image_ids ) > 1 ) : ?>
-        <div class="product-gallery-thumbs">
-          <?php foreach ( $gallery_image_ids as $index => $image_id ) : ?>
-            <button
-              type="button"
-              class="product-gallery-thumb<?php echo 0 === $index ? ' is-active' : ''; ?>"
-              data-product-gallery-thumb
-              data-index="<?php echo esc_attr( $index ); ?>"
-            >
-              <img src="<?php echo esc_url( wp_get_attachment_image_url( $image_id, 'thumbnail' ) ); ?>" alt="" loading="lazy">
-            </button>
-          <?php endforeach; ?>
+      <?php if ( count( $gallery_items ) > 1 ) : ?>
+        <div class="product-gallery-thumbs-wrap" data-product-gallery-thumbs-wrap>
+          <button type="button" class="product-gallery-thumbs-arrow is-prev" data-product-gallery-thumbs-prev aria-label="<?php esc_attr_e( 'Ver miniaturas anteriores', 'air-light' ); ?>">
+            <?php require get_theme_file_path( 'assets/svg/icon-chevron-down.svg' ); ?>
+          </button>
+
+          <div class="product-gallery-thumbs" data-product-gallery-thumbs>
+            <?php foreach ( $gallery_items as $index => $item ) : ?>
+              <button
+                type="button"
+                class="product-gallery-thumb<?php echo $item['is_video'] ? ' is-video' : ''; ?><?php echo 0 === $index ? ' is-active' : ''; ?>"
+                data-product-gallery-thumb
+                data-index="<?php echo esc_attr( $index ); ?>"
+              >
+                <?php if ( $item['is_video'] ) : ?>
+                  <video muted playsinline preload="metadata">
+                    <source src="<?php echo esc_url( wp_get_attachment_url( $item['id'] ) ); ?>#t=0.1" <?php echo $item['mime'] ? 'type="' . esc_attr( $item['mime'] ) . '"' : ''; ?>>
+                  </video>
+                  <?php require get_theme_file_path( 'assets/svg/icon-play-circle.svg' ); ?>
+                <?php else : ?>
+                  <img src="<?php echo esc_url( wp_get_attachment_image_url( $item['id'], 'thumbnail' ) ); ?>" alt="" loading="lazy">
+                <?php endif; ?>
+              </button>
+            <?php endforeach; ?>
+          </div>
+
+          <button type="button" class="product-gallery-thumbs-arrow is-next" data-product-gallery-thumbs-next aria-label="<?php esc_attr_e( 'Ver más miniaturas', 'air-light' ); ?>">
+            <?php require get_theme_file_path( 'assets/svg/icon-chevron-down.svg' ); ?>
+          </button>
         </div>
       <?php endif; ?>
 
       <div class="product-gallery-main">
-        <div class="product-gallery-track" data-product-gallery-track>
-          <?php foreach ( $gallery_image_ids as $index => $image_id ) : ?>
-            <button
-              type="button"
-              class="product-gallery-slide<?php echo 0 === $index ? ' is-active' : ''; ?>"
-              data-product-gallery-slide
-              data-index="<?php echo esc_attr( $index ); ?>"
-              data-zoom="<?php echo esc_url( wp_get_attachment_image_url( $image_id, 'full' ) ); ?>"
-              aria-label="<?php esc_attr_e( 'Ampliar imagen', 'air-light' ); ?>"
-            >
-              <img
-                src="<?php echo esc_url( wp_get_attachment_image_url( $image_id, 'large' ) ); ?>"
-                alt="<?php echo esc_attr( get_the_title() ); ?>"
-                loading="<?php echo 0 === $index ? 'eager' : 'lazy'; ?>"
-              >
+        <div class="product-gallery-track-wrap">
+          <div class="product-gallery-track" data-product-gallery-track>
+            <?php foreach ( $gallery_items as $index => $item ) : ?>
+              <?php if ( $item['is_video'] ) : ?>
+                <div
+                  class="product-gallery-slide is-video<?php echo 0 === $index ? ' is-active' : ''; ?>"
+                  data-product-gallery-slide
+                  data-index="<?php echo esc_attr( $index ); ?>"
+                >
+                  <video controls playsinline preload="metadata">
+                    <source src="<?php echo esc_url( wp_get_attachment_url( $item['id'] ) ); ?>" <?php echo $item['mime'] ? 'type="' . esc_attr( $item['mime'] ) . '"' : ''; ?>>
+                  </video>
+                </div>
+              <?php else : ?>
+                <button
+                  type="button"
+                  class="product-gallery-slide<?php echo 0 === $index ? ' is-active' : ''; ?>"
+                  data-product-gallery-slide
+                  data-index="<?php echo esc_attr( $index ); ?>"
+                  data-zoom="<?php echo esc_url( wp_get_attachment_image_url( $item['id'], 'full' ) ); ?>"
+                  aria-label="<?php esc_attr_e( 'Ampliar imagen', 'air-light' ); ?>"
+                >
+                  <img
+                    src="<?php echo esc_url( wp_get_attachment_image_url( $item['id'], 'large' ) ); ?>"
+                    alt="<?php echo esc_attr( get_the_title() ); ?>"
+                    loading="<?php echo 0 === $index ? 'eager' : 'lazy'; ?>"
+                  >
+                </button>
+              <?php endif; ?>
+            <?php endforeach; ?>
+          </div>
+
+          <?php if ( count( $gallery_items ) > 1 ) : ?>
+            <button type="button" class="product-gallery-nav is-prev" data-product-gallery-prev aria-label="<?php esc_attr_e( 'Foto anterior', 'air-light' ); ?>">
+              <?php require get_theme_file_path( 'assets/svg/icon-chevron-down.svg' ); ?>
             </button>
-          <?php endforeach; ?>
+            <button type="button" class="product-gallery-nav is-next" data-product-gallery-next aria-label="<?php esc_attr_e( 'Foto siguiente', 'air-light' ); ?>">
+              <?php require get_theme_file_path( 'assets/svg/icon-chevron-down.svg' ); ?>
+            </button>
+          <?php endif; ?>
         </div>
 
-        <?php if ( count( $gallery_image_ids ) > 1 ) : ?>
+        <?php if ( count( $gallery_items ) > 1 ) : ?>
           <div class="product-gallery-dots" data-product-gallery-dots>
-            <?php foreach ( $gallery_image_ids as $index => $image_id ) : ?>
+            <?php foreach ( $gallery_items as $index => $item ) : ?>
               <button
                 type="button"
                 class="product-gallery-dot<?php echo 0 === $index ? ' is-active' : ''; ?>"
@@ -489,7 +545,15 @@ while ( have_posts() ) :
       <?php require get_theme_file_path( 'assets/svg/icon-x.svg' ); ?>
       <span class="screen-reader-text"><?php esc_html_e( 'Cerrar', 'air-light' ); ?></span>
     </button>
+    <button type="button" class="product-gallery-lightbox-nav is-prev" data-product-gallery-lightbox-prev>
+      <?php require get_theme_file_path( 'assets/svg/icon-chevron-down.svg' ); ?>
+      <span class="screen-reader-text"><?php esc_html_e( 'Foto anterior', 'air-light' ); ?></span>
+    </button>
     <img class="product-gallery-lightbox-image" data-product-gallery-lightbox-image src="" alt="">
+    <button type="button" class="product-gallery-lightbox-nav is-next" data-product-gallery-lightbox-next>
+      <?php require get_theme_file_path( 'assets/svg/icon-chevron-down.svg' ); ?>
+      <span class="screen-reader-text"><?php esc_html_e( 'Foto siguiente', 'air-light' ); ?></span>
+    </button>
   </div>
 
   <div class="product-comparison">
@@ -522,7 +586,7 @@ while ( have_posts() ) :
           <p class="product-comparison-card-text"><?php echo esc_html( $comparison_card_text ); ?></p>
           <a href="<?php echo esc_url( $comparison_card_link_url ); ?>" class="product-comparison-card-link">
             <?php echo esc_html( $comparison_card_link_label ); ?>
-            <?php require get_theme_file_path( 'assets/svg/icon-caret-right.svg' ); ?>
+            <?php require get_theme_file_path( 'assets/svg/icon-chevron-down.svg' ); ?>
           </a>
         </div>
       </div>

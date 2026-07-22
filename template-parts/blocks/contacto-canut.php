@@ -60,9 +60,6 @@ if ( ! $whatsapp_channels ) {
         'contact_email'       => get_field( 'contact_email' ) ?: 'hola@canut.pet',
         'schedule_day_label'  => get_field( 'schedule_day_label' ) ?: __( 'Lunes a Viernes', 'air-light' ),
         'schedule_hours'      => get_field( 'schedule_hours' ) ?: '8:00 am - 6:00 pm',
-        'address'             => get_field( 'address' ) ?: '',
-        'map_embed_url'       => get_field( 'map_embed_url' ) ?: '',
-        'map_link_url'        => get_field( 'map_link_url' ) ?: '',
       ] ); ?>
 
     </div>

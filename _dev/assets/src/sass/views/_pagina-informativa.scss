@@ -38,6 +38,8 @@
     color: var(--wp--preset--color--text-secondary);
     flex-shrink: 0;
     height: 0.5rem;
+    // icon-chevron-down.svg points down by default - rotate to point right.
+    transform: rotate(-90deg);
     width: 0.5rem;
   }
 }

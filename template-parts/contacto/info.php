@@ -1,6 +1,6 @@
 <?php
 /**
- * Contacto: Section 3 - WhatsApp, atención/correo y mapa (right column).
+ * Contacto: Section 3 - WhatsApp, atención/correo y cobertura (right column).
  *
  * Fed by template-parts/blocks/contacto-canut.php via $args; falls back to
  * the original CANUT design copy when included without $args.
@@ -16,9 +16,6 @@ $info_heading        = $args['info_heading'] ?? __( 'Atención y correo', 'air-l
 $contact_email       = $args['contact_email'] ?? 'hola@canut.pet';
 $schedule_day_label  = $args['schedule_day_label'] ?? __( 'Lunes a Viernes', 'air-light' );
 $schedule_hours      = $args['schedule_hours'] ?? '8:00 am - 6:00 pm';
-$address             = $args['address'] ?? '';
-$map_embed_url       = $args['map_embed_url'] ?? '';
-$map_link_url        = $args['map_link_url'] ?? '';
 
 // Whitelist: channel icon comes from an ACF select field, but the value
 // still ends up in a file path below, so only ever require() a known file.
@@ -74,21 +71,9 @@ $allowed_channel_icons = [ 'phone', 'headset', 'whatsapp', 'chat-circle' ];
     <?php endif; ?>
   </div>
 
-  <?php if ( $map_embed_url ) : ?>
-    <div class="contacto-map">
-      <iframe
-        class="contacto-map-frame"
-        src="<?php echo esc_url( $map_embed_url ); ?>"
-        title="<?php echo esc_attr( $address ?: __( 'Mapa de ubicación CANUT', 'air-light' ) ); ?>"
-        loading="lazy"
-        referrerpolicy="no-referrer-when-downgrade"
-      ></iframe>
-      <?php if ( $map_link_url ) : ?>
-        <a class="contacto-map-button" href="<?php echo esc_url( $map_link_url ); ?>" target="_blank" rel="noopener noreferrer" aria-label="<?php esc_attr_e( 'Ver en Google Maps', 'air-light' ); ?>">
-          <?php require get_theme_file_path( 'assets/svg/icon-map-pin.svg' ); ?>
-        </a>
-      <?php endif; ?>
-    </div>
-  <?php endif; ?>
+  <div class="contacto-coverage">
+    <?php require get_theme_file_path( 'assets/svg/icon-map-pin.svg' ); ?>
+    <p><?php esc_html_e( 'Disponibles en toda Colombia', 'air-light' ); ?></p>
+  </div>
 
 </div>
