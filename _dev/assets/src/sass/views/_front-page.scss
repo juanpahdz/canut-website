@@ -305,7 +305,9 @@ $canut-on-dark-muted: color-mix(in sRGB, var(--wp--preset--color--white) 75%, va
   display: grid;
   gap: var(--wp--preset--spacing--space-sm) var(--wp--preset--spacing--space-md);
   grid-template-columns: repeat(2, 1fr);
+  list-style: none;
   margin: 0 0 var(--wp--preset--spacing--space-lg);
+  padding: 0;
 
   @media screen and (max-width: $breakpoint-mobile) {
     grid-template-columns: 1fr;
@@ -313,11 +315,14 @@ $canut-on-dark-muted: color-mix(in sRGB, var(--wp--preset--color--white) 75%, va
 }
 
 .home-featured-product-specs-item {
+  @include canut-radius(sm);
   @include text-style(small, body, medium);
   align-items: center;
+  background-color: var(--wp--preset--color--light);
   color: var(--wp--preset--color--text-primary);
   display: flex;
   gap: var(--wp--preset--spacing--space-sm);
+  padding: var(--wp--preset--spacing--space-sm);
 
   svg {
     color: var(--wp--preset--color--accent-dark);

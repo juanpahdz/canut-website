@@ -27,7 +27,9 @@ $specs               = $args['specs'] ?? [
   [ 'icon' => 'scales', 'label' => __( 'Porciones precisas', 'air-light' ) ],
   [ 'icon' => 'battery-full', 'label' => __( 'Batería de respaldo', 'air-light' ) ],
 ];
-$cta_primary_label   = $args['cta_primary_label'] ?? __( 'Lo quiero ya', 'air-light' );
+$product             = $args['product'] ?? null;
+$already_in_cart     = $args['already_in_cart'] ?? false;
+$cta_primary_label   = $args['cta_primary_label'] ?? __( 'Comprar ahora', 'air-light' );
 $cta_primary_url     = $args['cta_primary_url'] ?? home_url( '/tienda/' );
 $cta_secondary_label = $args['cta_secondary_label'] ?? __( 'Especificaciones', 'air-light' );
 $cta_secondary_url   = $args['cta_secondary_url'] ?? '#';
@@ -61,9 +63,23 @@ $cta_secondary_url   = $args['cta_secondary_url'] ?? '#';
       <?php endif; ?>
       <p class="home-featured-product-price"><?php echo wp_kses_post( $price ); ?></p>
       <div class="home-featured-product-actions">
-        <a href="<?php echo esc_url( $cta_primary_url ); ?>" class="button-canut-base button-canut-checkout">
-          <?php echo esc_html( $cta_primary_label ); ?>
-        </a>
+        <?php if ( $product instanceof \WC_Product && $product->is_purchasable() && $product->is_in_stock() && $product->supports( 'ajax_add_to_cart' ) ) : ?>
+          <a
+            href="<?php echo esc_url( $cta_primary_url ); ?>"
+            data-quantity="1"
+            data-product_id="<?php echo esc_attr( $product->get_id() ); ?>"
+            data-product_sku="<?php echo esc_attr( $product->get_sku() ); ?>"
+            data-added-label="<?php esc_attr_e( 'Ver carrito', 'air-light' ); ?>"
+            data-added-aria-label="<?php esc_attr_e( 'Ver carrito', 'air-light' ); ?>"
+            class="button-canut-base button-canut-checkout ajax_add_to_cart add_to_cart_button<?php echo $already_in_cart ? ' wc-interactive' : ''; ?>"
+          >
+            <span data-action-label><?php echo esc_html( $already_in_cart ? __( 'Ver carrito', 'air-light' ) : $cta_primary_label ); ?></span>
+          </a>
+        <?php else : ?>
+          <a href="<?php echo esc_url( $cta_primary_url ); ?>" class="button-canut-base button-canut-checkout">
+            <?php echo esc_html( $cta_primary_label ); ?>
+          </a>
+        <?php endif; ?>
         <a href="<?php echo esc_url( $cta_secondary_url ); ?>" class="button-canut-base button-canut-secondary">
           <?php echo esc_html( $cta_secondary_label ); ?>
         </a>

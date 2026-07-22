@@ -191,8 +191,8 @@ acf_add_local_field_group( [
       'label' => __( 'Botón primario: texto', 'air-light' ),
       'name'  => 'featured_cta_primary_label',
       'type'  => 'text',
-      'default_value' => 'Lo quiero ya',
-      'instructions' => __( 'El botón enlaza directo al checkout con el producto agregado.', 'air-light' ),
+      'default_value' => 'Comprar ahora',
+      'instructions' => __( 'Agrega el producto al carrito y abre el carrito lateral, sin salir de la página. Si el producto ya está en el carrito, el botón muestra "Ver carrito" y solo lo abre.', 'air-light' ),
       'wrapper' => [ 'width' => '50' ],
     ],
     [

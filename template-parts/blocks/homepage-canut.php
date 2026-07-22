@@ -108,6 +108,16 @@ if ( ! $featured_specs ) {
 if ( $featured_product instanceof \WC_Product ) {
   $featured_product_image_id = $featured_product->get_image_id();
 
+  /**
+   * Already in the cart: render the button straight into its post-add "Ver
+   * carrito" state, same server-rendered pattern as $already_in_cart in
+   * woocommerce/content-product.php and woocommerce/single-product.php -
+   * modules/cart-drawer.js treats a `.wc-interactive` button with no
+   * `data-added-href` as "just reopen the drawer, don't add another unit".
+   */
+  $featured_already_in_cart = function_exists( 'WC' ) && WC()->cart
+    && WC()->cart->find_product_in_cart( WC()->cart->generate_cart_id( $featured_product->get_id() ) );
+
   get_template_part( 'template-parts/front-page/featured-product', '', [
     'image'                => $featured_product_image_id
       ? [
@@ -120,8 +130,10 @@ if ( $featured_product instanceof \WC_Product ) {
     'description'          => $featured_product->get_short_description() ? wp_strip_all_tags( $featured_product->get_short_description() ) : null,
     'price'                => $featured_product->get_price_html(),
     'specs'                => $featured_specs,
-    'cta_primary_label'    => get_field( 'featured_cta_primary_label' ) ?: __( 'Lo quiero ya', 'air-light' ),
-    'cta_primary_url'      => add_query_arg( 'add-to-cart', $featured_product->get_id(), wc_get_checkout_url() ),
+    'product'              => $featured_product,
+    'already_in_cart'      => $featured_already_in_cart,
+    'cta_primary_label'    => get_field( 'featured_cta_primary_label' ) ?: __( 'Comprar ahora', 'air-light' ),
+    'cta_primary_url'      => $featured_product->add_to_cart_url(),
     'cta_secondary_label'  => get_field( 'featured_cta_secondary_label' ) ?: __( 'Especificaciones', 'air-light' ),
     'cta_secondary_url'    => $featured_product->get_permalink(),
   ] );
