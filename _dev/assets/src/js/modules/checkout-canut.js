@@ -87,13 +87,19 @@ const wireMobileSummaryQtyStepper = () => {
   } );
 };
 
+// Its `disabled` attribute (server-rendered on, footer.php) is managed
+// entirely by wirePlaceOrderButtonState() (modules/checkout-steps-canut.js) -
+// that's the single source of truth for whether the wizard is actually
+// complete, kept in sync with the real #place_order button it forwards
+// clicks to below. Forcing it enabled here regardless of that state would
+// let this button finalize checkout before every step is confirmed, even
+// with #place_order itself correctly disabled.
 const wireMobileSummaryBar = () => {
   const button = document.querySelector( '[data-checkout-summary-canut-button]' );
   const placeOrderButton = document.querySelector( '#place_order' );
 
   if ( ! button || ! placeOrderButton ) return;
 
-  button.disabled = false;
   button.addEventListener( 'click', () => placeOrderButton.click() );
 };
 

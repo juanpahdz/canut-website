@@ -492,13 +492,27 @@ const blockSubmitUntilStepsConfirmed = () => {
 };
 
 /**
- * Keeps the real #place_order button ("Finalizar compra") visually and
- * functionally disabled (same .checkout-summary-canut-submit:disabled look
- * as the mobile fixed bar's own placeholder button, _checkout-canut.scss)
- * until every step reports complete (isStepIncomplete() above) - otherwise
- * it sits fully clickable the entire time despite living outside the step
- * wizard entirely (order-summary sidebar, review-order.php), which is what
- * blockSubmitUntilStepsConfirmed() alone doesn't make visually obvious.
+ * Keeps both real/forwarding "Finalizar compra" buttons - #place_order
+ * itself (order-summary sidebar, review-order.php) and the mobile fixed
+ * bar's own button (data-checkout-summary-canut-button, footer.php, which
+ * just forwards its click to #place_order - see
+ * modules/checkout-canut.js's wireMobileSummaryBar()) - visually and
+ * functionally disabled until every step reports complete
+ * (isStepIncomplete() above). Both need it: neither lives inside the step
+ * wizard itself, so blockSubmitUntilStepsConfirmed() alone doesn't make
+ * either one's state visually obvious, and the mobile bar button being left
+ * clickable would let it finalize checkout via #place_order.click() even
+ * with #place_order itself correctly disabled.
+ *
+ * refresh() re-queries both every time rather than closing over references
+ * grabbed at init - WooCommerce's own checkout.js replaces #order_review's
+ * *entire* contents (a fresh, non-disabled #place_order included) on every
+ * 'updated_checkout' AJAX fragment swap, including the automatic one it
+ * fires once right after page load to quote initial shipping/totals -
+ * modules/checkout-canut.js's own syncMobileSummaryBar() already re-queries
+ * fresh on that same event for the same reason. A cached reference would
+ * silently end up disabling a detached node nobody can see, leaving the
+ * new, real button on the page untouched and fully clickable.
  *
  * A MutationObserver on each step's own class attribute (rather than calling
  * this after every place that toggles is-locked/is-confirmed - confirmStep(),
@@ -506,18 +520,26 @@ const blockSubmitUntilStepsConfirmed = () => {
  * of sync with whichever of those actually ran.
  */
 const wirePlaceOrderButtonState = () => {
-  const placeOrderButton = document.getElementById('place_order');
   const steps = document.querySelectorAll('.checkout-step-canut');
-  if (!placeOrderButton || !steps.length) return;
+  if (!steps.length) return;
 
   const refresh = () => {
-    placeOrderButton.disabled = Boolean(getIncompleteStep());
+    const incomplete = Boolean(getIncompleteStep());
+    const placeOrderButton = document.getElementById('place_order');
+    const mobileBarButton = document.querySelector('[data-checkout-summary-canut-button]');
+
+    if (placeOrderButton) placeOrderButton.disabled = incomplete;
+    if (mobileBarButton) mobileBarButton.disabled = incomplete;
   };
 
   refresh();
 
   const observer = new MutationObserver(refresh);
   steps.forEach((step) => observer.observe(step, { attributes: true, attributeFilter: ['class'] }));
+
+  if (window.jQuery) {
+    window.jQuery(document.body).on('updated_checkout', refresh);
+  }
 };
 
 const initCheckoutStepsCanut = () => {
