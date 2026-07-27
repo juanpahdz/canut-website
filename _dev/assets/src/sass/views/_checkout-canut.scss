@@ -101,6 +101,19 @@ body.woocommerce-checkout {
   .woocommerce {
     max-width: none;
   }
+
+  // Same page.php <main class="... has-global-padding ..."> also carries
+  // WordPress's own global-styles rule (class-wp-theme-json.php) that pads
+  // it left/right with the exact same --wp--style--root--padding-left/right
+  // tokens .wrap-canut around the form below already applies as its own
+  // padding - on every other WooCommerce template (archive-product.php,
+  // single-product.php) that's a non-issue since none of them render through
+  // page.php/has-global-padding at all. Zeroed here so the two don't stack
+  // into double the intended gutter.
+  .site-main.has-global-padding {
+    padding-left: 0;
+    padding-right: 0;
+  }
 }
 
 // Breathing room above the first step (under .site-header-checkout) and
@@ -119,14 +132,14 @@ body.woocommerce-checkout {
   gap: var(--wp--preset--spacing--space-md);
   grid-template-columns: 1fr;
 
-  @media (min-width: $breakpoint-mobile) {
+  @media (min-width: $breakpoint-checkout-mobile) {
     align-items: start;
     grid-template-columns: 1fr 27.5rem;
   }
 }
 
 .checkout-form-canut-sidebar {
-  @media (min-width: $breakpoint-mobile) {
+  @media (min-width: $breakpoint-checkout-mobile) {
     position: sticky;
     top: var(--wp--preset--spacing--space-md);
   }
@@ -165,6 +178,12 @@ body.woocommerce-checkout {
 
 .checkout-step-canut-body {
   padding-left: 2.75rem; // Aligns with the title, past the number badge + gap.
+
+  // Below this, the indent squeezes the fields too narrow against the number
+  // badge above - drop it so fields use the full step width instead.
+  @media (max-width: 43.6875rem) { // 699px
+    padding-left: 0;
+  }
 }
 
 .checkout-step-canut-body-grid {
@@ -491,6 +510,15 @@ ul.payment_methods {
     height: 1em;
     width: 1em;
   }
+
+  // Disabled by modules/checkout-steps-canut.js until every wizard step is
+  // is-confirmed (same treatment as the mobile fixed bar's own disabled
+  // placeholder button - .checkout-summary-canut-button:disabled,
+  // _checkout-summary-canut.scss).
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
 }
 
 // --- Trust badges ----------------------------------------------------------
@@ -529,7 +557,7 @@ ul.payment_methods {
 // set by modules/checkout-canut.js) underneath the form, keeping the
 // sidebar's own place-order button/trust badges clear of the fixed bar
 // instead of covered by it.
-@media (max-width: $breakpoint-mobile - 1px) {
+@media (max-width: $breakpoint-checkout-mobile - 1px) {
   .checkout-form-canut {
     padding-bottom: calc(var(--wp--preset--spacing--space-xl) + var(--checkout-summary-canut-bar-height, 4.75rem));
   }

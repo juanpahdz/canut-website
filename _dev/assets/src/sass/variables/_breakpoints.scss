@@ -15,6 +15,13 @@ $breakpoint-grid-base: 1440px;
 // Navigation breakpoint (when mobile nav kicks in)
 $breakpoint-nav: 1030px;
 
+// Checkout's own mobile/desktop switch (views/_checkout-canut.scss,
+// components/_checkout-summary-canut.scss) - wider than $breakpoint-mobile
+// since the numbered-step column + 27.5rem sidebar need more room than the
+// rest of the site's own mobile breakpoint gives them before the sidebar
+// squeezes the steps uncomfortably narrow.
+$breakpoint-checkout-mobile: 1034px;
+
 // CSS variable for JS navigation
 :root {
   --breakpoint-nav: #{$breakpoint-nav - 1px};

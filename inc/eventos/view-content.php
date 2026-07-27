@@ -15,10 +15,11 @@ namespace Air_Light;
 add_action( 'template_redirect', __NAMESPACE__ . '\send_view_content_event' );
 
 /**
- * Sends ViewContent for the product being viewed. Deduped per (session,
- * product) for 30 minutes, so refreshing/going back to the same product page
- * doesn't spam the Conversions API with what is, from Facebook's audience
- * building perspective, the same "just looked at this product" signal.
+ * Sends ViewContent for the product being viewed. No dedup guard here on
+ * purpose: template_redirect fires exactly once per request already, and
+ * every real page load - including a visitor leaving and coming back to the
+ * same product later - is its own genuine ViewContent, not a repeat to
+ * suppress.
  */
 function send_view_content_event() {
   if ( ! function_exists( 'is_product' ) || ! is_product() ) {
@@ -32,8 +33,6 @@ function send_view_content_event() {
   }
 
   send_facebook_event( 'ViewContent', [
-    'dedup_key'   => facebook_capi_session_id() . '|' . $product->get_id(),
-    'dedup_ttl'   => 30 * MINUTE_IN_SECONDS,
     'custom_data' => [
       'content_ids'   => [ $product->get_sku() ?: (string) $product->get_id() ],
       'content_type'  => 'product',

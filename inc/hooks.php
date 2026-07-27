@@ -33,6 +33,13 @@ require get_theme_file_path( 'inc/hooks/whatsapp.php' );
 add_action( 'acf/init', __NAMESPACE__ . '\register_whatsapp_options_page' );
 
 /**
+ * Site-wide cookie notice (Ajustes > Cookies options page + render_cookie_notice(),
+ * called from footer.php)
+ */
+require get_theme_file_path( 'inc/hooks/cookie-notice.php' );
+add_action( 'acf/init', __NAMESPACE__ . '\register_cookie_notice_options_page' );
+
+/**
  * Scripts and styles associated hooks
  */
 require get_theme_file_path( 'inc/hooks/scripts-styles.php' );
@@ -122,6 +129,17 @@ add_action( 'wp_footer', __NAMESPACE__ . '\output_custom_footer_scripts', 999 );
 require get_theme_file_path( 'inc/hooks/checkout.php' );
 
 /**
+ * Generic checkout-wizard step-confirmation hook (Air_Light\checkout_step_continued)
+ * + the data-processing consent audit log that's its first listener.
+ */
+require get_theme_file_path( 'inc/hooks/checkout-step-actions.php' );
+require get_theme_file_path( 'inc/hooks/data-consent.php' );
+
+if ( is_admin() ) {
+  require get_theme_file_path( 'inc/admin/consent-log.php' );
+}
+
+/**
  * "Lleva X y ahorra Y%" per-product quantity discount
  */
 require get_theme_file_path( 'inc/hooks/quantity-discount.php' );
@@ -150,7 +168,10 @@ add_action( 'acf/init', __NAMESPACE__ . '\register_facebook_pixel_options_page' 
 require get_theme_file_path( 'inc/eventos/view-content.php' );
 require get_theme_file_path( 'inc/eventos/add-to-cart.php' );
 require get_theme_file_path( 'inc/eventos/initiate-checkout.php' );
+require get_theme_file_path( 'inc/eventos/add-contact-info.php' );
+require get_theme_file_path( 'inc/eventos/add-shipping-info.php' );
 require get_theme_file_path( 'inc/eventos/add-payment-info.php' );
+require get_theme_file_path( 'inc/eventos/initiate-payment.php' );
 require get_theme_file_path( 'inc/eventos/purchase.php' );
 require get_theme_file_path( 'inc/eventos/lead.php' );
 require get_theme_file_path( 'inc/eventos/complete-registration.php' );

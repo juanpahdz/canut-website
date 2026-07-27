@@ -79,6 +79,28 @@ function facebook_pixel_settings() {
 } // end facebook_pixel_settings
 
 /**
+ * Configurable name for a custom event (one with no Meta standard
+ * equivalent - AddContactInfo, AddShippingInfo, InitiatePayment), read from
+ * its own text field on Ajustes > Facebook Pixel (see
+ * inc/acf-fields/ajustes-facebook-pixel.php's "Eventos personalizados" tab)
+ * so it can be renamed to match whatever a Custom Conversion is set up to
+ * look for in Ads Manager, without a code deploy.
+ *
+ * @param string $field_name ACF field name for this custom event's name.
+ * @param string $default    Fallback event name if the field is left empty or ACF isn't active.
+ * @return string
+ */
+function facebook_capi_custom_event_name( $field_name, $default ) {
+  if ( ! function_exists( 'get_field' ) ) {
+    return $default;
+  }
+
+  $value = trim( (string) get_field( $field_name, 'option' ) );
+
+  return $value ?: $default;
+} // end facebook_capi_custom_event_name
+
+/**
  * Whether events can actually be sent: toggle on, plus both a Pixel ID and an
  * access token configured.
  *
@@ -104,31 +126,6 @@ function facebook_capi_hash( $value ) {
 } // end facebook_capi_hash
 
 /**
- * Visitor's IP address for user_data.client_ip_address, preferring the
- * client-facing header set by whatever's in front of PHP (CDN/load balancer)
- * over $_SERVER['REMOTE_ADDR'], which on this stack is the proxy, not the
- * visitor.
- *
- * @return string
- */
-function facebook_capi_client_ip() {
-  foreach ( [ 'HTTP_CF_CONNECTING_IP', 'HTTP_X_REAL_IP', 'HTTP_X_FORWARDED_FOR', 'REMOTE_ADDR' ] as $key ) {
-    if ( empty( $_SERVER[ $key ] ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash
-      continue;
-    }
-
-    $ip = sanitize_text_field( wp_unslash( $_SERVER[ $key ] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash
-    $ip = trim( explode( ',', $ip )[0] );
-
-    if ( filter_var( $ip, FILTER_VALIDATE_IP ) ) {
-      return $ip;
-    }
-  }
-
-  return '';
-} // end facebook_capi_client_ip
-
-/**
  * Shared user_data block sent with every event: IP/user agent (always
  * available server-side), fbp/fbc click id cookies if present, and whatever
  * billing details WooCommerce already knows about the current visitor
@@ -143,7 +140,7 @@ function facebook_capi_client_ip() {
 function facebook_capi_user_data( $extra = [] ) {
   $user_data = [];
 
-  $ip = facebook_capi_client_ip();
+  $ip = get_client_ip_address();
   if ( $ip ) {
     $user_data['client_ip_address'] = $ip;
   }
@@ -221,19 +218,40 @@ function facebook_mark_event_sent( $event_name, $identifier, $ttl = HOUR_IN_SECO
 } // end facebook_mark_event_sent
 
 /**
- * A stable per-visitor identifier for dedup keys, reusing WooCommerce's own
- * session/customer id (persists across page loads within the same browser
- * session, for guests too) rather than inventing a separate cookie.
+ * Session-scoped dedup for checkout-progress events (AddContactInfo/
+ * AddShippingInfo/AddPaymentInfo - see their own files under inc/eventos/):
+ * true if $value_hash is exactly the same value last sent for $event_key in
+ * this WooCommerce session. Storing in WC()->session instead of a transient
+ * with a fixed TTL ties the guard to the checkout session's own real
+ * lifetime - a customer sitting on checkout for over half an hour without
+ * touching a field can't cause a spurious resend just because a fixed window
+ * elapsed, and it still refires the moment the value genuinely changes (or
+ * changes back - overwriting, not accumulating, past values).
  *
- * @return string
+ * @param string $event_key  Fixed internal identifier for the event (e.g. 'contact_info') - NOT the customizable Facebook event name, which could be renamed/emptied from Ajustes > Facebook Pixel.
+ * @param string $value_hash Hash representing the current field value(s).
+ * @return bool
  */
-function facebook_capi_session_id() {
-  if ( function_exists( 'WC' ) && WC()->session ) {
-    return (string) WC()->session->get_customer_id();
+function facebook_capi_session_value_unchanged( $event_key, $value_hash ) {
+  if ( ! function_exists( 'WC' ) || ! WC()->session ) {
+    return false;
   }
 
-  return '';
-} // end facebook_capi_session_id
+  return WC()->session->get( 'fb_capi_' . $event_key ) === $value_hash;
+} // end facebook_capi_session_value_unchanged
+
+/**
+ * Marks $value_hash as the last value sent for $event_key in this session,
+ * see facebook_capi_session_value_unchanged() above.
+ *
+ * @param string $event_key  Same fixed identifier passed to facebook_capi_session_value_unchanged().
+ * @param string $value_hash Hash representing the value just sent.
+ */
+function facebook_capi_mark_session_value_sent( $event_key, $value_hash ) {
+  if ( function_exists( 'WC' ) && WC()->session ) {
+    WC()->session->set( 'fb_capi_' . $event_key, $value_hash );
+  }
+} // end facebook_capi_mark_session_value_sent
 
 /**
  * Cart contents formatted as Meta's custom_data.contents/content_ids/value -

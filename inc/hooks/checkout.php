@@ -203,6 +203,8 @@ function checkout_render_phone_field( $field, $phone_value, $code_value ) {
         placeholder="<?php echo esc_attr( $field['placeholder'] ?? '' ); ?>"
         value="<?php echo esc_attr( $phone_value ); ?>"
         autocomplete="tel-national"
+        inputmode="numeric"
+        pattern="[0-9]*"
         <?php echo $required ? 'required' : ''; ?>
       />
     </span>
@@ -269,6 +271,8 @@ function checkout_render_additional_phones() {
           name="billing_phone_additional_number[]"
           placeholder="<?php echo esc_attr__( 'Número adicional', 'air-light' ); ?>"
           autocomplete="tel-national"
+          inputmode="numeric"
+          pattern="[0-9]*"
         />
       </span>
       <button type="button" class="form-canut-phone-remove" data-phone-repeater-remove aria-label="<?php echo esc_attr__( 'Eliminar número', 'air-light' ); ?>">
@@ -337,6 +341,191 @@ function checkout_admin_display_additional_phones( $order ) {
   <?php
 } // end checkout_admin_display_additional_phones
 add_action( 'woocommerce_admin_order_data_after_billing_address', __NAMESPACE__ . '\checkout_admin_display_additional_phones' );
+
+/**
+ * Render the data-processing consent checkbox shown at the bottom of the
+ * contact step (CANUT redesign), required to continue to the address step -
+ * Colombia's Ley 1581 de 2012 (Habeas Data) requires explicit, informed
+ * consent before collecting personal data, so this has to be confirmed
+ * before the name/email/phone just entered above are used for anything
+ * further down the checkout. Not a core WooCommerce field, so - like Barrio/
+ * the phone country code - it isn't validated or saved automatically:
+ * checkout_validate_data_consent() enforces it server-side and
+ * checkout_save_data_consent() below persists when it was given.
+ *
+ * Reuses the same `.form-row.validate-required` convention every other
+ * custom field here relies on, so modules/checkout-steps-canut.js's
+ * validateStepFields() (which already special-cases checkbox inputs) picks
+ * this up with no JS changes at all.
+ *
+ * The link target comes from WordPress' own Privacy Policy page setting
+ * (Settings > Privacy in wp-admin, `wp_page_for_privacy_policy` option) via
+ * core's get_privacy_policy_url() - not a hardcoded page slug - so it stays
+ * correct whenever that setting is changed, without a code change here.
+ * get_privacy_policy_url() itself already only returns a URL once that page
+ * is published (empty string otherwise), which is why the plain-text
+ * fallback below still applies until a real page is set.
+ */
+function checkout_render_data_consent_field() {
+  $privacy_policy_url = get_privacy_policy_url();
+  ?>
+  <p class="form-row form-canut-checkbox validate-required" id="data_processing_consent_field">
+    <label for="data_processing_consent">
+      <input type="checkbox" name="data_processing_consent" id="data_processing_consent" value="1" />
+      <span>
+        <?php if ( $privacy_policy_url ) : ?>
+          <?php
+          echo wp_kses_post(
+            sprintf(
+              /* translators: %1$s: opening link tag to the privacy/data-processing policy page, %2$s: closing link tag. */
+              __( 'Acepto la %1$spolítica de tratamiento de datos personales%2$s.', 'air-light' ),
+              '<a href="' . esc_url( $privacy_policy_url ) . '" target="_blank" rel="noopener noreferrer">',
+              '</a>'
+            )
+          );
+          ?>
+        <?php else : ?>
+          <?php esc_html_e( 'Acepto la política de tratamiento de datos personales.', 'air-light' ); ?>
+        <?php endif; ?>
+        <abbr class="required" title="<?php echo esc_attr__( 'required', 'woocommerce' ); ?>">*</abbr>
+      </span>
+    </label>
+  </p>
+  <?php
+} // end checkout_render_data_consent_field
+
+/**
+ * Reject the order server-side if the data-processing consent checkbox
+ * above wasn't checked - the step wizard's own client-side validation
+ * (modules/checkout-steps-canut.js) can't be relied on as the only gate,
+ * same reasoning as core's own required-field checks.
+ */
+function checkout_validate_data_consent() {
+  if ( empty( $_POST['data_processing_consent'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+    wc_add_notice( __( 'Debes aceptar la política de tratamiento de datos personales para continuar.', 'air-light' ), 'error' );
+  }
+} // end checkout_validate_data_consent
+add_action( 'woocommerce_checkout_process', __NAMESPACE__ . '\checkout_validate_data_consent' );
+
+/**
+ * Persist when data-processing consent was given as order meta - a record
+ * that a checkbox was ticked isn't itself proof once the checkout session is
+ * gone, so this keeps a timestamp on the order for the same reason a real
+ * consent trail normally would.
+ *
+ * @param int $order_id Order being created.
+ */
+function checkout_save_data_consent( $order_id ) {
+  if ( ! empty( $_POST['data_processing_consent'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+    update_post_meta( $order_id, '_data_processing_consent_at', current_time( 'mysql' ) );
+  }
+} // end checkout_save_data_consent
+add_action( 'woocommerce_checkout_update_order_meta', __NAMESPACE__ . '\checkout_save_data_consent' );
+
+/**
+ * Records that a wizard step was actually confirmed via its own "Continuar"
+ * button, in the WooCommerce session - checkout_validate_steps_complete()
+ * below checks this alongside each step's own fields, since a field simply
+ * having a value (browser autofill, a previous visit's cached form state)
+ * was never proof the customer confirmed anything in *this* checkout
+ * attempt. Piggybacks on the generic step-confirmation hook
+ * (Air_Light\checkout_step_continued, inc/hooks/checkout-step-actions.php)
+ * modules/checkout-steps-canut.js's postStepContinued() already fires for
+ * exactly this - no new AJAX endpoint needed.
+ *
+ * @param int $step Confirmed step number (1-3 - see checkout_step_continue()).
+ */
+function checkout_track_confirmed_step( $step ) {
+  if ( ! WC()->session ) {
+    return;
+  }
+
+  $confirmed_steps = (array) WC()->session->get( 'canut_confirmed_steps', [] );
+  $confirmed_steps[ $step ] = true;
+  WC()->session->set( 'canut_confirmed_steps', $confirmed_steps );
+} // end checkout_track_confirmed_step
+add_action( __NAMESPACE__ . '\checkout_step_continued', __NAMESPACE__ . '\checkout_track_confirmed_step' );
+
+/**
+ * Backend counterpart of modules/checkout-steps-canut.js's own submit gate
+ * (blockSubmitUntilStepsConfirmed()) - that script blocks the real
+ * #place_order submit unless every step wizard section shows as confirmed,
+ * but that's a purely client-side "is-confirmed" class with nothing stopping
+ * a submission that never runs it at all (dev tools, JS disabled, a direct
+ * POST to admin-ajax.php's checkout endpoint).
+ *
+ * WooCommerce core's own validate_checkout() (class-wc-checkout.php) already
+ * rejects a missing/invalid payment method and, once a shipping country is
+ * known, a missing shipping method - but "Envío"/"Método de pago" ship
+ * pre-populated with a first-available default the moment the page loads
+ * (checkout_render_shipping_methods() above, core's own default gateway
+ * selection), so those defaults alone already satisfy core's checks even if
+ * a customer's request never actually reached those steps at all.
+ *
+ * Checking each step's own $_POST keys alone still isn't enough either:
+ * browser autofill or a previous visit's cached form values can leave a
+ * locked, never-opened step's fields already holding valid-looking data, so
+ * this also requires checkout_track_confirmed_step()'s own session record
+ * that the customer actually clicked that step's "Continuar" in this
+ * checkout attempt - the one signal that can't be satisfied by cached/
+ * pre-filled data alone. Reports everything as one clear, step-mapped
+ * message rather than whatever mix of per-field notices core happens to add.
+ */
+function checkout_validate_steps_complete() {
+  $incomplete_steps = [];
+  $confirmed_steps = WC()->session ? (array) WC()->session->get( 'canut_confirmed_steps', [] ) : [];
+
+  // Step 1 - Información de contacto.
+  if (
+    empty( $confirmed_steps[1] )
+    || empty( $_POST['billing_email'] ) // phpcs:ignore WordPress.Security.NonceVerification.Missing
+    || empty( $_POST['billing_phone'] ) // phpcs:ignore WordPress.Security.NonceVerification.Missing
+    || empty( $_POST['data_processing_consent'] ) // phpcs:ignore WordPress.Security.NonceVerification.Missing
+  ) {
+    $incomplete_steps[] = __( 'Información de contacto', 'air-light' );
+  }
+
+  // Step 2 - Envío (only relevant for orders that actually need a shipping address).
+  if ( WC()->cart && WC()->cart->needs_shipping_address() ) {
+    $step_2_incomplete = empty( $confirmed_steps[2] );
+
+    foreach ( [ 'billing_address_1', 'billing_neighborhood', 'billing_city', 'billing_state' ] as $key ) {
+      if ( empty( $_POST[ $key ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+        $step_2_incomplete = true;
+        break;
+      }
+    }
+
+    if ( $step_2_incomplete ) {
+      $incomplete_steps[] = __( 'Envío', 'air-light' );
+    }
+  }
+
+  // Step 3 - Método de pago.
+  if ( WC()->cart && WC()->cart->needs_payment() && ( empty( $confirmed_steps[3] ) || empty( $_POST['payment_method'] ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+    $incomplete_steps[] = __( 'Método de pago', 'air-light' );
+  }
+
+  // Step 4 - Método de envío. No "Continuar" of its own to confirm (it's the
+  // last step before the sidebar's real submit button) - complete once
+  // "Método de pago" itself is confirmed, same rule the frontend wizard
+  // itself uses (isStepIncomplete(), modules/checkout-steps-canut.js).
+  if ( WC()->cart && WC()->cart->needs_shipping() && ( empty( $confirmed_steps[3] ) || empty( $_POST['shipping_method'] ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+    $incomplete_steps[] = __( 'Método de envío', 'air-light' );
+  }
+
+  if ( $incomplete_steps ) {
+    wc_add_notice(
+      sprintf(
+        /* translators: %s: comma-separated list of incomplete checkout step names. */
+        __( 'Completa estos pasos antes de finalizar tu compra: %s.', 'air-light' ),
+        implode( ', ', $incomplete_steps )
+      ),
+      'error'
+    );
+  }
+} // end checkout_validate_steps_complete
+add_action( 'woocommerce_checkout_process', __NAMESPACE__ . '\checkout_validate_steps_complete' );
 
 /**
  * Fields that should span the full width of the step's 2-column field grid

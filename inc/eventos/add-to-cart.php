@@ -27,12 +27,15 @@ function send_add_to_cart_event( $cart_item_key, $product_id, $quantity, $variat
     return;
   }
 
+  // No dedup guard here on purpose: WooCommerce generates the same
+  // $cart_item_key for the same product/variation every time (it's a hash of
+  // product/variation id, not of the action itself), so keying a dedup guard
+  // off it would also swallow a genuine add -> remove -> add-again of the
+  // same product, which is two real AddToCart events, not a duplicate. A
+  // double AJAX submit from one click still adds the product twice server
+  // side (cart quantity actually goes up by 2), so two events is correct
+  // there too.
   send_facebook_event( 'AddToCart', [
-    // Short-lived guard against the hook firing twice for the same click
-    // (double AJAX submit) - not meant to block a genuine second add of the
-    // same product a few seconds later.
-    'dedup_key'   => $cart_item_key . '|' . $quantity,
-    'dedup_ttl'   => 10,
     'custom_data' => [
       'content_ids'  => [ $product->get_sku() ?: (string) $product->get_id() ],
       'content_type' => 'product',

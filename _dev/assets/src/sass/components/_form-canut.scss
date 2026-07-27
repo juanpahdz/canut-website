@@ -8,6 +8,11 @@
 // fill/caret-down-fill.svg (theme copy: assets/svg/icon-chevron-down.svg).
 $form-canut-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z'/%3E%3C/svg%3E");
 
+// Checkmark shown inside .form-canut-checkbox once checked, same mask
+// technique as the chevron above. Sourced from @phosphor-icons/core
+// fill/check-fill.svg (theme copy: assets/svg/icon-check.svg).
+$form-canut-check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z'/%3E%3C/svg%3E");
+
 // Shared visual treatment for text inputs, selects and textareas.
 @mixin form-canut-field {
   @include canut-radius(sm);
@@ -235,6 +240,84 @@ $form-canut-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/200
   > select {
     border-color: var(--wp--preset--color--error);
   }
+}
+
+// Custom-styled checkbox row (checkout_render_data_consent_field(),
+// inc/hooks/checkout.php - currently the only checkbox field in the theme).
+// input[type='checkbox'] is drawn from scratch via appearance: none rather
+// than reusing form-canut-field, since a checkbox's own box/check mark has
+// nothing in common with a text input's shape.
+.form-canut-checkbox {
+  // A <p class="form-row"> carries its own browser default margin (same
+  // double-spacing issue .form-canut-group's own docblock explains) - zeroed
+  // here in favour of an explicit margin-top so it doesn't stack with
+  // whatever sits above it (the phone repeater, when present).
+  margin: 0;
+  margin-top: var(--wp--preset--spacing--space-sm);
+
+  > label {
+    align-items: flex-start;
+    cursor: pointer;
+    display: flex;
+    gap: var(--wp--preset--spacing--space-xs);
+  }
+
+  input[type='checkbox'] {
+    @include canut-radius(sm);
+    appearance: none;
+    background-color: var(--wp--preset--color--bg-surface);
+    border: 1px solid var(--wp--preset--color--border);
+    cursor: pointer;
+    flex-shrink: 0;
+    height: 1.25rem;
+    margin-top: 0.125rem;
+    position: relative;
+    transition: background-color 150ms ease, border-color 150ms ease;
+    width: 1.25rem;
+
+    &:checked {
+      background-color: var(--wp--preset--color--accent);
+      border-color: var(--wp--preset--color--accent);
+
+      &::after {
+        background-color: var(--wp--preset--color--white);
+        content: '';
+        height: 0.75rem;
+        left: 50%;
+        mask-image: $form-canut-check;
+        mask-position: center;
+        mask-repeat: no-repeat;
+        mask-size: contain;
+        position: absolute;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 0.75rem;
+      }
+    }
+
+    &:focus-visible {
+      box-shadow: 0 0 0 3px color-mix(in sRGB, var(--wp--preset--color--accent) 15%, transparent);
+      outline: none;
+    }
+  }
+
+  span {
+    @include text-style(caption, body, regular);
+    color: var(--wp--preset--color--text-secondary);
+
+    a {
+      color: var(--wp--preset--color--accent-dark);
+      text-decoration: underline;
+    }
+
+    .required {
+      color: var(--wp--preset--color--error);
+    }
+  }
+}
+
+.form-canut-checkbox.woocommerce-invalid input[type='checkbox'] {
+  border-color: var(--wp--preset--color--error);
 }
 
 // Phone field: country-code select + number input rendered as one merged

@@ -1,12 +1,22 @@
 <?php
 /**
- * Purchase: fired once an order reaches the thank-you page in a non-failed
- * state - the actual conversion every other event in this folder builds
- * towards. woocommerce_thankyou fires for every order regardless of payment
- * method (COD, Wompi) since both eventually land on the same order-received
- * template (woocommerce/checkout/thankyou.php), which is also where that
- * template decides success vs. failure view - the same status list is reused
- * here so this event fires exactly when the customer sees the success page.
+ * Purchase: the actual conversion every other event in this folder builds
+ * towards. Fired from whichever of these happens first for a given order:
+ *
+ * - woocommerce_thankyou: the order-received page actually rendering - the
+ *   only real "the order completed" signal for COD (contraentrega), which
+ *   never calls $order->payment_complete() since nothing was actually
+ *   charged at checkout time.
+ * - woocommerce_payment_complete: fired by $order->payment_complete(), which
+ *   the Wompi plugin's webhook handler calls the moment Wompi confirms an
+ *   APPROVED transaction (class-wompi-portal-pagos-webhook-handler.php) -
+ *   server-to-server, independent of the customer's browser ever making it
+ *   back to the thank-you page (closed tab, dropped connection, failed
+ *   redirect). Without this, a real Wompi sale could go untracked entirely.
+ *
+ * Both call the same send_purchase_event(), guarded by the same permanent
+ * per-order flag below, so whichever fires first sends the event and the
+ * other (or a reload of either) is a no-op.
  *
  * @package air-light
  */
@@ -14,6 +24,7 @@
 namespace Air_Light;
 
 add_action( 'woocommerce_thankyou', __NAMESPACE__ . '\send_purchase_event' );
+add_action( 'woocommerce_payment_complete', __NAMESPACE__ . '\send_purchase_event' );
 
 /**
  * Order statuses treated as a failed/cancelled purchase, not a conversion -
@@ -22,12 +33,12 @@ add_action( 'woocommerce_thankyou', __NAMESPACE__ . '\send_purchase_event' );
 const PURCHASE_EXCLUDED_ORDER_STATUSES = [ 'failed', 'cancelled', 'refunded', 'voided' ];
 
 /**
- * @param int $order_id Order whose thank-you page just rendered.
+ * @param int $order_id Order that just reached the thank-you page or had its payment marked complete.
  */
 function send_purchase_event( $order_id ) {
   // Permanent guard, not a transient: an order only ever "converts" once, so
-  // reloading the thank-you page (or the woocommerce_thankyou_{gateway} hook
-  // firing right alongside it, see thankyou.php) must never resend it.
+  // neither reloading the thank-you page nor the other trigger firing
+  // afterwards (see the two add_action() calls above) can ever resend it.
   if ( get_post_meta( $order_id, '_facebook_capi_purchase_sent', true ) ) {
     return;
   }
@@ -48,7 +59,12 @@ function send_purchase_event( $order_id ) {
     }
 
     $contents[] = [
+      // 'id' is what Meta actually matches against your catalog (falls back
+      // to the product id when there's no SKU) - 'sku' alongside it is the
+      // real SKU value on its own (blank if the product has none), not the
+      // id fallback, for your own reporting/matching outside of Meta.
       'id'         => $product->get_sku() ?: (string) $product->get_id(),
+      'sku'        => $product->get_sku(),
       'quantity'   => $item->get_quantity(),
       'item_price' => (float) $order->get_item_total( $item, false, false ),
     ];

@@ -62,7 +62,11 @@ $whatsapp_bubble_messages = get_whatsapp_bubble_messages();
   // (products, totals, coupon, terms checkbox, real #place_order button),
   // which on mobile now renders in normal page flow at the very end of the
   // form (views/_checkout-canut.scss) instead of being hidden.
-  $checkout_cart = function_exists( 'WC' ) ? WC()->cart : null;
+  //
+  // is_checkout() is also true on the order-received (thank you) endpoint,
+  // which has no #order_review/place_order to jump to or sync against -
+  // excluded here so the bar only ever shows on the actual checkout steps.
+  $checkout_cart = function_exists( 'WC' ) && ! ( function_exists( 'is_order_received_page' ) && is_order_received_page() ) ? WC()->cart : null;
   ?>
   <?php if ( $checkout_cart ) : ?>
     <div class="checkout-summary-canut">
@@ -176,6 +180,13 @@ $whatsapp_bubble_messages = get_whatsapp_bubble_messages();
 </div><!-- #page -->
 
 <?php wp_footer(); ?>
+
+<?php
+// Site-wide, including checkout (unlike the WhatsApp float below) - a
+// cookie notice is a legal requirement on every page, not a marketing
+// element that can be dropped for a distraction-free checkout.
+render_cookie_notice();
+?>
 
 <?php if ( ! ( function_exists( 'is_checkout' ) && is_checkout() ) ) : ?>
   <div class="whatsapp-float-wrap">

@@ -1,0 +1,59 @@
+// Site-wide cookie notice bar (footer.php, render_cookie_notice() in
+// inc/hooks/cookie-notice.php) - fixed to the bottom of every page,
+// including checkout, until accepted (modules/cookie-notice-canut.js).
+// stylelint-disable custom-property-pattern, csstools/value-no-unknown-custom-properties
+@use '../variables' as *;
+
+.cookie-notice-canut {
+  @include canut-shadow(card);
+  background-color: var(--wp--preset--color--bg-surface);
+  border-top: 1px solid var(--wp--preset--color--border);
+  bottom: 0;
+  left: 0;
+  position: fixed;
+  right: 0;
+  // Above the cart drawer/iframe modal's own overlay, but the notice itself
+  // isn't a blocking modal - it should never trap focus or dim the page.
+  z-index: 50;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.cookie-notice-canut-inner {
+  align-items: center;
+  display: flex;
+  gap: var(--wp--preset--spacing--space-md);
+  justify-content: space-between;
+  margin-inline: auto;
+  max-width: var(--wp--style--global--wide-size);
+  padding: var(--wp--preset--spacing--space-sm) var(--wp--preset--spacing--space-md);
+}
+
+.cookie-notice-canut-text {
+  @include text-style(caption, body, regular);
+  color: var(--wp--preset--color--text-secondary);
+  margin: 0;
+}
+
+.cookie-notice-canut-link {
+  color: var(--wp--preset--color--text-primary);
+  text-decoration: underline;
+  white-space: nowrap;
+}
+
+.cookie-notice-canut-button {
+  flex-shrink: 0;
+}
+
+@media screen and (max-width: $breakpoint-mobile) {
+  .cookie-notice-canut-inner {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .cookie-notice-canut-button {
+    width: 100%;
+  }
+}

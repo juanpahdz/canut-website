@@ -143,6 +143,37 @@ const confirmStep = (step) => {
   step.classList.add('is-confirmed');
 };
 
+/**
+ * Fire-and-forget: notifies the backend a wizard step was just confirmed
+ * (Air_Light\checkout_step_continued, inc/hooks/checkout-step-actions.php -
+ * see that file's docblock for what listens to it, e.g. the data-processing
+ * consent log). Posting the whole checkout form (same approach WooCommerce's
+ * own update_order_review AJAX cycle already uses) rather than picking out
+ * individual fields here, so a new backend listener needing a different
+ * field never requires a JS change too. Never awaited by the caller - this
+ * must never delay or block the wizard from advancing to the next step, so a
+ * slow response or a failed request (no config localized, no jQuery, network
+ * error) is simply ignored.
+ * @param {number} stepNumber
+ */
+const postStepContinued = (stepNumber) => {
+  const config = window.air_light_checkoutStepActions;
+  const form = document.querySelector('form.checkout');
+  if (!config || !form || !window.jQuery) return;
+
+  window.jQuery.ajax({
+    type: 'POST',
+    url: config.ajax_url,
+    data: {
+      action: 'canut_checkout_step_continue',
+      nonce: config.nonce,
+      step: stepNumber,
+      accepted_at: new Date().toISOString(),
+      form_data: window.jQuery(form).serialize(),
+    },
+  });
+};
+
 const handleContinueContact = (step) => {
   const firstInvalid = validateStepFields(step);
 
@@ -153,6 +184,7 @@ const handleContinueContact = (step) => {
 
   buildContactSummary(step);
   confirmStep(step);
+  postStepContinued(1);
 
   const nextStep = getStep(2);
   if (!nextStep) return;
@@ -171,6 +203,7 @@ const handleContinueAddress = (step) => {
 
   buildAddressSummary(step);
   confirmStep(step);
+  postStepContinued(2);
 
   const nextStep = getStep(3);
   if (!nextStep) return;
@@ -192,6 +225,7 @@ const handleContinuePayment = (step, button) => {
 
   buildPaymentSummary(step);
   confirmStep(step);
+  postStepContinued(3);
 
   const nextStep = getStep(4);
   if (!nextStep) return;
@@ -364,6 +398,128 @@ const wireAdditionalPhones = () => {
   });
 };
 
+/**
+ * Restrict billing_phone and the "add another phone number" repeater's
+ * billing_phone_additional_number[] rows (checkout_render_phone_field() /
+ * checkout_render_additional_phones(), inc/hooks/checkout.php) to digits
+ * only. Delegated on `document` rather than bound per-field, since repeater
+ * rows are cloned client-side after this runs (wireAdditionalPhones()
+ * above) and wouldn't otherwise be caught. Stripping on `input` (not just
+ * blocking keydown) also covers paste and autofill.
+ */
+const wirePhoneNumberInputs = () => {
+  document.addEventListener('input', (event) => {
+    const field = event.target;
+    if (!(field instanceof HTMLInputElement)) return;
+    if (field.id !== 'billing_phone' && field.name !== 'billing_phone_additional_number[]') return;
+
+    const digitsOnly = field.value.replace(/\D/g, '');
+    if (digitsOnly !== field.value) field.value = digitsOnly;
+  });
+};
+
+/**
+ * Whether a given step still needs the customer's attention before checkout
+ * can go through. Steps 1-3 ("Información de contacto"/"Envío"/"Método de
+ * pago") each have their own "Continuar" button that marks them is-confirmed
+ * (confirmStep() above) - but step 4 ("Método de envío") doesn't get one at
+ * all (it's the last step before the sidebar's real submit button, see
+ * form-checkout.php), so it never becomes is-confirmed either. Its own
+ * completion is just "reached" - unlocked once "Método de pago" confirms -
+ * since every rate card it renders already ships with a default one checked
+ * (checkout_render_shipping_methods(), inc/hooks/checkout.php).
+ * @param {Element} step
+ * @returns {boolean}
+ */
+const isStepIncomplete = (step) => {
+  if ('4' === step.dataset.step) return step.classList.contains('is-locked');
+  return !step.classList.contains('is-confirmed');
+};
+
+const getIncompleteStep = () => Array.from(document.querySelectorAll('.checkout-step-canut')).find(isStepIncomplete);
+
+/**
+ * Hard gate on the real #place_order submit ("Finalizar compra", always
+ * visible in the sidebar - see woocommerce/checkout/review-order.php - and
+ * not itself part of the step wizard) so it can't go through while any step
+ * is still open/locked, however it gets triggered (a stray Enter key, dev
+ * tools, anything besides clicking through every "Continuar" button in
+ * order). A locked step's fields stay in the DOM, just hidden
+ * (views/_checkout-canut.scss's is-locked rule) - not disabled - so their
+ * current values (including a pre-selected default payment/shipping method)
+ * would otherwise still post along with the form.
+ *
+ * Registered on `document` with `capture: true`, which fires during the
+ * capturing phase - before the event even reaches `form.checkout`, so before
+ * WooCommerce's own bundled checkout.js (bound the normal, bubble-phase way
+ * via `$checkout_form.on('submit', ...)`, assets/js/frontend/checkout.js)
+ * ever sees it. `stopImmediatePropagation()` then keeps it from reaching that
+ * handler (or anything else's) at all once a step is found incomplete.
+ *
+ * checkout_validate_steps_complete() (inc/hooks/checkout.php) is this same
+ * gate's backend counterpart, for anything that reaches the server without
+ * this script having run at all (JS disabled, a direct POST). Kept even
+ * though the button itself is also disabled (wirePlaceOrderButtonState()
+ * below) as a second line of defence - disabled is just an HTML attribute,
+ * trivially removable from dev tools.
+ */
+const blockSubmitUntilStepsConfirmed = () => {
+  document.addEventListener(
+    'submit',
+    (event) => {
+      if (!(event.target instanceof HTMLElement) || !event.target.matches('form.checkout')) return;
+
+      const incompleteStep = getIncompleteStep();
+      if (!incompleteStep) return;
+
+      event.preventDefault();
+      event.stopImmediatePropagation();
+
+      // Reuses that step's own "Continuar" button - same validation/focus
+      // behaviour as if the customer had clicked it themselves - rather than
+      // reimplementing it here. Locked steps have no reachable continue
+      // button (an earlier one hasn't been confirmed yet either); just
+      // surface that step instead.
+      const continueButton = incompleteStep.querySelector('[data-step-continue]');
+      if (continueButton && !incompleteStep.classList.contains('is-locked')) {
+        continueButton.click();
+      } else {
+        scrollToStep(incompleteStep);
+      }
+    },
+    true,
+  );
+};
+
+/**
+ * Keeps the real #place_order button ("Finalizar compra") visually and
+ * functionally disabled (same .checkout-summary-canut-submit:disabled look
+ * as the mobile fixed bar's own placeholder button, _checkout-canut.scss)
+ * until every step reports complete (isStepIncomplete() above) - otherwise
+ * it sits fully clickable the entire time despite living outside the step
+ * wizard entirely (order-summary sidebar, review-order.php), which is what
+ * blockSubmitUntilStepsConfirmed() alone doesn't make visually obvious.
+ *
+ * A MutationObserver on each step's own class attribute (rather than calling
+ * this after every place that toggles is-locked/is-confirmed - confirmStep(),
+ * lockStepsAfter(), the async payment-step unlock) means it can't drift out
+ * of sync with whichever of those actually ran.
+ */
+const wirePlaceOrderButtonState = () => {
+  const placeOrderButton = document.getElementById('place_order');
+  const steps = document.querySelectorAll('.checkout-step-canut');
+  if (!placeOrderButton || !steps.length) return;
+
+  const refresh = () => {
+    placeOrderButton.disabled = Boolean(getIncompleteStep());
+  };
+
+  refresh();
+
+  const observer = new MutationObserver(refresh);
+  steps.forEach((step) => observer.observe(step, { attributes: true, attributeFilter: ['class'] }));
+};
+
 const initCheckoutStepsCanut = () => {
   if (!document.querySelector('form.checkout')) return;
 
@@ -371,6 +527,9 @@ const initCheckoutStepsCanut = () => {
   wireEditButtons();
   wireCouponField();
   wireAdditionalPhones();
+  wirePhoneNumberInputs();
+  blockSubmitUntilStepsConfirmed();
+  wirePlaceOrderButtonState();
 };
 
 export default initCheckoutStepsCanut;

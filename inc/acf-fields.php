@@ -34,4 +34,5 @@ function register_acf_field_groups() {
   require get_theme_file_path( '/inc/acf-fields/ajustes-whatsapp.php' );
   require get_theme_file_path( '/inc/acf-fields/ajustes-scripts.php' );
   require get_theme_file_path( '/inc/acf-fields/ajustes-facebook-pixel.php' );
+  require get_theme_file_path( '/inc/acf-fields/ajustes-cookies.php' );
 } // end register_acf_field_groups

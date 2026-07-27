@@ -18,27 +18,25 @@ namespace Air_Light;
 add_action( 'woocommerce_before_checkout_form', __NAMESPACE__ . '\send_initiate_checkout_event' );
 
 /**
- * Sends InitiateCheckout for the current cart. Deduped per (session, cart
- * contents) for 30 minutes, so reloading the checkout page repeatedly with
- * the same cart doesn't refire the event - it fires again if the cart
- * actually changes (item added/removed/qty changed) or after the window
- * lapses.
+ * Sends InitiateCheckout for the current cart. No dedup guard here on
+ * purpose, same reasoning as ViewContent: woocommerce_before_checkout_form
+ * fires once per real checkout page load, and a visitor leaving checkout and
+ * coming back later to try again is a genuine new InitiateCheckout, not a
+ * repeat to suppress - matching how a client-side Facebook pixel would fire
+ * this event on every checkout page load too.
  */
 function send_initiate_checkout_event() {
   if ( ! function_exists( 'WC' ) || ! WC()->cart || WC()->cart->is_empty() ) {
     return;
   }
 
-  $cart          = WC()->cart;
-  $cart_contents = facebook_capi_cart_contents( $cart );
+  $cart_contents = facebook_capi_cart_contents( WC()->cart );
 
   if ( ! $cart_contents['contents'] ) {
     return;
   }
 
   send_facebook_event( 'InitiateCheckout', [
-    'dedup_key'   => facebook_capi_session_id() . '|' . $cart->get_cart_hash(),
-    'dedup_ttl'   => 30 * MINUTE_IN_SECONDS,
     'custom_data' => array_merge( [ 'content_type' => 'product' ], $cart_contents ),
   ] );
 } // end send_initiate_checkout_event

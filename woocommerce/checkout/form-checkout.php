@@ -109,6 +109,8 @@ $address_keys = array_diff( array_keys( $billing_fields ), $contact_keys );
 
             <?php checkout_render_additional_phones(); ?>
 
+            <?php checkout_render_data_consent_field(); ?>
+
             <button type="button" class="button-canut-base button-canut-primary is-full-width checkout-step-canut-continue" data-step-continue="1">
               <?php esc_html_e( 'Continuar a envío', 'air-light' ); ?>
             </button>

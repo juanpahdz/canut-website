@@ -518,6 +518,14 @@
   padding-top: var(--wp--preset--spacing--space-md);
 }
 
+// WooCommerce auto-inserts a "Ver carrito" link after the button once it
+// succeeds (add-to-cart.js) - redundant here since the button itself already
+// switches to its "Finalizar compra" added-state. Needs `.wc-forward` too to
+// outrank WooCommerce's own `.woocommerce a.added_to_cart { display: inline-block }`.
+.product-purchase a.added_to_cart.wc-forward {
+  display: none;
+}
+
 // 2. Comparison section ("¿Se te hace familiar?") -----------------------------------
 .product-comparison {
   background-color: var(--canut-tint-soft);

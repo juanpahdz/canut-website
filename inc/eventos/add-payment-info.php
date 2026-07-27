@@ -9,7 +9,12 @@
  * (address change, payment method change, shipping method change, coupon
  * apply - see inc/hooks/checkout.php for other consumers of this same AJAX
  * cycle). $post_data is the serialized checkout form, so it's only actually
- * an AddPaymentInfo-worthy update when it carries a payment_method.
+ * an AddPaymentInfo-worthy update when it carries a payment_method - and
+ * deduped against the WooCommerce session (see add-contact-info.php for the
+ * same mechanism) so it only sends once per distinct payment method/cart
+ * combo for the whole checkout session, not on every unrelated field edit
+ * the same AJAX cycle also runs for, and not a spurious resend just because
+ * time passed with the same method still selected.
  *
  * @package air-light
  */
@@ -41,11 +46,17 @@ function send_add_payment_info_event( $post_data ) {
     return;
   }
 
-  send_facebook_event( 'AddPaymentInfo', [
-    // Refires if the customer switches payment method or the cart changes,
-    // not on every unrelated field edit the same AJAX cycle also runs for.
-    'dedup_key'   => facebook_capi_session_id() . '|' . $payment_method . '|' . $cart->get_cart_hash(),
-    'dedup_ttl'   => 30 * MINUTE_IN_SECONDS,
+  $value_hash = md5( $payment_method . '|' . $cart->get_cart_hash() );
+
+  if ( facebook_capi_session_value_unchanged( 'payment_info', $value_hash ) ) {
+    return;
+  }
+
+  $sent = send_facebook_event( 'AddPaymentInfo', [
     'custom_data' => array_merge( [ 'content_type' => 'product' ], $cart_contents ),
   ] );
+
+  if ( $sent ) {
+    facebook_capi_mark_session_value_sent( 'payment_info', $value_hash );
+  }
 } // end send_add_payment_info_event

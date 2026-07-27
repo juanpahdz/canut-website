@@ -21,7 +21,7 @@
   right: 0;
   z-index: 40;
 
-  @media (max-width: $breakpoint-mobile - 1px) {
+  @media (max-width: $breakpoint-checkout-mobile - 1px) {
     display: flex;
   }
 }
@@ -45,6 +45,13 @@
     color: var(--wp--preset--color--text-primary);
     height: 1rem;
     width: 1rem;
+  }
+
+  // Dropped below 500px - the bar is too narrow there to fit this alongside
+  // the product count/total and the real "Finalizar compra" button without
+  // cramping them.
+  @media (max-width: 31.1875rem) { // 499px
+    display: none;
   }
 }
 

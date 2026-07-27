@@ -23,12 +23,27 @@ namespace Air_Light;
 defined( 'ABSPATH' ) || exit;
 
 $icons = checkout_render_payment_method_icons();
+
+/**
+ * $gateway->chosen deliberately isn't used to decide "checked" here: core
+ * (WC_Payment_Gateways::set_current_gateway()) auto-picks the first
+ * available gateway into the session the moment gateways are listed at all,
+ * even on a visitor's very first page load who hasn't touched anything yet -
+ * so it can't tell "customer chose this" apart from "core defaulted to this".
+ * The CANUT checkout wants no card pre-selected until the customer actually
+ * clicks one (modules/checkout-steps-canut.js already blocks "Continuar" on
+ * this step until a radio is :checked, so this only needed the template side
+ * fixed). $_POST is only populated by a real form submission, so it stays
+ * empty on a fresh page load, and correctly restores the customer's own pick
+ * if checkout re-renders after a validation error elsewhere in the form.
+ */
+$posted_payment_method = isset( $_POST['payment_method'] ) ? sanitize_text_field( wp_unslash( $_POST['payment_method'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- read-only comparison to restore the customer's own selection on a re-render, not a state change.
 ?>
 <li class="wc_payment_method payment_method_<?php echo esc_attr( $gateway->id ); ?>">
   <label for="payment_method_<?php echo esc_attr( $gateway->id ); ?>" class="payment-option-canut">
     <div class="payment-option-canut-top">
       <?php echo $icons[ $gateway->id ] ?? ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-      <input id="payment_method_<?php echo esc_attr( $gateway->id ); ?>" type="radio" class="payment-option-canut-input" name="payment_method" value="<?php echo esc_attr( $gateway->id ); ?>" <?php checked( $gateway->chosen, true ); ?> data-order_button_text="<?php echo esc_attr( $gateway->order_button_text ); ?>" />
+      <input id="payment_method_<?php echo esc_attr( $gateway->id ); ?>" type="radio" class="payment-option-canut-input" name="payment_method" value="<?php echo esc_attr( $gateway->id ); ?>" <?php checked( $gateway->id, $posted_payment_method ); ?> data-order_button_text="<?php echo esc_attr( $gateway->order_button_text ); ?>" />
     </div>
     <div class="payment-option-canut-body">
       <span class="payment-option-canut-title-row">
@@ -40,7 +55,7 @@ $icons = checkout_render_payment_method_icons();
     </div>
   </label>
   <?php if ( $gateway->has_fields() ) : ?>
-    <div class="payment_box payment_method_<?php echo esc_attr( $gateway->id ); ?>" <?php if ( ! $gateway->chosen ) : ?>style="display:none;"<?php endif; ?>>
+    <div class="payment_box payment_method_<?php echo esc_attr( $gateway->id ); ?>" <?php if ( $gateway->id !== $posted_payment_method ) : ?>style="display:none;"<?php endif; ?>>
       <?php $gateway->payment_fields(); ?>
     </div>
   <?php endif; ?>

@@ -34,6 +34,7 @@ import initWhatsappFloatBubble from './modules/whatsapp-float-bubble';
 import initCheckoutCanut from './modules/checkout-canut';
 import initCheckoutStepsCanut from './modules/checkout-steps-canut';
 import initThankYouCanut from './modules/thank-you-canut';
+import initCookieNoticeCanut from './modules/cookie-notice-canut';
 // Define Javascript is active by changing the body class
 document.body.classList.remove('no-js');
 document.body.classList.add('js');
@@ -69,6 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initCheckoutCanut();
   initCheckoutStepsCanut();
   initThankYouCanut();
+  initCookieNoticeCanut();
 
   // Uncomment if you like to use a sticky navigation
   // navSticky();
