@@ -79,33 +79,7 @@ $cart = function_exists( 'WC' ) ? WC()->cart : null;
           </button>
         </div>
 
-        <?php if ( $qty_discount_remaining > 0 ) : ?>
-          <div class="cart-upsell-canut">
-            <div class="cart-upsell-canut-icon">
-              <?php require get_theme_file_path( 'assets/svg/icon-gift.svg' ); ?>
-            </div>
-            <div class="cart-upsell-canut-body">
-              <p class="cart-upsell-canut-title">
-                <?php echo esc_html( sprintf(
-                  /* translators: 1: minimum quantity, 2: discount percentage. */
-                  __( '¡Lleva %1$d y ahorra %2$s%%!', 'air-light' ),
-                  qty_discount_min_qty_for( $_product->get_id() ),
-                  rtrim( rtrim( number_format( qty_discount_percent_for( $_product->get_id() ), 1 ), '0' ), '.' )
-                ) ); ?>
-              </p>
-              <p class="cart-upsell-canut-text">
-                <?php echo esc_html( sprintf(
-                  /* translators: %s: product name. */
-                  __( 'Agrega otra unidad de %s al carrito', 'air-light' ),
-                  $_product->get_name()
-                ) ); ?>
-              </p>
-            </div>
-            <button type="button" class="cart-upsell-canut-button" data-canut-cart-qty="increase" data-cart-item-key="<?php echo esc_attr( $cart_item_key ); ?>">
-              <?php echo esc_html__( '+ Agregar', 'air-light' ); ?>
-            </button>
-          </div>
-        <?php endif; ?>
+        <?php render_qty_discount_upsell( $cart_item_key, $_product, $cart_item['quantity'] ); ?>
       <?php endforeach; ?>
     </div>
 

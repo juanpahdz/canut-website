@@ -1,12 +1,13 @@
-// CANUT checkout: a CSS/JS reskin of WooCommerce's Checkout BLOCK (Store
-// API - skeleton loaders, AJAX speed), not a template override. The block
-// keeps its own markup/behaviour; only class names it already ships are
-// targeted here (checked against the installed plugin's own
-// assets/client/blocks/checkout.css, not guessed) - see inc/hooks/checkout.php
-// for the two PHP-side extensions (Barrio field, gateway order/discount).
-// Numbered steps are the block's own `showFormStepNumbers` attribute
-// (enabled on the Checkout page itself), just restyled from a plain "1."
-// into the CANUT circular badge.
+// CANUT checkout: classic WooCommerce checkout ([woocommerce_checkout]
+// shortcode, theme-owned templates under woocommerce/checkout/*.php - see
+// inc/hooks/checkout.php for the field/hook customization behind them).
+// Styles our own markup directly, not a reskin layer on top of anything -
+// reuses existing design-system components wherever they already fit
+// (components/_form-canut.scss's .form-canut-group for every field,
+// components/_payment-option-canut.scss for the payment method cards,
+// components/_banner-canut.scss for the shipping-info/help notices,
+// components/_button-canut.scss for the place-order button) rather than
+// rebuilding them here.
 // stylelint-disable custom-property-pattern, csstools/value-no-unknown-custom-properties
 @use '../variables' as *;
 
@@ -28,15 +29,23 @@
 }
 
 // Minimal footer: brand + copyright, no menus/social/payment icons.
+// Outer element carries the full-width background/border, matching
+// .site-footer-canut's own outer/inner split (layout/_site-footer.scss) -
+// the .wrap-canut inner div (footer.php) keeps this in line with the site's
+// usual horizontal max-width/padding instead of running edge to edge.
 .site-footer-checkout {
-  align-items: center;
   background-color: color-mix(in sRGB, var(--wp--preset--color--success) 12%, var(--wp--preset--color--bg-surface));
   border-top: 1px solid var(--wp--preset--color--border);
+  padding-bottom: var(--wp--preset--spacing--space-lg);
+  padding-top: var(--wp--preset--spacing--space-lg);
+}
+
+.site-footer-checkout-inner {
+  align-items: center;
   display: flex;
   flex-wrap: wrap;
   gap: var(--wp--preset--spacing--space-sm);
   justify-content: space-between;
-  padding: var(--wp--preset--spacing--space-lg) var(--wp--preset--spacing--space-md);
 }
 
 .site-footer-checkout-brand {
@@ -70,159 +79,458 @@
   }
 }
 
-// Checkout block wrapper: page background + base typography/colors, so
-// every block-provided element inherits CANUT tokens instead of the block's
-// own (theme.json-derived) defaults.
-.wp-block-woocommerce-checkout {
+// Site-wide body background is white (theme.json styles.color.background) -
+// the checkout design calls for the warm bg-base tone instead, scoped to
+// this page only via WooCommerce's own 'woocommerce-checkout' body class
+// rather than touching the global token.
+body.woocommerce-checkout {
+  background-color: var(--wp--preset--color--bg-base);
   color: var(--wp--preset--color--text-primary);
 
-  ::selection {
-    background-color: var(--wp--preset--color--accent);
+  // The [woocommerce_checkout] shortcode's own output wraps itself in
+  // <div class="woocommerce"> - a direct child of <main class="...
+  // is-layout-constrained">, so WordPress's own global-styles CSS caps it at
+  // --wp--style--global--content-size (800px, theme.json) same as any plain
+  // paragraph would get, same mechanism .alignwide/.alignfull escape from.
+  // Every other WooCommerce template (archive-product.php,
+  // single-product.php) never hits this, since those render through the
+  // template hierarchy directly rather than a shortcode's own wrapper div -
+  // .wrap-canut around the form below (woocommerce/checkout/form-checkout.php)
+  // needs this uncapped first before its own (correct, wide-size-based)
+  // max-width can do anything.
+  .woocommerce {
+    max-width: none;
   }
 }
 
-// --- Numbered steps -----------------------------------------------------
-// Core renders "1." as a ::before counter on the step title, with a
-// vertical rule down the step body via ::before on __content/__description
-// (see checkout.css - this isn't guessed). Restyle the counter into a
-// circular badge and recolor the connecting rule.
-.wc-block-components-checkout-step__title {
+// Breathing room above the first step (under .site-header-checkout) and
+// below the last step/help banner (before the footer) - .wrap-canut and
+// <main class="site-main has-global-padding ..."> (page.php) carry no
+// vertical padding of their own here (theme.json's root padding is
+// left/right only).
+.checkout-form-canut {
+  padding-bottom: var(--wp--preset--spacing--space-xl);
+  padding-top: var(--wp--preset--spacing--space-xl);
+}
+
+// --- Page layout: numbered steps (left) + sticky order summary (right) ---
+.checkout-form-canut-columns {
+  display: grid;
+  gap: var(--wp--preset--spacing--space-md);
+  grid-template-columns: 1fr;
+
+  @media (min-width: $breakpoint-mobile) {
+    align-items: start;
+    grid-template-columns: 1fr 27.5rem;
+  }
+}
+
+.checkout-form-canut-sidebar {
+  @media (min-width: $breakpoint-mobile) {
+    position: sticky;
+    top: var(--wp--preset--spacing--space-md);
+  }
+}
+
+// --- Numbered steps -------------------------------------------------------
+.checkout-step-canut {
+  margin-bottom: var(--wp--preset--spacing--space-lg);
+}
+
+.checkout-step-canut-header {
+  align-items: center;
+  display: flex;
+  gap: var(--wp--preset--spacing--space-sm);
+  margin-bottom: var(--wp--preset--spacing--space-md);
+}
+
+.checkout-step-canut-number {
+  @include text-style(small, body, bold);
+  align-items: center;
+  background-color: var(--wp--preset--color--primary);
+  border-radius: 50%;
+  color: var(--wp--preset--color--white);
+  display: flex;
+  flex-shrink: 0;
+  height: 2rem;
+  justify-content: center;
+  width: 2rem;
+}
+
+.checkout-step-canut-title {
   @include text-style(h-3, display, medium, h-3);
   color: var(--wp--preset--color--text-primary);
+  margin: 0;
 }
 
-.wc-block-checkout__form--with-step-numbers .wc-block-components-checkout-step--with-step-number {
-  .wc-block-components-checkout-step__title::before {
-    @include text-style(small, body, bold);
-    align-items: center;
-    background-color: var(--wp--preset--color--primary);
-    border-radius: 50%;
-    color: color-mix(in sRGB, var(--wp--preset--color--white) 65%, var(--wp--preset--color--primary));
-    display: flex;
-    height: 2rem;
-    justify-content: center;
-    left: -2.75rem;
-    top: 0;
-    transform: none;
-    width: 2rem;
+.checkout-step-canut-body {
+  padding-left: 2.75rem; // Aligns with the title, past the number badge + gap.
+}
+
+.checkout-step-canut-body-grid {
+  display: grid;
+  gap: var(--wp--preset--spacing--space-md) var(--wp--preset--spacing--space-sm);
+  grid-template-columns: 1fr;
+
+  // Fields meant to span the full row regardless of column count (added via
+  // FULL_WIDTH_CHECKOUT_FIELDS in inc/hooks/checkout.php).
+  .form-canut-group--full {
+    grid-column: 1 / -1;
   }
 
-  .wc-block-components-checkout-step__content::before,
-  .wc-block-components-checkout-step__description::before {
-    border-left-color: var(--wp--preset--color--border);
-    left: -1.75rem;
+  @media (min-width: $breakpoint-mobile) {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
-.wc-block-components-checkout-step__description {
+// .banner-canut (shipping info notice) sits right under the address fields,
+// inside the same step body.
+.checkout-step-canut-body > .banner-canut {
+  margin-top: var(--wp--preset--spacing--space-md);
+}
+
+// --- Payment methods: grid of .payment-option-canut cards -----------------
+// The cards themselves (border, radius, checked state, custom radio) are
+// components/_payment-option-canut.scss - this just lays out the <ul> core
+// wraps them in.
+ul.payment_methods {
+  display: grid;
+  gap: var(--wp--preset--spacing--space-sm);
+  grid-template-columns: 1fr;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  li {
+    margin: 0;
+  }
+
+  @media (min-width: $breakpoint-mobile) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+// --- Shipping methods: full-width stack of .payment-option-canut cards ----
+// Unlike ul.payment_methods above (2 columns from $breakpoint-mobile up),
+// shipping cards always span the full step width, at any breakpoint - each
+// carrier's name/cost reads better on its own row than squeezed 2-up.
+.shipping-methods-canut-list {
+  display: grid;
+  gap: var(--wp--preset--spacing--space-sm);
+  grid-template-columns: 1fr;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  li {
+    margin: 0;
+  }
+}
+
+.checkout-shipping-methods-canut-empty {
+  @include text-style(small, body, regular);
+  color: var(--wp--preset--color--text-secondary);
+  margin: 0;
+}
+
+// --- Order summary sidebar: single sticky card -----------------------------
+.checkout-summary-canut-card {
+  @include canut-radius(md);
+  @include canut-shadow(card);
+  background-color: var(--wp--preset--color--bg-surface);
+  padding: var(--wp--preset--spacing--space-md);
+}
+
+.checkout-summary-canut-title {
+  @include text-style(h-4, display, medium, h-4);
+  color: var(--wp--preset--color--text-primary);
+  margin: 0 0 var(--wp--preset--spacing--space-md);
+}
+
+.checkout-summary-canut-items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-md);
+}
+
+.checkout-summary-canut-item {
+  display: flex;
+  gap: var(--wp--preset--spacing--space-sm);
+}
+
+.checkout-summary-canut-item-thumb {
+  flex-shrink: 0;
+
+  img {
+    @include canut-radius(sm);
+    display: block;
+    height: 5rem;
+    object-fit: cover;
+    width: 5rem;
+  }
+}
+
+.checkout-summary-canut-item-body {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.checkout-summary-canut-item-name {
+  @include text-style(small, body, bold);
+  color: var(--wp--preset--color--text-primary);
+  margin: 0 0 var(--wp--preset--spacing--space-xs);
+}
+
+// Short description, hard-capped to a character count with an ellipsis
+// (checkout_truncate_description(), inc/hooks/checkout.php) rather than
+// relying on CSS line-clamp alone, so it never runs past the card at any
+// line-height/font-load timing. caption is the smallest size in the type
+// scale (theme.json); its own default line-height (--canut--line-height--body,
+// 1.7, meant for long-form paragraphs) reads far too loose/tall over 2-3
+// short lines here, so a tighter one is set directly instead.
+.checkout-summary-canut-item-description {
+  @include text-style(caption, body, regular);
+  color: var(--wp--preset--color--text-secondary);
+  line-height: 1.35;
+  margin: 0 0 var(--wp--preset--spacing--space-xs);
+}
+
+.checkout-summary-canut-item-total {
+  @include text-style(small, body, medium);
+  color: var(--wp--preset--color--text-primary);
+  white-space: nowrap;
+}
+
+// --- Coupon field: inline toggle + code input, inside "Método de pago" ----
+// (checkout_render_coupon_field(), inc/hooks/checkout.php) - plain markup,
+// not core's own checkout/form-coupon.php <form> (see that function's own
+// docblock for why), wired up in modules/checkout-steps-canut.js.
+.checkout-coupon-canut {
+  margin-top: var(--wp--preset--spacing--space-md);
+}
+
+.checkout-coupon-canut-toggle {
+  @include text-style(caption, body, regular);
+  background-color: transparent;
+  border: 0;
+  color: var(--wp--preset--color--accent-dark);
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.checkout-coupon-canut-panel {
+  display: flex;
+  gap: var(--wp--preset--spacing--space-xs);
+  margin-top: var(--wp--preset--spacing--space-sm);
+
+  // A class selector and the [hidden] attribute share the same specificity -
+  // without this, `display: flex` below (an author rule) would win over the
+  // browser's own `[hidden] { display: none }` UA rule regardless of the
+  // attribute actually being present, since author styles always outrank UA
+  // ones at equal specificity.
+  &[hidden] {
+    display: none;
+  }
+
+  input {
+    @include canut-radius(sm);
+    background-color: var(--wp--preset--color--bg-surface);
+    border: 1px solid var(--wp--preset--color--border);
+    color: var(--wp--preset--color--text-primary);
+    flex-grow: 1;
+    padding: var(--wp--preset--spacing--space-sm);
+  }
+
+  button {
+    flex-shrink: 0;
+  }
+}
+
+// --- Sequential step lock/confirm states (checkout wizard) ----------------
+// modules/checkout-steps-canut.js toggles these classes on .checkout-step-canut
+// itself - "Envío"/"Método de pago" start open, "Método de pago"/"Método de
+// envío" start `is-locked` (baked into form-checkout.php's own markup),
+// swapping to `is-confirmed` once their own "Continuar" validates and
+// collapses them. Both states hide the same .checkout-step-canut-body;
+// only which replacement (summary vs. placeholder message) shows differs.
+.checkout-step-canut-summary,
+.checkout-step-canut-locked-message {
+  display: none;
+}
+
+.checkout-step-canut.is-locked,
+.checkout-step-canut.is-confirmed {
+  .checkout-step-canut-body {
+    display: none;
+  }
+}
+
+.checkout-step-canut.is-locked .checkout-step-canut-locked-message {
+  @include canut-radius(md);
+  @include text-style(small, body, regular);
+  border: 1px dashed var(--wp--preset--color--border);
+  color: var(--wp--preset--color--text-secondary);
+  display: block;
+  padding: var(--wp--preset--spacing--space-md);
+}
+
+.checkout-step-canut.is-confirmed .checkout-step-canut-summary {
+  @include canut-radius(md);
+  background-color: var(--wp--preset--color--bg-surface);
+  border: 1px solid var(--wp--preset--color--border);
+  display: block;
+  padding: var(--wp--preset--spacing--space-md);
+}
+
+.checkout-step-canut-summary-row {
+  align-items: flex-start;
+  display: flex;
+  gap: var(--wp--preset--spacing--space-sm);
+  justify-content: space-between;
+}
+
+.checkout-step-canut-summary-title {
+  @include text-style(small, body, bold);
+  color: var(--wp--preset--color--text-primary);
+  margin: 0 0 var(--wp--preset--spacing--space-xs);
+}
+
+.checkout-step-canut-summary-detail {
+  @include text-style(small, body, regular);
+  color: var(--wp--preset--color--text-secondary);
+  margin: 0;
+}
+
+.checkout-step-canut-summary-edit {
+  @include text-style(small, body, medium);
+  background-color: transparent;
+  border: 0;
+  color: var(--wp--preset--color--accent-dark);
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+  text-decoration: underline;
+}
+
+// "Calculando opciones de envío..." swaps in for the default locked message
+// while confirming "Método de pago" waits on a real update_checkout AJAX
+// round trip before unlocking "Método de envío" (checkout-steps-canut.js).
+.checkout-step-canut-locked-message-loading {
+  display: none;
+}
+
+.checkout-step-canut.is-loading {
+  .checkout-step-canut-locked-message-default {
+    display: none;
+  }
+
+  .checkout-step-canut-locked-message-loading {
+    display: block;
+  }
+}
+
+.checkout-step-canut.is-locked .checkout-step-canut-number {
+  background-color: var(--wp--preset--color--border);
   color: var(--wp--preset--color--text-secondary);
 }
 
-// --- Text inputs / selects / textareas -----------------------------------
-.wc-block-components-text-input,
-.wc-block-components-address-form .wc-block-components-select,
-.wc-block-components-textarea {
-  input,
-  select,
-  textarea {
-    @include canut-radius(sm);
-    background-color: var(--wp--preset--color--bg-surface);
-    border-color: var(--wp--preset--color--border) !important;
+.checkout-step-canut.is-confirmed .checkout-step-canut-number {
+  background-color: var(--wp--preset--color--success);
+}
+
+.checkout-step-canut-continue {
+  margin-top: var(--wp--preset--spacing--space-md);
+}
+
+.checkout-summary-canut-totals {
+  border-top: 1px solid color-mix(in sRGB, var(--wp--preset--color--border) 50%, transparent);
+  margin-top: var(--wp--preset--spacing--space-md);
+  padding-top: var(--wp--preset--spacing--space-md);
+  width: 100%;
+
+  th,
+  td {
+    @include text-style(small, body, regular);
     color: var(--wp--preset--color--text-primary);
+    font-weight: var(--wp--custom--font-weight--regular);
+    padding: var(--wp--preset--spacing--space-xs) 0;
+    text-align: left;
   }
 
-  label {
+  td {
+    text-align: right;
+  }
+
+  .order-total th,
+  .order-total td {
+    @include text-style(body-lg, display, medium);
+    border-top: 1px solid color-mix(in sRGB, var(--wp--preset--color--border) 50%, transparent);
+    padding-top: var(--wp--preset--spacing--space-sm);
+  }
+}
+
+.checkout-summary-canut-actions {
+  margin-top: var(--wp--preset--spacing--space-md);
+}
+
+.woocommerce-terms-and-conditions-wrapper {
+  @include text-style(caption, body, regular);
+  color: var(--wp--preset--color--text-secondary);
+  margin-bottom: var(--wp--preset--spacing--space-sm);
+
+  a {
+    color: var(--wp--preset--color--text-primary);
+  }
+}
+
+.checkout-summary-canut-submit {
+  width: 100%;
+
+  svg {
+    height: 1em;
+    width: 1em;
+  }
+}
+
+// --- Trust badges ----------------------------------------------------------
+// Static reassurance row under the place-order button (CANUT redesign).
+// Markup from PHP (checkout_render_trust_badges() in inc/hooks/checkout.php).
+.checkout-trust-badges-canut {
+  border-top: 1px solid color-mix(in sRGB, var(--wp--preset--color--border) 50%, transparent);
+  display: grid;
+  gap: var(--wp--preset--spacing--space-sm) var(--wp--preset--spacing--space-xs);
+  grid-template-columns: repeat(2, 1fr);
+  margin-top: var(--wp--preset--spacing--space-lg);
+  padding-top: var(--wp--preset--spacing--space-lg);
+}
+
+.checkout-trust-badges-canut-item {
+  @include text-style(caption, body, regular);
+  align-items: center;
+  color: var(--wp--preset--color--text-secondary);
+  display: flex;
+  gap: var(--wp--preset--spacing--space-xs);
+
+  svg {
     color: var(--wp--preset--color--text-secondary);
-  }
-
-  input:focus,
-  select:focus,
-  textarea:focus {
-    border-color: var(--wp--preset--color--accent) !important;
-    box-shadow: 0 0 0 3px color-mix(in sRGB, var(--wp--preset--color--accent) 15%, transparent) !important;
+    flex-shrink: 0;
+    height: 0.9375rem;
+    width: 0.9375rem;
   }
 }
 
-// --- Payment methods: radio list restyled as selectable cards ------------
-// Payment methods render via RadioControl's "accordion" variant - each
-// .wc-block-components-radio-control-accordion-option *is* the clickable
-// row containing the real radio input, matching the Figma card design
-// closely enough to restyle directly rather than rebuild.
-.wc-block-checkout__payment-method {
-  .wc-block-components-radio-control {
-    display: grid;
-    gap: var(--wp--preset--spacing--space-sm);
-    grid-template-columns: 1fr;
-
-    @media (min-width: $breakpoint-mobile) {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  .wc-block-components-radio-control-accordion-option {
-    @include canut-radius(md);
-    background-color: var(--wp--preset--color--bg-surface);
-    border: 2px solid var(--wp--preset--color--border);
-    padding: var(--wp--preset--spacing--space-md);
-    transition: background-color 150ms ease, border-color 150ms ease;
-
-    &.wc-block-components-radio-control-accordion-option--checked-option-highlighted,
-    &:has(input:checked) {
-      background-color: color-mix(in sRGB, var(--wp--preset--color--accent-dark) 4%, var(--wp--preset--color--bg-surface));
-      border-color: var(--wp--preset--color--accent-dark);
-    }
-  }
-
-  .wc-block-components-radio-control__label {
-    @include text-style(small, body, bold);
-    color: var(--wp--preset--color--text-primary);
-  }
-
-  .wc-block-components-radio-control__secondary-label,
-  .wc-block-components-radio-control__description {
-    @include text-style(caption, body, regular);
-    color: var(--wp--preset--color--text-secondary);
-  }
-
-  input[type='radio'] {
-    accent-color: var(--wp--preset--color--accent-dark);
-  }
-}
-
-// --- Order summary sidebar: sticky card matching the design system -------
-.wc-block-checkout__sidebar {
-  .wc-block-components-order-summary,
-  .wc-block-components-totals-wrapper {
-    @include canut-radius(md);
-    @include canut-shadow(card);
-    background-color: var(--wp--preset--color--bg-surface);
-  }
-
-  .wc-block-components-checkout-order-summary__title {
-    @include text-style(h-4, display, medium, h-4);
-    color: var(--wp--preset--color--text-primary);
-  }
-
-  .wc-block-components-order-summary-item__total-price,
-  .wc-block-components-totals-item__value {
-    color: var(--wp--preset--color--text-primary);
-  }
-
-  .wc-block-components-totals-footer-item {
-    .wc-block-components-totals-item__label,
-    .wc-block-components-totals-item__value {
-      @include text-style(body-lg, display, medium);
-    }
-  }
-}
-
-.wc-block-components-checkout-place-order-button {
-  @include canut-radius(btn);
-  background-color: var(--wp--preset--color--primary-dark) !important;
-  border-color: var(--wp--preset--color--primary-dark) !important;
-
-  &:hover,
-  &:focus {
-    @include canut-shadow(hover);
+// --- Mobile: the order-summary sidebar (product rows, coupon form, totals,
+// real #place_order button) stays in normal flow instead of being hidden -
+// single-column grid above means it already renders at the very end of the
+// page, right after the numbered steps/help banner. checkout-summary-canut's
+// fixed bar (components/_checkout-summary-canut.scss) sits on top of that
+// flow, so reserve space equal to its real rendered height (custom property
+// set by modules/checkout-canut.js) underneath the form, keeping the
+// sidebar's own place-order button/trust badges clear of the fixed bar
+// instead of covered by it.
+@media (max-width: $breakpoint-mobile - 1px) {
+  .checkout-form-canut {
+    padding-bottom: calc(var(--wp--preset--spacing--space-xl) + var(--checkout-summary-canut-bar-height, 4.75rem));
   }
 }

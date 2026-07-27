@@ -140,3 +140,17 @@ require get_theme_file_path( 'inc/hooks/help-center.php' );
  * Soporte: community question form + approval workflow
  */
 require get_theme_file_path( 'inc/hooks/soporte.php' );
+
+/**
+ * Eventos: Facebook Pixel Conversions API (Ajustes > Facebook Pixel).
+ * Backend-only, one file per event - see inc/eventos/facebook-conversions-api.php.
+ */
+require get_theme_file_path( 'inc/eventos/facebook-conversions-api.php' );
+add_action( 'acf/init', __NAMESPACE__ . '\register_facebook_pixel_options_page' );
+require get_theme_file_path( 'inc/eventos/view-content.php' );
+require get_theme_file_path( 'inc/eventos/add-to-cart.php' );
+require get_theme_file_path( 'inc/eventos/initiate-checkout.php' );
+require get_theme_file_path( 'inc/eventos/add-payment-info.php' );
+require get_theme_file_path( 'inc/eventos/purchase.php' );
+require get_theme_file_path( 'inc/eventos/lead.php' );
+require get_theme_file_path( 'inc/eventos/complete-registration.php' );

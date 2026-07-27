@@ -31,6 +31,9 @@ import initPaginaInformativaToc from './modules/pagina-informativa';
 import initHelpCenterCanut from './modules/help-center-canut';
 import initShopFilters from './modules/shop-filters';
 import initWhatsappFloatBubble from './modules/whatsapp-float-bubble';
+import initCheckoutCanut from './modules/checkout-canut';
+import initCheckoutStepsCanut from './modules/checkout-steps-canut';
+import initThankYouCanut from './modules/thank-you-canut';
 // Define Javascript is active by changing the body class
 document.body.classList.remove('no-js');
 document.body.classList.add('js');
@@ -63,6 +66,9 @@ document.addEventListener('DOMContentLoaded', () => {
   initHelpCenterCanut();
   initShopFilters();
   initWhatsappFloatBubble();
+  initCheckoutCanut();
+  initCheckoutStepsCanut();
+  initThankYouCanut();
 
   // Uncomment if you like to use a sticky navigation
   // navSticky();

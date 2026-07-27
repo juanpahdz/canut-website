@@ -8,6 +8,27 @@
 namespace Air_Light;
 
 /**
+ * WooCommerce enqueues its own default frontend stylesheet (woocommerce.css -
+ * generic list/table/button/notice styling meant for themes that don't build
+ * their own) on every WC-related page. It was never actually relevant before
+ * on the checkout page specifically (the Checkout block used its own,
+ * separate plugin stylesheet, not this legacy one) - now that checkout
+ * renders classic templates (woocommerce/checkout/*.php), those generic
+ * defaults (payment method list background/spacing, coupon form, etc.) do
+ * apply and fight the CANUT design system's own components
+ * (components/_payment-option-canut.scss, _form-canut.scss, _button-canut.scss,
+ * _banner-canut.scss - all styled to stand alone). Every WooCommerce template
+ * on this site already has a CANUT-styled equivalent, so this is dequeued
+ * everywhere rather than patched page by page.
+ *
+ * @return string[]
+ */
+function woocommerce_disable_default_styles() {
+  return [];
+} // end woocommerce_disable_default_styles
+add_filter( 'woocommerce_enqueue_styles', __NAMESPACE__ . '\woocommerce_disable_default_styles' );
+
+/**
  * Show 2 products per row in the shop/archive loop, matching the CANUT
  * design system's product grid.
  *
@@ -27,6 +48,18 @@ function woocommerce_loop_columns() {
  * auto-output needs removing or every page would render it twice.
  */
 remove_action( 'woocommerce_before_main_content', 'woocommerce_breadcrumb', 20 );
+
+/**
+ * WooCommerce core also hooks its own default woocommerce_order_details_table()
+ * (product table + totals + billing/shipping address, via order/order-details.php
+ * and order/order-details-customer.php) to woocommerce_thankyou at priority 10 -
+ * fired a second time by our own woocommerce/checkout/thankyou.php (kept for
+ * gateway/plugin compatibility), duplicating the CANUT-styled order summary
+ * template-parts/order/success.php already renders itself. Only removed from
+ * this hook - the same callback stays on woocommerce_view_order (My Account >
+ * Orders > View), which has no custom replacement.
+ */
+remove_action( 'woocommerce_thankyou', 'woocommerce_order_details_table', 10 );
 
 /**
  * Cart item count badge shown on the header cart icon.

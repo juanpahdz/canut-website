@@ -68,6 +68,18 @@ function contact_form_submit() {
 
   $sent = wp_mail( $to, $subject, $body, $headers );
 
+  if ( $sent ) {
+    /**
+     * Fires the Lead Facebook Conversions API event, see
+     * inc/eventos/lead.php.
+     */
+    do_action( __NAMESPACE__ . '\lead_submitted', [
+      'email' => $email,
+      'phone' => $phone,
+      'name'  => $name,
+    ] );
+  }
+
   wp_safe_redirect( add_query_arg( 'contacto', $sent ? 'exito' : 'error', $redirect_url ) );
   exit;
 } // end contact_form_submit

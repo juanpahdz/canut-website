@@ -1,0 +1,75 @@
+// CANUT mobile checkout summary bar: fixed to the bottom of the viewport on
+// small screens only (the order-summary sidebar card - checkout-summary-canut-card
+// via views/_checkout-canut.scss - already covers this on desktop). Total
+// kept in sync with classic checkout's own AJAX-updated order total by
+// modules/checkout-canut.js; its button forwards a click to the real
+// #place_order button in the sidebar.
+// stylelint-disable custom-property-pattern -- WP's own --wp--preset--* custom properties aren't kebab-case
+@use '../variables' as *;
+
+.checkout-summary-canut {
+  align-items: center;
+  background-color: var(--wp--preset--color--bg-surface);
+  border-top: 1px solid var(--wp--preset--color--border);
+  bottom: 0;
+  display: none;
+  gap: var(--wp--preset--spacing--space-md);
+  justify-content: space-between;
+  left: 0;
+  padding: var(--wp--preset--spacing--space-sm) var(--wp--preset--spacing--space-md);
+  position: fixed;
+  right: 0;
+  z-index: 40;
+
+  @media (max-width: $breakpoint-mobile - 1px) {
+    display: flex;
+  }
+}
+
+// Scrolls down to the real order-summary card at the end of the page
+// (modules/checkout-canut.js, #order_review) - a plain jump link, not a
+// toggle, so icon-chevron-down's own down-pointing orientation already
+// matches the direction it scrolls.
+.checkout-summary-canut-toggle {
+  align-items: center;
+  background-color: var(--wp--preset--color--bg-base);
+  border: 1px solid var(--wp--preset--color--border);
+  border-radius: 50%;
+  display: flex;
+  flex-shrink: 0;
+  height: 2.25rem;
+  justify-content: center;
+  width: 2.25rem;
+
+  svg {
+    color: var(--wp--preset--color--text-primary);
+    height: 1rem;
+    width: 1rem;
+  }
+}
+
+.checkout-summary-canut-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.checkout-summary-canut-count {
+  @include text-style(caption, body, regular);
+  color: var(--wp--preset--color--text-secondary);
+}
+
+.checkout-summary-canut-total {
+  @include text-style(body-lg, display, medium);
+  color: var(--wp--preset--color--text-primary);
+}
+
+.checkout-summary-canut-button {
+  flex-shrink: 0;
+  width: auto;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}

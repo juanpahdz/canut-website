@@ -343,6 +343,14 @@ $canut-on-dark-muted: color-mix(in sRGB, var(--wp--preset--color--white) 75%, va
   flex-wrap: wrap;
   gap: var(--wp--preset--spacing--space-md);
 
+  // WooCommerce auto-inserts a "Ver carrito" link after the button once the
+  // AJAX add-to-cart succeeds - redundant next to the main button here.
+  // Needs the `.wc-forward` class too to outrank WooCommerce's own
+  // `.woocommerce a.added_to_cart { display: inline-block }` rule.
+  a.added_to_cart.wc-forward {
+    display: none;
+  }
+
   @media screen and (max-width: $breakpoint-mobile) {
     flex-direction: column;
 

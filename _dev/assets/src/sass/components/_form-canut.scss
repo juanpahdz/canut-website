@@ -94,6 +94,14 @@ $form-canut-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/200
   display: flex;
   flex-direction: column;
   gap: var(--wp--preset--spacing--space-xs);
+  // WooCommerce renders each field as <p class="form-row ... form-canut-group">
+  // - a <p> tag carries its own browser default margin, which stacked with
+  // the checkout step grid's own row-gap (views/_checkout-canut.scss) to
+  // roughly double the visual spacing between fields.
+  margin: 0;
+  // Positioning context for the > select chevron below - only takes effect
+  // where that path actually applies (no layout impact otherwise).
+  position: relative;
   width: 100%;
 
   > label {
@@ -105,6 +113,40 @@ $form-canut-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/200
     .optional {
       display: none;
     }
+  }
+
+  // Some field-type overrides (wc-dropi-integration's 'city' field type,
+  // registered via woocommerce_form_field_city - see StatesPlaces.php)
+  // rebuild the field from scratch instead of respecting the $field markup
+  // woocommerce_form_field() already built for them, skipping the
+  // <span class="woocommerce-input-wrapper"> below entirely - label and
+  // <select> end up direct children of this <p> instead. Same field look/
+  // chevron needed there too, or it's the one native-browser-styled select
+  // sitting next to every other custom-styled one.
+  > select {
+    @include form-canut-field;
+    appearance: none;
+    padding-right: calc(var(--wp--preset--spacing--space-md) + var(--wp--preset--spacing--space-sm));
+  }
+
+  // The chevron is positioned from the group's bottom edge (not centred on
+  // the select directly - ::after can't target a replaced form element) -
+  // safe since the <select> this targets is always this group's last child,
+  // making its own box a consistent height up from that edge regardless of
+  // how tall the label above happens to render.
+  &:has(> select)::after {
+    background-color: var(--wp--preset--color--text-secondary);
+    bottom: 1.1875rem;
+    content: '';
+    height: 1rem;
+    mask-image: $form-canut-chevron;
+    mask-position: center;
+    mask-repeat: no-repeat;
+    mask-size: contain;
+    pointer-events: none;
+    position: absolute;
+    right: var(--wp--preset--spacing--space-sm);
+    width: 1rem;
   }
 
   .woocommerce-input-wrapper {
@@ -121,13 +163,21 @@ $form-canut-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/200
       resize: vertical;
     }
 
+    // WooCommerce's own wc-country-select/wc-address-i18n scripts enhance
+    // country/state (and, after wc-dropi-integration's own JS swap, city)
+    // into a SelectWoo/select2 widget - the plain <select> this styles stays
+    // in the DOM but hidden (visually replaced by .select2-container), so
+    // both paths need the same field look/chevron.
     &:has(select) {
       input,
       select {
         appearance: none;
         padding-right: calc(var(--wp--preset--spacing--space-md) + var(--wp--preset--spacing--space-sm));
       }
+    }
 
+    &:has(select),
+    &:has(.select2-container) {
       &::after {
         background-color: var(--wp--preset--color--text-secondary);
         content: '';
@@ -142,8 +192,167 @@ $form-canut-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/200
         top: 50%;
         transform: translateY(-50%);
         width: 1rem;
+        z-index: 1;
       }
     }
+
+    .select2-container {
+      width: 100% !important;
+    }
+
+    // select2's own arrow is replaced by the shared chevron above.
+    .select2-selection__arrow {
+      display: none !important;
+    }
+
+    .select2-selection--single {
+      @include form-canut-field;
+      align-items: center;
+      display: flex !important;
+      height: auto !important;
+      padding-right: calc(var(--wp--preset--spacing--space-md) + var(--wp--preset--spacing--space-sm)) !important;
+    }
+
+    .select2-selection__rendered {
+      color: var(--wp--preset--color--text-primary) !important;
+      line-height: inherit !important;
+      padding: 0 !important;
+    }
+  }
+}
+
+// Inline validation error - WooCommerce's own validate_field (checkout.js,
+// already bound to every field's input/change/focusout) toggles
+// woocommerce-invalid on the field's <p class="form-row">, previously
+// unstyled since the theme dequeues WC's own default stylesheet (see
+// woocommerce_disable_default_styles(), inc/hooks/woocommerce.php). Reused
+// (not reimplemented) by modules/checkout-steps-canut.js's own "Continuar"
+// validation for the sequential checkout steps.
+.form-canut-group.woocommerce-invalid {
+  .woocommerce-input-wrapper input,
+  .woocommerce-input-wrapper select,
+  .woocommerce-input-wrapper textarea,
+  > select {
+    border-color: var(--wp--preset--color--error);
+  }
+}
+
+// Phone field: country-code select + number input rendered as one merged
+// control (checkout_render_phone_field() in inc/hooks/checkout.php - a
+// compound field woocommerce_form_field() can't produce on its own).
+// Self-contained rather than reusing .form-canut-group's own
+// .woocommerce-input-wrapper treatment above - that assumes exactly one
+// input/select/textarea per field, and its :has(select) chevron would
+// otherwise render across the whole merged group instead of just over the
+// code select.
+.form-canut-phone-group {
+  display: flex;
+
+  .input-canut {
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+    flex-grow: 1;
+    min-width: 0;
+
+    &:focus {
+      position: relative;
+      z-index: 1;
+    }
+  }
+}
+
+.form-canut-phone-code {
+  flex-shrink: 0;
+  // Wide enough for the longest option (flag + 3-digit code, e.g. "🇪🇨 +593")
+  // at the field's own font size - the shared .select-canut-wrap chevron
+  // padding (built for a full-width field) left too little room otherwise,
+  // clipping the code's last digit.
+  width: 8rem;
+
+  .select-canut {
+    border-bottom-right-radius: 0;
+    border-right: 0;
+    border-top-right-radius: 0;
+    padding-right: calc(var(--wp--preset--spacing--space-xs) + 1rem);
+  }
+
+  // Tighter chevron offset to match the reduced padding-right above (the
+  // default .select-canut-wrap::after position assumes the wider padding a
+  // full-size field gets).
+  &::after {
+    right: var(--wp--preset--spacing--space-xs);
+  }
+}
+
+// "Add another phone number" repeater under the contact step's primary phone
+// field (checkout_render_additional_phones(), inc/hooks/checkout.php;
+// modules/checkout-steps-canut.js clones its <template> row on "Agregar otro
+// número"). Each row reuses .form-canut-phone-group/.form-canut-phone-code
+// above, plus its own remove button.
+.form-canut-phone-repeater {
+  margin-top: var(--wp--preset--spacing--space-sm);
+}
+
+.form-canut-phone-repeater-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-sm);
+}
+
+.form-canut-phone-additional-row {
+  align-items: center;
+  display: flex;
+  gap: var(--wp--preset--spacing--space-xs);
+  margin-bottom: var(--wp--preset--spacing--space-sm);
+
+  .form-canut-phone-group {
+    flex-grow: 1;
+  }
+}
+
+.form-canut-phone-remove {
+  align-items: center;
+  background-color: transparent;
+  border: 0;
+  color: var(--wp--preset--color--text-secondary);
+  cursor: pointer;
+  display: flex;
+  flex-shrink: 0;
+  padding: var(--wp--preset--spacing--space-xs);
+
+  svg {
+    height: 1.25rem;
+    width: 1.25rem;
+  }
+
+  &:hover,
+  &:focus {
+    color: var(--wp--preset--color--error);
+  }
+}
+
+.form-canut-phone-add {
+  @include text-style(caption, body, regular);
+  align-items: center;
+  background-color: transparent;
+  border: 0;
+  color: var(--wp--preset--color--accent-dark);
+  cursor: pointer;
+  display: inline-flex;
+  gap: var(--wp--preset--spacing--space-xs);
+  padding: 0;
+
+  // Same author-vs-UA-stylesheet specificity gotcha as .checkout-coupon-canut-panel
+  // (_checkout-canut.scss) - `display: inline-flex` above would otherwise win
+  // over the browser's own `[hidden] { display: none }` regardless of the
+  // attribute.
+  &[hidden] {
+    display: none;
+  }
+
+  svg {
+    height: 1rem;
+    width: 1rem;
   }
 }
 

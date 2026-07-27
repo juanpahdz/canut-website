@@ -71,6 +71,66 @@ function cart_quantity_discount_total( $cart ) {
 } // end cart_quantity_discount_total
 
 /**
+ * Render the "¡Lleva X y ahorra Y%!" upsell card for a cart line that
+ * qualifies for the quantity discount but hasn't reached the minimum yet -
+ * shared by the cart drawer (template-parts/cart/drawer-content.php) and the
+ * checkout order-summary card (woocommerce/checkout/review-order.php) so
+ * both show identical copy instead of two hand-kept-in-sync copies. The
+ * button carries both data-canut-cart-qty (drawer's modules/cart-drawer.js)
+ * and data-checkout-summary-canut-qty (modules/checkout-canut.js) - each
+ * script only ever looks for its own attribute, on buttons inside its own
+ * scoped container, so the unused one on either page is inert.
+ *
+ * @param string      $cart_item_key
+ * @param \WC_Product $product
+ * @param int         $quantity Current quantity of this line.
+ */
+function render_qty_discount_upsell( $cart_item_key, $product, $quantity ) {
+  if ( ! qty_discount_is_enabled_for( $product->get_id() ) ) {
+    return;
+  }
+
+  $remaining = max( 0, qty_discount_min_qty_for( $product->get_id() ) - $quantity );
+
+  if ( $remaining <= 0 ) {
+    return;
+  }
+  ?>
+  <div class="cart-upsell-canut">
+    <div class="cart-upsell-canut-icon">
+      <?php require get_theme_file_path( 'assets/svg/icon-gift.svg' ); ?>
+    </div>
+    <div class="cart-upsell-canut-body">
+      <p class="cart-upsell-canut-title">
+        <?php echo esc_html( sprintf(
+          /* translators: 1: minimum quantity, 2: discount percentage. */
+          __( '¡Lleva %1$d y ahorra %2$s%%!', 'air-light' ),
+          qty_discount_min_qty_for( $product->get_id() ),
+          rtrim( rtrim( number_format( qty_discount_percent_for( $product->get_id() ), 1 ), '0' ), '.' )
+        ) ); ?>
+      </p>
+      <p class="cart-upsell-canut-text">
+        <?php echo esc_html( sprintf(
+          /* translators: %s: product name. */
+          __( 'Agrega otra unidad de %s', 'air-light' ),
+          $product->get_name()
+        ) ); ?>
+      </p>
+    </div>
+    <button
+      type="button"
+      class="cart-upsell-canut-button"
+      data-canut-cart-qty="increase"
+      data-checkout-summary-canut-qty="increase"
+      data-cart-item-key="<?php echo esc_attr( $cart_item_key ); ?>"
+    >
+      <?php echo esc_html__( '+ Agregar', 'air-light' ); ?>
+    </button>
+  </div>
+  <?php
+} // end render_qty_discount_upsell
+
+/**
  * @param \WC_Cart $cart Current cart.
  */
 function cart_quantity_discount_fee( $cart ) {

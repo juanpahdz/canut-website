@@ -74,11 +74,40 @@ div.product {
   }
 }
 
+// WooCommerce's own notices (added to cart, coupon applied, checkout
+// errors, etc.) - core's default woocommerce.css is dequeued sitewide
+// (inc/hooks/woocommerce.php, woocommerce_disable_default_styles()) in
+// favour of the CANUT design system, so these need an equivalent here.
 .woocommerce-message,
 .woocommerce-error,
 .woocommerce-info {
-  border-top: 3px solid var(--wp--preset--color--black);
+  @include canut-radius(md);
+  @include text-style(small, body, regular);
+  align-items: center;
+  background-color: color-mix(in sRGB, var(--wp--preset--color--success) 12%, var(--wp--preset--color--bg-surface));
+  border: 1px solid color-mix(in sRGB, var(--wp--preset--color--border) 50%, transparent);
+  color: var(--wp--preset--color--text-primary);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--wp--preset--spacing--space-sm);
+  justify-content: space-between;
   list-style: none;
-  margin: 0 0 var(--wp--preset--spacing--l);
-  padding: var(--wp--preset--spacing--m);
+  margin: 0 0 var(--wp--preset--spacing--space-lg);
+  padding: var(--wp--preset--spacing--space-md);
+
+  .button {
+    @include text-style(caption, body, bold);
+    @include canut-radius(btn);
+    background-color: var(--wp--preset--color--primary-dark);
+    color: var(--wp--preset--color--white);
+    display: inline-block;
+    padding: var(--wp--preset--spacing--space-xs) var(--wp--preset--spacing--space-sm);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+}
+
+.woocommerce-error {
+  background-color: color-mix(in sRGB, #cc1818 8%, var(--wp--preset--color--bg-surface));
+  border-color: color-mix(in sRGB, #cc1818 30%, transparent);
 }

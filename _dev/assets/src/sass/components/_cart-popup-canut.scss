@@ -9,6 +9,7 @@
   background-color: var(--wp--preset--color--bg-base);
   border: 1px solid var(--wp--preset--color--border);
   display: flex;
+  flex-wrap: wrap;
   gap: var(--wp--preset--spacing--space-sm);
   padding: var(--wp--preset--spacing--space-sm);
 }
@@ -60,9 +61,15 @@
   border: 0;
   color: var(--wp--preset--color--white);
   cursor: pointer;
-  flex-shrink: 0;
+
+  // flex: 1 1 100% (parent's flex-wrap: wrap, shared rule above) always
+  // pushes this onto its own full-width row below the icon+body one,
+  // instead of competing with them for space and squeezing the title/text
+  // down to a two-or-three-word-per-line column on a narrow phone screen.
+  flex: 1 1 100%;
+  margin-top: var(--wp--preset--spacing--space-xs);
   padding: var(--wp--preset--spacing--space-xs) var(--wp--preset--spacing--space-sm);
-  white-space: nowrap;
+  text-align: center;
 
   &:hover,
   &:focus {
