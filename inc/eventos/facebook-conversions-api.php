@@ -302,12 +302,24 @@ function facebook_capi_cart_contents( $cart ) {
  */
 function send_facebook_event( $event_name, $args = [] ) {
   if ( ! facebook_pixel_is_configured() ) {
+    facebook_capi_debug_log( [
+      'event'  => $event_name,
+      'sent'   => false,
+      'reason' => 'not_configured',
+    ] );
+
     return false;
   }
 
   $dedup_key = $args['dedup_key'] ?? null;
 
   if ( $dedup_key && facebook_event_already_sent( $event_name, $dedup_key ) ) {
+    facebook_capi_debug_log( [
+      'event'  => $event_name,
+      'sent'   => false,
+      'reason' => 'deduped',
+    ] );
+
     return false;
   }
 
@@ -340,6 +352,12 @@ function send_facebook_event( $event_name, $args = [] ) {
   if ( is_wp_error( $response ) ) {
     error_log( sprintf( '[Facebook Conversions API] %s: %s', $event_name, $response->get_error_message() ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- deliberate: surfaces delivery failures for a fire-and-forget background request with no other visible feedback.
 
+    facebook_capi_debug_log( [
+      'event'  => $event_name,
+      'sent'   => false,
+      'reason' => 'request_failed: ' . $response->get_error_message(),
+    ] );
+
     return false;
   }
 
@@ -348,6 +366,12 @@ function send_facebook_event( $event_name, $args = [] ) {
   if ( $status < 200 || $status >= 300 ) {
     error_log( sprintf( '[Facebook Conversions API] %s: HTTP %d - %s', $event_name, $status, wp_remote_retrieve_body( $response ) ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- see above.
 
+    facebook_capi_debug_log( [
+      'event'  => $event_name,
+      'sent'   => false,
+      'reason' => 'http_' . $status,
+    ] );
+
     return false;
   }
 
@@ -355,5 +379,38 @@ function send_facebook_event( $event_name, $args = [] ) {
     facebook_mark_event_sent( $event_name, $dedup_key, $args['dedup_ttl'] ?? HOUR_IN_SECONDS );
   }
 
+  facebook_capi_debug_log( [
+    'event' => $event_name,
+    'sent'  => true,
+  ] );
+
   return true;
 } // end send_facebook_event
+
+/**
+ * TEMPORARY debug aid for confirming InitiateCheckout/AddContactInfo/
+ * AddShippingInfo/AddPaymentInfo actually fire at the right moments while
+ * testing the checkout wizard - see inc/eventos/initiate-checkout.php (echoes
+ * this to the console on page load) and inc/hooks/checkout-step-actions.php
+ * (returns this in the step-confirm AJAX response, logged client-side by
+ * postStepContinued() in modules/checkout-steps-canut.js). Only ever recorded/
+ * surfaced when WP_DEBUG is on, never in production. Safe to remove, along
+ * with its two call sites above, once the four events are confirmed firing
+ * correctly.
+ *
+ * @param array|null $entry Entry to record (['event' => string, 'sent' => bool, 'reason' => string]), or null to just read the log so far.
+ * @return array Entries recorded so far this request.
+ */
+function facebook_capi_debug_log( $entry = null ) {
+  static $log = [];
+
+  if ( ! defined( 'WP_DEBUG' ) || ! WP_DEBUG ) {
+    return $log;
+  }
+
+  if ( null !== $entry ) {
+    $log[] = $entry;
+  }
+
+  return $log;
+} // end facebook_capi_debug_log

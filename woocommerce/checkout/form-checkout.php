@@ -47,6 +47,14 @@ namespace Air_Light;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Restored to match core's own form-checkout.php position (before the
+ * registration check, before <form> even opens) - this rewrite had dropped
+ * it entirely, which silently broke inc/eventos/initiate-checkout.php (hooked
+ * here) and made the InitiateCheckout Conversions API event never fire.
+ */
+do_action( 'woocommerce_before_checkout_form', $checkout );
+
 if ( ! $checkout->is_registration_enabled() && $checkout->is_registration_required() && ! is_user_logged_in() ) {
   echo esc_html( apply_filters( 'woocommerce_checkout_must_be_logged_in_message', __( 'You must be logged in to checkout.', 'woocommerce' ) ) );
   return;

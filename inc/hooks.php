@@ -173,5 +173,6 @@ require get_theme_file_path( 'inc/eventos/add-shipping-info.php' );
 require get_theme_file_path( 'inc/eventos/add-payment-info.php' );
 require get_theme_file_path( 'inc/eventos/initiate-payment.php' );
 require get_theme_file_path( 'inc/eventos/purchase.php' );
+require get_theme_file_path( 'inc/eventos/purchase-failed.php' );
 require get_theme_file_path( 'inc/eventos/lead.php' );
 require get_theme_file_path( 'inc/eventos/complete-registration.php' );

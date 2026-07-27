@@ -63,7 +63,19 @@ function checkout_step_continue() {
    */
   do_action( __NAMESPACE__ . '\checkout_step_continued', $step, $form_data, $accepted_at );
 
-  wp_send_json_success();
+  $response = [];
+
+  // TEMPORARY debug aid, WP_DEBUG only - surfaces which Facebook Conversions
+  // API events (AddContactInfo/AddShippingInfo/AddPaymentInfo) fired for this
+  // step confirmation, logged client-side by postStepContinued() in
+  // modules/checkout-steps-canut.js. See facebook_capi_debug_log()'s own
+  // docblock (inc/eventos/facebook-conversions-api.php). Safe to remove once
+  // those three events are confirmed firing at the right step.
+  if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+    $response['fb_capi_debug'] = facebook_capi_debug_log();
+  }
+
+  wp_send_json_success( $response );
 } // end checkout_step_continue
 add_action( 'wp_ajax_canut_checkout_step_continue', __NAMESPACE__ . '\checkout_step_continue' );
 add_action( 'wp_ajax_nopriv_canut_checkout_step_continue', __NAMESPACE__ . '\checkout_step_continue' );

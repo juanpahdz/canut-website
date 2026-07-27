@@ -267,6 +267,10 @@ $canut-on-dark-muted: color-mix(in sRGB, var(--wp--preset--color--white) 75%, va
   }
 }
 
+.home-featured-product-media a {
+  display: block;
+}
+
 .home-featured-product-media img {
   @include canut-radius(lg);
   @include canut-shadow(card);
@@ -293,6 +297,16 @@ $canut-on-dark-muted: color-mix(in sRGB, var(--wp--preset--color--white) 75%, va
   @include text-style(h-2, display, regular);
   color: var(--wp--preset--color--text-primary);
   margin: 0 0 var(--wp--preset--spacing--space-md);
+
+  a {
+    color: currentColor;
+    text-decoration: none;
+
+    &:hover,
+    &:focus {
+      text-decoration: underline;
+    }
+  }
 }
 
 .home-featured-product-description {

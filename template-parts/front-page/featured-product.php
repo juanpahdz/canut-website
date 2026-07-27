@@ -33,6 +33,7 @@ $cta_primary_label   = $args['cta_primary_label'] ?? __( 'Comprar ahora', 'air-l
 $cta_primary_url     = $args['cta_primary_url'] ?? home_url( '/tienda/' );
 $cta_secondary_label = $args['cta_secondary_label'] ?? __( 'Especificaciones', 'air-light' );
 $cta_secondary_url   = $args['cta_secondary_url'] ?? '#';
+$product_url         = $product instanceof \WC_Product ? $product->get_permalink() : $cta_secondary_url;
 
 ?>
 
@@ -40,16 +41,18 @@ $cta_secondary_url   = $args['cta_secondary_url'] ?? '#';
   <div class="wrap-canut home-featured-product-inner">
 
     <div class="home-featured-product-media">
-      <img
-        src="<?php echo esc_url( $image['url'] ); ?>"
-        alt="<?php echo esc_attr( $image['alt'] ); ?>"
-        loading="lazy"
-      >
+      <a href="<?php echo esc_url( $product_url ); ?>">
+        <img
+          src="<?php echo esc_url( $image['url'] ); ?>"
+          alt="<?php echo esc_attr( $image['alt'] ); ?>"
+          loading="lazy"
+        >
+      </a>
     </div>
 
     <div class="home-featured-product-content">
       <span class="home-featured-product-eyebrow"><?php echo esc_html( $eyebrow ); ?></span>
-      <h2 class="home-featured-product-title"><?php echo esc_html( $title ); ?></h2>
+      <h2 class="home-featured-product-title"><a href="<?php echo esc_url( $product_url ); ?>"><?php echo esc_html( $title ); ?></a></h2>
       <p class="home-featured-product-description"><?php echo esc_html( $description ); ?></p>
       <?php if ( $specs ) : ?>
         <ul class="home-featured-product-specs">

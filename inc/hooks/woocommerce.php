@@ -155,6 +155,36 @@ function register_shop_filter_attributes() {
 } // end register_shop_filter_attributes
 
 /**
+ * "Reintentar pago"/"Cambiar método de pago" on template-parts/order/failed.php
+ * both link to $order->get_checkout_payment_url() - WooCommerce's own
+ * order-pay endpoint refuses to render anything for it unless
+ * WC_Order::needs_payment() says so, which checks the order's status against
+ * this filter. Core's own default is ['pending', 'failed'] only, so a
+ * 'cancelled' or 'voided' order hits order_pay()'s own
+ * "This order's status is ... it cannot be paid for" exception instead of the
+ * payment form - exactly what shows up as "El estado de este pedido es
+ * «Cancelado». No se ha podido pagar." on that page.
+ *
+ * The Wompi webhook handler (wompi-portal-de-pagos/includes/class-wompi-portal-pagos-webhook-handler.php)
+ * sets 'cancelled' on a DECLINED transaction and its own custom 'voided'
+ * status on a VOIDED one - neither ever actually captured a charge, so both
+ * are legitimate to retry. 'refunded' is deliberately left out: that status
+ * means a charge DID succeed at some point, and letting a customer "retry
+ * payment" on it risks a second, confusing charge instead.
+ *
+ * @param string[]  $statuses Statuses eligible for payment, without the 'wc-' prefix.
+ * @param \WC_Order $order    Order being checked.
+ * @return string[]
+ */
+add_filter( 'woocommerce_valid_order_statuses_for_payment', __NAMESPACE__ . '\woocommerce_allow_pay_for_declined_orders', 10, 2 );
+function woocommerce_allow_pay_for_declined_orders( $statuses, $order ) {
+  $statuses[] = 'cancelled';
+  $statuses[] = 'voided';
+
+  return $statuses;
+} // end woocommerce_allow_pay_for_declined_orders
+
+/**
  * WooCommerce's own "Product gallery" admin metabox
  * (WC_Meta_Box_Product_Images::output()) renders each gallery attachment
  * with wp_get_attachment_image( $id, 'thumbnail' ) to build its preview

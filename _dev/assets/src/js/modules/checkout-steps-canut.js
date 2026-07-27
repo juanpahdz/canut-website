@@ -159,19 +159,53 @@ const confirmStep = (step) => {
 const postStepContinued = (stepNumber) => {
   const config = window.air_light_checkoutStepActions;
   const form = document.querySelector('form.checkout');
-  if (!config || !form || !window.jQuery) return;
+  if (!config || !form || !window.jQuery) {
+    // TEMPORARY debug aid, unconditional (no server round trip happened yet
+    // to gate on WP_DEBUG) - see the .done()/.fail() logging below for why
+    // this matters: if this fires, postStepContinued() never even attempted
+    // the request, so no AddContactInfo/AddShippingInfo/AddPaymentInfo debug
+    // log will ever appear for this step. Safe to remove together with them.
+    // eslint-disable-next-line no-console
+    console.warn(`[FB CAPI] step ${stepNumber}: request not sent`, {
+      hasConfig: !!config,
+      hasForm: !!form,
+      hasJQuery: !!window.jQuery,
+    });
+    return;
+  }
 
-  window.jQuery.ajax({
-    type: 'POST',
-    url: config.ajax_url,
-    data: {
-      action: 'canut_checkout_step_continue',
-      nonce: config.nonce,
-      step: stepNumber,
-      accepted_at: new Date().toISOString(),
-      form_data: window.jQuery(form).serialize(),
-    },
-  });
+  window.jQuery
+    .ajax({
+      type: 'POST',
+      url: config.ajax_url,
+      data: {
+        action: 'canut_checkout_step_continue',
+        nonce: config.nonce,
+        step: stepNumber,
+        accepted_at: new Date().toISOString(),
+        form_data: window.jQuery(form).serialize(),
+      },
+    })
+    // TEMPORARY debug aid: server only includes fb_capi_debug when WP_DEBUG
+    // is on (see checkout_step_continue(), inc/hooks/checkout-step-actions.php)
+    // - lets the Facebook Conversions API events fired for this step be
+    // confirmed from the browser console. Doesn't delay/block the wizard,
+    // same as the fire-and-forget call above. Safe to remove once
+    // AddContactInfo/AddShippingInfo/AddPaymentInfo are confirmed firing at
+    // the right step.
+    .done((response) => {
+      if (response && response.data && response.data.fb_capi_debug) {
+        // eslint-disable-next-line no-console
+        console.log(`[FB CAPI] step ${stepNumber} confirmed:`, response.data.fb_capi_debug);
+      } else {
+        // eslint-disable-next-line no-console
+        console.log(`[FB CAPI] step ${stepNumber} confirmed: request succeeded, no debug data (WP_DEBUG off?)`, response);
+      }
+    })
+    .fail((jqXHR) => {
+      // eslint-disable-next-line no-console
+      console.warn(`[FB CAPI] step ${stepNumber}: request failed`, jqXHR.status, jqXHR.responseText);
+    });
 };
 
 const handleContinueContact = (step) => {
@@ -446,8 +480,21 @@ const getIncompleteStep = () => Array.from(document.querySelectorAll('.checkout-
  * tools, anything besides clicking through every "Continuar" button in
  * order). A locked step's fields stay in the DOM, just hidden
  * (views/_checkout-canut.scss's is-locked rule) - not disabled - so their
- * current values (including a pre-selected default payment/shipping method)
- * would otherwise still post along with the form.
+ * current values (including a pre-selected default payment/shipping method,
+ * or values the browser's own autofill silently poured into a still-hidden
+ * step the customer never actually looked at) would otherwise still post
+ * along with the form.
+ *
+ * Deliberately only scrolls to the incomplete step and stops there - it used
+ * to also synthesize a click on that step's own "Continuar" button
+ * (confirming it exactly as if the customer had reviewed and clicked
+ * through), which meant a step whose fields already read as valid - because
+ * autofill had filled them in while the section was still is-locked, not
+ * the customer typing - got silently marked is-confirmed by the very submit
+ * attempt this function exists to block. isStepIncomplete()/confirmStep()
+ * must only ever be set from a real click on [data-step-continue]
+ * (handleContinueContact/Address/Payment below); a blocked submit is never
+ * allowed to count as one, no matter how many times it's retried.
  *
  * Registered on `document` with `capture: true`, which fires during the
  * capturing phase - before the event even reaches `form.checkout`, so before
@@ -474,18 +521,7 @@ const blockSubmitUntilStepsConfirmed = () => {
 
       event.preventDefault();
       event.stopImmediatePropagation();
-
-      // Reuses that step's own "Continuar" button - same validation/focus
-      // behaviour as if the customer had clicked it themselves - rather than
-      // reimplementing it here. Locked steps have no reachable continue
-      // button (an earlier one hasn't been confirmed yet either); just
-      // surface that step instead.
-      const continueButton = incompleteStep.querySelector('[data-step-continue]');
-      if (continueButton && !incompleteStep.classList.contains('is-locked')) {
-        continueButton.click();
-      } else {
-        scrollToStep(incompleteStep);
-      }
+      scrollToStep(incompleteStep);
     },
     true,
   );

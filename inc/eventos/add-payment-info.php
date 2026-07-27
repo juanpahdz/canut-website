@@ -1,39 +1,47 @@
 <?php
 /**
- * AddPaymentInfo: fired when a customer has a payment method selected at
- * checkout, right before they place the order - narrows the funnel further
- * between "reached checkout" (InitiateCheckout) and "order placed".
+ * AddPaymentInfo: fired when the customer confirms the "Método de pago" step
+ * (step 3) and the wizard advances to "Método de envío" - narrows the funnel
+ * further between "reached checkout" (InitiateCheckout) and "order placed".
  *
- * woocommerce_checkout_update_order_review is core's own AJAX hook, fired
- * every time classic checkout's checkout.js posts an updated order review
- * (address change, payment method change, shipping method change, coupon
- * apply - see inc/hooks/checkout.php for other consumers of this same AJAX
- * cycle). $post_data is the serialized checkout form, so it's only actually
- * an AddPaymentInfo-worthy update when it carries a payment_method - and
- * deduped against the WooCommerce session (see add-contact-info.php for the
- * same mechanism) so it only sends once per distinct payment method/cart
- * combo for the whole checkout session, not on every unrelated field edit
- * the same AJAX cycle also runs for, and not a spurious resend just because
- * time passed with the same method still selected.
+ * Hooks Air_Light\checkout_step_continued (inc/hooks/checkout-step-actions.php),
+ * same step-confirmation signal add-contact-info.php/add-shipping-info.php
+ * use, fired once per "Continuar" click on step 3, with $form_data being the
+ * whole checkout form parsed from its serialized string (unsanitized,
+ * sanitized here same as those files). Previously hooked
+ * woocommerce_checkout_update_order_review, core's own AJAX hook fired by
+ * checkout.js right after page load to quote initial shipping/totals - by
+ * then a payment gateway is already force-checked to a default by core
+ * itself (see WC_Payment_Gateways/checkout.js init_payment_methods()), so
+ * that first AJAX call already carried a payment_method and fired this
+ * immediately at checkout start, before the customer had chosen (or even
+ * seen) a payment method.
+ *
+ * Still deduped against the WooCommerce session so re-confirming the same
+ * step (e.g. via "Modificar") with an unchanged payment method doesn't
+ * resend.
  *
  * @package air-light
  */
 
 namespace Air_Light;
 
-add_action( 'woocommerce_checkout_update_order_review', __NAMESPACE__ . '\send_add_payment_info_event' );
+add_action( __NAMESPACE__ . '\checkout_step_continued', __NAMESPACE__ . '\send_add_payment_info_event', 10, 2 );
 
 /**
- * @param string $post_data Serialized checkout form fields (query-string encoded).
+ * @param int   $step      Confirmed step number.
+ * @param array $form_data Whole checkout form, unsanitized (see checkout_step_continue()).
  */
-function send_add_payment_info_event( $post_data ) {
+function send_add_payment_info_event( $step, $form_data ) {
+  if ( 3 !== $step ) {
+    return;
+  }
+
   if ( ! function_exists( 'WC' ) || ! WC()->cart || WC()->cart->is_empty() ) {
     return;
   }
 
-  parse_str( (string) $post_data, $data );
-
-  $payment_method = isset( $data['payment_method'] ) ? sanitize_text_field( $data['payment_method'] ) : '';
+  $payment_method = isset( $form_data['payment_method'] ) ? sanitize_text_field( $form_data['payment_method'] ) : '';
 
   if ( ! $payment_method ) {
     return;

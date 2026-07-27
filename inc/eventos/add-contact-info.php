@@ -1,38 +1,46 @@
 <?php
 /**
  * AddContactInfo (custom event - Meta has no standard event for "checkout
- * contact step completed"): fired once the checkout form has a valid email
- * and a phone number, i.e. the "Información de contacto" step's fields are
- * actually filled in. Configurable event name, see Ajustes > Facebook Pixel.
+ * contact step completed"): fired when the customer confirms the
+ * "Información de contacto" step (step 1) and the wizard advances to "Envío"
+ * - not on every field blur while they're still typing. Configurable event
+ * name, see Ajustes > Facebook Pixel.
  *
- * Same mechanism as add-payment-info.php: woocommerce_checkout_update_order_review
- * is core's own AJAX hook, fired on every field edit/blur during checkout,
- * so it's gated on the actual field values (not just "the hook fired") and
- * deduped against the WooCommerce session so it only sends once per distinct
- * email+phone combo for the whole checkout session - not on every unrelated
- * field the same AJAX cycle also runs for (address, payment method, ...),
- * and not a spurious resend just because the customer took a while filling
- * in the rest of the form.
+ * Hooks Air_Light\checkout_step_continued (inc/hooks/checkout-step-actions.php),
+ * the same step-confirmation signal inc/hooks/data-consent.php already
+ * listens to - fired once per "Continuar" click on step 1, with $form_data
+ * being the whole checkout form parsed from its serialized string
+ * (unsanitized, sanitized here same as data-consent.php). Previously hooked
+ * woocommerce_checkout_update_order_review, core's AJAX hook that fires on
+ * any field edit/blur anywhere in the form, which sent this the moment a
+ * valid-looking email+phone existed - often while still on step 1, well
+ * before the customer actually confirmed it.
+ *
+ * Still deduped against the WooCommerce session so re-confirming the same
+ * step (e.g. via "Modificar") with an unchanged email+phone doesn't resend.
  *
  * @package air-light
  */
 
 namespace Air_Light;
 
-add_action( 'woocommerce_checkout_update_order_review', __NAMESPACE__ . '\send_add_contact_info_event' );
+add_action( __NAMESPACE__ . '\checkout_step_continued', __NAMESPACE__ . '\send_add_contact_info_event', 10, 2 );
 
 /**
- * @param string $post_data Serialized checkout form fields (query-string encoded).
+ * @param int   $step      Confirmed step number.
+ * @param array $form_data Whole checkout form, unsanitized (see checkout_step_continue()).
  */
-function send_add_contact_info_event( $post_data ) {
+function send_add_contact_info_event( $step, $form_data ) {
+  if ( 1 !== $step ) {
+    return;
+  }
+
   if ( ! function_exists( 'WC' ) || ! WC()->cart || WC()->cart->is_empty() ) {
     return;
   }
 
-  parse_str( (string) $post_data, $data );
-
-  $email = isset( $data['billing_email'] ) ? sanitize_email( $data['billing_email'] ) : '';
-  $phone = isset( $data['billing_phone'] ) ? sanitize_text_field( $data['billing_phone'] ) : '';
+  $email = isset( $form_data['billing_email'] ) ? sanitize_email( $form_data['billing_email'] ) : '';
+  $phone = isset( $form_data['billing_phone'] ) ? sanitize_text_field( $form_data['billing_phone'] ) : '';
 
   if ( ! is_email( $email ) || ! $phone ) {
     return;

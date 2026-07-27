@@ -39,4 +39,14 @@ function send_initiate_checkout_event() {
   send_facebook_event( 'InitiateCheckout', [
     'custom_data' => array_merge( [ 'content_type' => 'product' ], $cart_contents ),
   ] );
+
+  // TEMPORARY debug aid, WP_DEBUG only - see facebook_capi_debug_log()'s own
+  // docblock (inc/eventos/facebook-conversions-api.php). Safe to remove once
+  // InitiateCheckout is confirmed firing on checkout page load.
+  if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+    printf(
+      '<script>console.log("[FB CAPI] InitiateCheckout:", %s);</script>',
+      wp_json_encode( facebook_capi_debug_log() )
+    );
+  }
 } // end send_initiate_checkout_event
