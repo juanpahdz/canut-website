@@ -18,12 +18,18 @@ namespace Air_Light;
 add_action( 'woocommerce_before_checkout_form', __NAMESPACE__ . '\send_initiate_checkout_event' );
 
 /**
- * Sends InitiateCheckout for the current cart. No dedup guard here on
- * purpose, same reasoning as ViewContent: woocommerce_before_checkout_form
- * fires once per real checkout page load, and a visitor leaving checkout and
- * coming back later to try again is a genuine new InitiateCheckout, not a
- * repeat to suppress - matching how a client-side Facebook pixel would fire
- * this event on every checkout page load too.
+ * Sends InitiateCheckout for the current cart. Short dedup window (same
+ * reasoning as lead.php's own dedup_key - an accidental double submit, not a
+ * genuinely repeated action) rather than none: woocommerce_before_checkout_form
+ * was assumed to fire exactly once per real checkout page load, but in
+ * practice a single visit can trigger it twice in quick succession (a
+ * double-click on the "go to checkout" link/button, or the browser
+ * prefetching it before the real navigation) - two distinct event_ids for the
+ * same cart landing in Events Manager a second apart. 15s is long enough to
+ * absorb that, short enough that a visitor who actually leaves and comes back
+ * to retry checkout still gets counted as a new InitiateCheckout almost
+ * immediately, matching how a client-side Facebook pixel would fire this
+ * event on every genuine checkout page load.
  */
 function send_initiate_checkout_event() {
   if ( ! function_exists( 'WC' ) || ! WC()->cart || WC()->cart->is_empty() ) {
@@ -37,6 +43,8 @@ function send_initiate_checkout_event() {
   }
 
   send_facebook_event( 'InitiateCheckout', [
+    'dedup_key'   => WC()->session ? WC()->session->get_customer_id() : '',
+    'dedup_ttl'   => 15,
     'custom_data' => array_merge( [ 'content_type' => 'product' ], $cart_contents ),
   ] );
 

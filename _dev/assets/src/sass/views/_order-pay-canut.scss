@@ -1,0 +1,53 @@
+// CANUT "pay for order" / retry-payment page (woocommerce/checkout/form-pay.php).
+// Reuses thank-you-canut's card/order-table (views/_thank-you-canut.scss),
+// the payment step's own payment-option-canut cards (views/_checkout-canut.scss's
+// ul.payment_methods rule) and button-canut/banner-canut - this only covers
+// the handful of layout pieces unique to this page (header, submit spacing).
+// stylelint-disable custom-property-pattern -- WP's own --wp--preset--* custom properties aren't kebab-case
+@use '../variables' as *;
+
+// Same full-width treatment as .thank-you-canut (views/_thank-you-canut.scss) -
+// .wrap-canut around this already gives the site's usual max-width/padding,
+// and body.woocommerce-checkout's own global-styles override (that file's
+// docblock) already uncaps .woocommerce from WordPress's 800px content-size
+// default, so no extra max-width is needed here either.
+.order-pay-canut {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-md);
+  padding: var(--wp--preset--spacing--space-lg) 0;
+  width: 100%;
+}
+
+.order-pay-canut-header {
+  text-align: center;
+}
+
+.order-pay-canut-title {
+  @include text-style(h-3, display, medium, h-3);
+  color: var(--wp--preset--color--text-primary);
+  margin: 0 0 var(--wp--preset--spacing--space-xs);
+}
+
+.order-pay-canut-subtitle {
+  @include text-style(small, body, regular);
+  color: var(--wp--preset--color--text-secondary);
+  margin: 0;
+}
+
+.order-pay-canut-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-md);
+}
+
+.order-pay-canut-submit {
+  margin-top: var(--wp--preset--spacing--space-md);
+
+  .button-canut-base {
+    svg {
+      height: 1em;
+      width: 1em;
+    }
+  }
+}
