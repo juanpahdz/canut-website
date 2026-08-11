@@ -16,3 +16,34 @@
     margin-top: var(--wp--preset--spacing--space-lg);
   }
 }
+
+// "Cuenta tu historia" CTA band, opens the submission dialog
+// (components/_historia-submit-canut.scss) - same brand-green banded CTA
+// shape as .soporte-bridge (views/_soporte.scss).
+.historia-archive-cta {
+  @include canut-radius(lg);
+  align-items: center;
+  background-color: var(--wp--preset--color--primary);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--wp--preset--spacing--space-md);
+  justify-content: space-between;
+  margin: 0 auto var(--wp--preset--spacing--space-xl);
+  max-width: var(--wp--style--global--wide-size);
+  padding: var(--wp--preset--spacing--space-lg);
+}
+
+.historia-archive-cta-content {
+  h2 {
+    @include text-style(h-2, display, regular);
+    color: var(--wp--preset--color--white);
+    margin: 0 0 var(--wp--preset--spacing--space-xs);
+  }
+
+  p {
+    @include text-style(body-lg, body, regular);
+    color: color-mix(in sRGB, var(--wp--preset--color--white) 75%, transparent);
+    margin: 0;
+    max-width: 34rem;
+  }
+}

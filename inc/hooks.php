@@ -160,6 +160,14 @@ require get_theme_file_path( 'inc/hooks/help-center.php' );
 require get_theme_file_path( 'inc/hooks/soporte.php' );
 
 /**
+ * Historia: shared query/render helpers, public "Cuenta tu historia"
+ * submission form (Turnstile-gated, Ajustes > Historias options page) and
+ * the legacy product-reviews migration
+ */
+require get_theme_file_path( 'inc/hooks/historia.php' );
+add_action( 'acf/init', __NAMESPACE__ . '\register_historia_options_page' );
+
+/**
  * Eventos: Facebook Pixel Conversions API (Ajustes > Facebook Pixel).
  * Backend-only, one file per event - see inc/eventos/facebook-conversions-api.php.
  */

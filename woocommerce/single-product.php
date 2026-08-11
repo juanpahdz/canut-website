@@ -241,28 +241,19 @@ while ( have_posts() ) :
     }
   }
 
-  $reviews_title        = $field( 'reviews_title' ) ?: __( 'Nuestros Clientes', 'air-light' );
-  $reviews_rating_score = $field( 'reviews_rating_score' ) ?: '4.9';
-  $reviews_rating_count = $field( 'reviews_rating_count' ) ?: __( '(124 reseñas)', 'air-light' );
-  $reviews              = [];
-
-  if ( $rows( 'reviews' ) ) {
-    while ( have_rows( 'reviews' ) ) {
-      the_row();
-      $review_image = get_sub_field( 'image' );
-      $reviews[]    = [
-        'name'  => get_sub_field( 'name' ),
-        'text'  => get_sub_field( 'text' ),
-        'image' => $review_image['url'] ?? '',
-      ];
-    }
-  } else {
-    $reviews = [
-      [ 'name' => 'Carolina M.', 'text' => __( 'Cambió mi vida y la de mi gato. Ya no me despierta a las 5 am para pedir comida. El diseño en madera es espectacular.', 'air-light' ), 'image' => get_theme_file_uri( 'assets/images/homepage/review-1.jpg' ) ],
-      [ 'name' => 'Andrés F.', 'text' => __( 'La cámara tiene una resolución increíble. Puedo ver a mi perro desde la oficina y hablarle. Es muy robusto y elegante.', 'air-light' ), 'image' => get_theme_file_uri( 'assets/images/homepage/review-2.jpg' ) ],
-      [ 'name' => 'Valentina R.', 'text' => __( 'La atención al cliente por WhatsApp es 10/10. Me ayudaron a configurar todo en 5 minutos. El mejor regalo que le he dado a mi mascota.', 'air-light' ), 'image' => get_theme_file_uri( 'assets/images/homepage/review-3.jpg' ) ],
-    ];
-  }
+  /**
+   * "Nuestros Clientes" is now driven entirely by Historia posts linked to
+   * this product (its `product` ACF field, see inc/acf-fields/historia.php)
+   * instead of the old per-product `reviews` repeater - see
+   * historia_query_for_product()/historia_rating_summary_for_product()
+   * (inc/hooks/historia.php). No placeholder data: when the product has no
+   * linked stories yet, $reviews_summary is null and $reviews is empty, and
+   * the render below shows an empty state inviting a visitor to write the
+   * first one instead of a fake score/reviews.
+   */
+  $reviews_title   = $field( 'reviews_title' ) ?: __( 'Nuestros Clientes', 'air-light' );
+  $reviews         = historia_query_for_product( $product->get_id(), 6 );
+  $reviews_summary = historia_rating_summary_for_product( $product->get_id() );
 
   $extended_faq_title       = $field( 'extended_faq_title' ) ?: __( 'Preguntas Frecuentes', 'air-light' );
   $extended_faq_image_field = $field( 'extended_faq_image' );
@@ -616,17 +607,27 @@ while ( have_posts() ) :
       <div class="product-reviews-header">
         <div>
           <h2 class="product-reviews-title"><?php echo esc_html( $reviews_title ); ?></h2>
-          <div class="product-reviews-rating">
-            <span class="product-reviews-rating-score"><?php echo esc_html( $reviews_rating_score ); ?></span>
-            <span class="product-reviews-rating-stars">
-              <?php for ( $i = 0; $i < 5; $i++ ) : ?>
-                <?php require get_theme_file_path( 'assets/svg/icon-star.svg' ); ?>
-              <?php endfor; ?>
-            </span>
-            <span class="product-reviews-rating-count"><?php echo esc_html( $reviews_rating_count ); ?></span>
-          </div>
+          <?php if ( $reviews_summary ) : ?>
+            <div class="product-reviews-rating">
+              <span class="product-reviews-rating-score"><?php echo esc_html( $reviews_summary['score'] ); ?></span>
+              <span class="product-reviews-rating-stars">
+                <?php for ( $i = 0; $i < $reviews_summary['score_rounded']; $i++ ) : ?>
+                  <?php require get_theme_file_path( 'assets/svg/icon-star.svg' ); ?>
+                <?php endfor; ?>
+              </span>
+              <span class="product-reviews-rating-count"><?php echo esc_html( $reviews_summary['count'] ); ?></span>
+            </div>
+          <?php endif; ?>
         </div>
-        <a href="#reviews" class="button-canut-base button-canut-secondary"><?php esc_html_e( 'Escribir reseña', 'air-light' ); ?></a>
+        <button
+          type="button"
+          class="button-canut-base button-canut-secondary"
+          data-canut-historia-open
+          data-canut-historia-product="<?php echo esc_attr( $product->get_id() ); ?>"
+          data-canut-historia-product-name="<?php echo esc_attr( get_the_title() ); ?>"
+        >
+          <?php esc_html_e( 'Escribir reseña', 'air-light' ); ?>
+        </button>
       </div>
 
       <?php if ( $reviews ) : ?>
@@ -639,7 +640,7 @@ while ( have_posts() ) :
                   <p class="product-reviews-card-verified"><?php esc_html_e( 'Compra verificada', 'air-light' ); ?></p>
                 </div>
                 <span class="product-reviews-card-stars">
-                  <?php for ( $i = 0; $i < 5; $i++ ) : ?>
+                  <?php for ( $i = 0; $i < (int) ( $review['rating'] ?? 5 ); $i++ ) : ?>
                     <?php require get_theme_file_path( 'assets/svg/icon-star.svg' ); ?>
                   <?php endfor; ?>
                 </span>
@@ -653,6 +654,8 @@ while ( have_posts() ) :
             </div>
           <?php endforeach; ?>
         </div>
+      <?php else : ?>
+        <p class="product-how-it-works-step-text"><?php esc_html_e( 'Todavía no hay historias de clientes para este producto. ¡Sé el primero en compartir la tuya!', 'air-light' ); ?></p>
       <?php endif; ?>
     </div>
   </div>

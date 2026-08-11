@@ -183,28 +183,20 @@ get_template_part( 'template-parts/front-page/emotional-branding', '', [
   'title' => get_field( 'emotional_title' ) ?: __( 'Vendemos tranquilidad', 'air-light' ),
 ] );
 
-$featured_historias = new \WP_Query( [
-  'post_type'      => 'historia',
-  'posts_per_page' => 12,
-  'meta_key'       => 'is_featured', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-  'meta_value'     => '1', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
-  'orderby'        => 'menu_order',
-  'order'          => 'ASC',
-] );
+// 5 random, well-rated (rating >= 4) published stories - see historia_query_random_for_homepage() (inc/hooks/historia.php).
+$featured_historias = historia_query_random_for_homepage( 5, 4 );
 
 $historias = [];
 if ( $featured_historias->have_posts() ) {
-  while ( $featured_historias->have_posts() ) {
-    $featured_historias->the_post();
-    $historia_id = get_the_ID();
+  foreach ( $featured_historias->posts as $historia ) {
+    $card_args   = historia_get_card_args( $historia->ID );
     $historias[] = [
-      'image'  => homepage_canut_image( [ 'url' => get_the_post_thumbnail_url( $historia_id, 'medium' ), 'alt' => get_the_title() ], 'review-1.jpg', get_the_title() ),
-      'rating' => (int) ( get_field( 'rating', $historia_id ) ?: 5 ),
-      'quote'  => get_field( 'quote', $historia_id ),
-      'author' => get_the_title(),
+      'image'  => homepage_canut_image( $card_args['image'], 'review-1.jpg', $card_args['author'] ),
+      'rating' => $card_args['rating'],
+      'quote'  => $card_args['quote'],
+      'author' => $card_args['author'],
     ];
   }
-  wp_reset_postdata();
 }
 if ( ! $historias ) {
   $historias = [
