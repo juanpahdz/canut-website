@@ -15,16 +15,7 @@ if ( ! function_exists( 'acf_add_local_field_group' ) ) {
   return;
 }
 
-$icon_choices = [
-  'pencil-ruler' => __( 'Regla y lápiz (diseño)', 'air-light' ),
-  'medal'        => __( 'Medalla (calidad)', 'air-light' ),
-  'brain'        => __( 'Cerebro (ciencia)', 'air-light' ),
-  'whatsapp'     => __( 'WhatsApp (servicio)', 'air-light' ),
-  'shield-check' => __( 'Escudo (garantía)', 'air-light' ),
-  'chat-circle'  => __( 'Chat (soporte)', 'air-light' ),
-  'wrench'       => __( 'Herramienta (artesanal)', 'air-light' ),
-  'star'         => __( 'Estrella', 'air-light' ),
-];
+$icon_choices = icon_choices();
 
 $variant_choices = [
   'light'  => __( 'Claro (fondo blanco)', 'air-light' ),
@@ -167,6 +158,7 @@ acf_add_local_field_group( [
           'name'    => 'icon',
           'type'    => 'select',
           'choices' => $icon_choices,
+          'ui'      => 1,
           'wrapper' => [ 'width' => '33' ],
         ],
         [

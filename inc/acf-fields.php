@@ -14,6 +14,31 @@
 namespace Air_Light;
 
 /**
+ * Every assets/svg/icon-*.svg file, keyed by its slug, with a label
+ * auto-generated from that slug. Shared `choices` source for every ACF
+ * icon-picker select field, so adding an SVG to assets/svg/ is enough to
+ * make it pickable - no per-field-group array to keep in sync.
+ */
+function icon_choices() {
+  static $choices = null;
+
+  if ( null !== $choices ) {
+    return $choices;
+  }
+
+  $choices = [];
+
+  foreach ( glob( get_theme_file_path( 'assets/svg/icon-*.svg' ) ) as $file ) {
+    $slug             = substr( basename( $file, '.svg' ), strlen( 'icon-' ) );
+    $choices[ $slug ] = ucwords( str_replace( '-', ' ', $slug ) );
+  }
+
+  ksort( $choices );
+
+  return $choices;
+} // end icon_choices
+
+/**
  * Require every custom ACF field group file. Hooked to acf/init (see
  * inc/hooks.php) instead of run immediately - each field group calls
  * translation functions (__()) inline, and doing that before WordPress's
@@ -35,4 +60,5 @@ function register_acf_field_groups() {
   require get_theme_file_path( '/inc/acf-fields/ajustes-scripts.php' );
   require get_theme_file_path( '/inc/acf-fields/ajustes-facebook-pixel.php' );
   require get_theme_file_path( '/inc/acf-fields/ajustes-cookies.php' );
+  require get_theme_file_path( '/inc/acf-fields/ajustes-historias.php' );
 } // end register_acf_field_groups

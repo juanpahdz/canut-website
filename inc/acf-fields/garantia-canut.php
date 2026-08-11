@@ -18,17 +18,7 @@ if ( ! function_exists( 'acf_add_local_field_group' ) ) {
   return;
 }
 
-$garantia_icon_choices = [
-  'shield-check'          => __( 'Escudo (garantía)', 'air-light' ),
-  'arrow-counter-clockwise' => __( 'Flecha circular (retracto)', 'air-light' ),
-  'truck'                 => __( 'Camión (envío)', 'air-light' ),
-  'wrench'                => __( 'Llave (servicio técnico)', 'air-light' ),
-  'medal'                 => __( 'Medalla (calidad)', 'air-light' ),
-  'headset'               => __( 'Auriculares (soporte)', 'air-light' ),
-  'paw-print'             => __( 'Huella (mascota)', 'air-light' ),
-  'x'                     => __( 'X (exclusión)', 'air-light' ),
-  'check'                 => __( 'Check', 'air-light' ),
-];
+$garantia_icon_choices = icon_choices();
 
 acf_add_local_field_group( [
   'key'    => 'group_garantia_canut',
@@ -120,6 +110,7 @@ acf_add_local_field_group( [
           'name'    => 'icon',
           'type'    => 'select',
           'choices' => $garantia_icon_choices,
+          'ui'      => 1,
           'wrapper' => [ 'width' => '25' ],
         ],
         [
@@ -239,6 +230,7 @@ acf_add_local_field_group( [
           'name'    => 'icon',
           'type'    => 'select',
           'choices' => $garantia_icon_choices,
+          'ui'      => 1,
           'wrapper' => [ 'width' => '25' ],
         ],
         [

@@ -16,12 +16,7 @@ if ( ! function_exists( 'acf_add_local_field_group' ) ) {
   return;
 }
 
-$whatsapp_icon_choices = [
-  'phone'    => __( 'Teléfono', 'air-light' ),
-  'headset'  => __( 'Auriculares (soporte)', 'air-light' ),
-  'whatsapp' => __( 'WhatsApp', 'air-light' ),
-  'chat-circle' => __( 'Chat', 'air-light' ),
-];
+$whatsapp_icon_choices = icon_choices();
 
 acf_add_local_field_group( [
   'key'    => 'group_contacto_canut',
@@ -122,6 +117,7 @@ acf_add_local_field_group( [
           'name'    => 'icon',
           'type'    => 'select',
           'choices' => $whatsapp_icon_choices,
+          'ui'      => 1,
           'wrapper' => [ 'width' => '20' ],
         ],
         [

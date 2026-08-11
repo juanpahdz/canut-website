@@ -18,16 +18,9 @@ if ( ! function_exists( 'acf_add_local_field_group' ) ) {
 
 /**
  * Icon choices for the "Lo que incluye" chips (mini cards, see
- * views/_product.scss .tabs-canut-chip). Slugs match assets/svg/icon-*.svg.
+ * views/_product.scss .tabs-canut-chip).
  */
-$box_content_icon_choices = [
-  'package'      => __( 'Caja / producto', 'air-light' ),
-  'battery-full' => __( 'Batería', 'air-light' ),
-  'plug'         => __( 'Cable / carga', 'air-light' ),
-  'book-open'    => __( 'Guía / manual', 'air-light' ),
-  'wifi-high'    => __( 'Conectividad', 'air-light' ),
-  'check'        => __( 'Genérico', 'air-light' ),
-];
+$box_content_icon_choices = icon_choices();
 
 acf_add_local_field_group( [
   'key'    => 'group_product_canut',
@@ -170,6 +163,7 @@ acf_add_local_field_group( [
           'name'    => 'icon',
           'type'    => 'select',
           'choices' => $box_content_icon_choices,
+          'ui'      => 1,
           'wrapper' => [ 'width' => '30' ],
         ],
         [

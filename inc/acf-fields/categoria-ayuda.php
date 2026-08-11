@@ -16,21 +16,9 @@ if ( ! function_exists( 'acf_add_local_field_group' ) ) {
 }
 
 /**
- * Icon choices for the category heading. Slugs match assets/svg/icon-*.svg
- * (same "select choice slug === SVG filename suffix" convention as
- * inc/acf-fields/product-canut.php's $box_content_icon_choices).
+ * Icon choices for the category heading.
  */
-$categoria_ayuda_icon_choices = [
-  'package'      => __( 'Producto', 'air-light' ),
-  'truck'        => __( 'Envíos', 'air-light' ),
-  'credit-card'  => __( 'Pagos', 'air-light' ),
-  'shield-check' => __( 'Garantía', 'air-light' ),
-  'paw-print'    => __( 'Mascota', 'air-light' ),
-  'wrench'       => __( 'Soporte técnico', 'air-light' ),
-  'hand-coins'   => __( 'Financiación', 'air-light' ),
-  'gift'         => __( 'Promociones', 'air-light' ),
-  'chat-circle'  => __( 'Genérico', 'air-light' ),
-];
+$categoria_ayuda_icon_choices = icon_choices();
 
 acf_add_local_field_group( [
   'key'      => 'group_categoria_ayuda',
