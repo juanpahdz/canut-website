@@ -257,45 +257,6 @@ acf_add_local_field_group( [
         ],
       ],
     ],
-    [
-      'key'           => 'field_pc_comparison_card_image',
-      'label'         => __( 'Imagen de la tarjeta grande', 'air-light' ),
-      'name'          => 'comparison_card_image',
-      'type'          => 'image',
-      'return_format' => 'array',
-      'preview_size'  => 'medium',
-    ],
-    [
-      'key'           => 'field_pc_comparison_card_title',
-      'label'         => __( 'Título de la tarjeta grande', 'air-light' ),
-      'name'          => 'comparison_card_title',
-      'type'          => 'text',
-      'default_value' => 'Con CANUT, esto ya no pasa.',
-    ],
-    [
-      'key'           => 'field_pc_comparison_card_text',
-      'label'         => __( 'Texto de la tarjeta grande', 'air-light' ),
-      'name'          => 'comparison_card_text',
-      'type'          => 'textarea',
-      'rows'          => 3,
-      'default_value' => 'Transforma la angustia en serenidad. Tu mascota merece la puntualidad de un reloj y el cariño de una marca premium.',
-    ],
-    [
-      'key'           => 'field_pc_comparison_card_link_label',
-      'label'         => __( 'Enlace: texto', 'air-light' ),
-      'name'          => 'comparison_card_link_label',
-      'type'          => 'text',
-      'default_value' => 'Ver tecnología',
-      'wrapper'       => [ 'width' => '50' ],
-    ],
-    [
-      'key'     => 'field_pc_comparison_card_link_url',
-      'label'   => __( 'Enlace: URL', 'air-light' ),
-      'name'    => 'comparison_card_link_url',
-      'type'    => 'url',
-      'wrapper' => [ 'width' => '50' ],
-    ],
-
     // Familia CANUT (galería estilo de vida)
     [
       'key'   => 'field_pc_tab_gallery_strip',
