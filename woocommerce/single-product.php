@@ -199,13 +199,6 @@ while ( have_posts() ) :
     ];
   }
 
-  $comparison_card_image_field = $field( 'comparison_card_image' );
-  $comparison_card_image       = $comparison_card_image_field['url'] ?? get_theme_file_uri( 'assets/images/homepage/featured-product.jpg' );
-  $comparison_card_title       = $field( 'comparison_card_title' ) ?: __( 'Con CANUT, esto ya no pasa.', 'air-light' );
-  $comparison_card_text        = $field( 'comparison_card_text' ) ?: __( 'Transforma la angustia en serenidad. Tu mascota merece la puntualidad de un reloj y el cariño de una marca premium.', 'air-light' );
-  $comparison_card_link_label  = $field( 'comparison_card_link_label' ) ?: __( 'Ver tecnología', 'air-light' );
-  $comparison_card_link_url    = $field( 'comparison_card_link_url' ) ?: home_url( '/tienda/' );
-
   $gallery_strip_title  = $field( 'gallery_strip_title' ) ?: __( 'Familia CANUT', 'air-light' );
   $gallery_strip_images = [];
 
@@ -563,24 +556,6 @@ while ( have_posts() ) :
           <?php endforeach; ?>
         </div>
       <?php endif; ?>
-
-      <div class="product-comparison-card">
-        <div class="product-comparison-card-media">
-          <img
-            src="<?php echo esc_url( $comparison_card_image ); ?>"
-            alt="<?php esc_attr_e( 'Perro junto al comedero CANUT en una sala de estar', 'air-light' ); ?>"
-            loading="lazy"
-          >
-        </div>
-        <div class="product-comparison-card-content">
-          <h3 class="product-comparison-card-title"><?php echo esc_html( $comparison_card_title ); ?></h3>
-          <p class="product-comparison-card-text"><?php echo esc_html( $comparison_card_text ); ?></p>
-          <a href="<?php echo esc_url( $comparison_card_link_url ); ?>" class="product-comparison-card-link">
-            <?php echo esc_html( $comparison_card_link_label ); ?>
-            <?php require get_theme_file_path( 'assets/svg/icon-chevron-down.svg' ); ?>
-          </a>
-        </div>
-      </div>
     </div>
   </div>
 
