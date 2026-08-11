@@ -18,13 +18,7 @@ get_header(); ?>
         <?php
         while ( have_posts() ) :
           the_post();
-          $historia_id = get_the_ID();
-          get_template_part( 'template-parts/historia/card', '', [
-            'image'  => [ 'url' => get_the_post_thumbnail_url( $historia_id, 'medium' ), 'alt' => get_the_title() ],
-            'rating' => (int) ( get_field( 'rating', $historia_id ) ?: 5 ),
-            'quote'  => get_field( 'quote', $historia_id ),
-            'author' => get_the_title(),
-          ] );
+          get_template_part( 'template-parts/historia/card', '', historia_get_card_args( get_the_ID() ) );
         endwhile;
         ?>
       </ul>
@@ -33,6 +27,16 @@ get_header(); ?>
     <?php else : ?>
       <p><?php esc_html_e( 'Todavía no hay historias publicadas.', 'air-light' ); ?></p>
     <?php endif; ?>
+
+    <div class="historia-archive-cta">
+      <div class="historia-archive-cta-content">
+        <h2><?php esc_html_e( '¿Ya tienes un CANUT?', 'air-light' ); ?></h2>
+        <p><?php esc_html_e( 'Cuenta tu historia y ayuda a otros dueños a decidirse.', 'air-light' ); ?></p>
+      </div>
+      <button type="button" class="button-canut-base button-canut-light is-no-arrow" data-canut-historia-open>
+        <?php esc_html_e( 'Cuenta tu historia', 'air-light' ); ?>
+      </button>
+    </div>
   </div>
 </main>
 

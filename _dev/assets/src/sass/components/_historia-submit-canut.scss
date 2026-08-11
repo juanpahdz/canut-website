@@ -1,0 +1,129 @@
+// CANUT "Cuenta tu historia" submission dialog
+// (template-parts/historia/submit-form.php, modules/historia-submit-canut.js).
+// A <dialog>, shown via showModal() - same shape/transition convention as
+// _iframe-modal-canut.scss (fade+slide via @starting-style, ::backdrop tint,
+// the :not([open]) specificity trick), styled as a bold brand-green card so
+// it reads as its own attention-grabbing moment rather than another plain
+// form on the page.
+// stylelint-disable custom-property-pattern, csstools/value-no-unknown-custom-properties, scss/at-rule-no-unknown -- @starting-style isn't in stylelint's at-rule list yet, and var(--wp--preset--color--*) tokens aren't resolvable by stylelint's value parser
+@use '../variables' as *;
+
+.historia-submit-canut {
+  @include canut-radius(lg);
+  background-color: var(--wp--preset--color--primary);
+  border: 0;
+  color: var(--wp--preset--color--white);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: auto;
+  max-height: min(90vh, 48rem);
+  max-width: 36rem;
+  padding: 0;
+  transform: translateY(0);
+  transition: opacity 200ms ease, transform 200ms ease;
+  width: 90vw;
+
+  // See _iframe-modal-canut.scss's own docblock for why this is needed:
+  // the UA stylesheet only hides a <dialog> via a plain `dialog { display:
+  // none }` (no `:not([open])`), which this component's own `display: flex`
+  // class selector would otherwise outrank, keeping it visible while closed.
+  &:not([open]) {
+    display: none;
+  }
+
+  @starting-style {
+    &[open] {
+      opacity: 0;
+      transform: translateY(0.5rem);
+    }
+  }
+
+  &::backdrop {
+    background-color: color-mix(in sRGB, var(--wp--preset--color--primary-dark) 60%, transparent);
+    opacity: 1;
+    transition: opacity 200ms ease;
+
+    @starting-style {
+      opacity: 0;
+    }
+  }
+
+  @media (max-width: $breakpoint-mobile) {
+    max-height: 100vh;
+    width: 100vw;
+  }
+}
+
+.historia-submit-canut-header {
+  align-items: center;
+  display: flex;
+  flex-shrink: 0;
+  justify-content: space-between;
+  padding: var(--wp--preset--spacing--space-md) var(--wp--preset--spacing--space-md) 0;
+}
+
+.historia-submit-canut-title {
+  @include text-style(h-3, display, medium);
+  color: var(--wp--preset--color--white);
+  margin: 0;
+}
+
+.historia-submit-canut-close {
+  background-color: transparent;
+  border: 0;
+  color: var(--wp--preset--color--white);
+  cursor: pointer;
+  padding: var(--wp--preset--spacing--space-xs);
+
+  svg {
+    height: 1.5rem;
+    width: 1.5rem;
+  }
+}
+
+.historia-submit-canut-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-md);
+  overflow-y: auto;
+  padding: var(--wp--preset--spacing--space-md);
+}
+
+.historia-submit-canut-subtitle {
+  @include text-style(small, body, regular);
+  color: color-mix(in sRGB, var(--wp--preset--color--white) 75%, transparent);
+  margin: 0;
+}
+
+.historia-submit-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-sm);
+
+  // The shared .form-canut-label is styled for a light card (--text-secondary,
+  // a dark grey) - unreadable on this dialog's dark green, so every label
+  // here gets a light override instead. Inputs/selects/textarea need no
+  // change: .input-canut/.select-canut/.textarea-canut already paint their
+  // own white background (--bg-surface), so they stay legible regardless.
+  .form-canut-label {
+    color: color-mix(in sRGB, var(--wp--preset--color--white) 85%, transparent);
+  }
+}
+
+// Honeypot: hidden from sighted/mouse users and skipped in tab order, but
+// still present in markup and DOM-visible to simple bots - same technique
+// as .soporte-form-hp (views/_soporte.scss).
+.historia-submit-form-hp {
+  height: 1px;
+  left: -625rem;
+  overflow: hidden;
+  position: absolute;
+  width: 1px;
+}
+
+.historia-submit-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--space-xs);
+}

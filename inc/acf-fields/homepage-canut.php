@@ -15,28 +15,7 @@ if ( ! function_exists( 'acf_add_local_field_group' ) ) {
   return;
 }
 
-$icon_choices = [
-  'shield-check' => __( 'Escudo (garantía)', 'air-light' ),
-  'truck'        => __( 'Camión (envíos)', 'air-light' ),
-  'chat-circle'  => __( 'Chat (soporte)', 'air-light' ),
-  'wrench'       => __( 'Herramienta (artesanal)', 'air-light' ),
-  'star'         => __( 'Estrella', 'air-light' ),
-  'shopping-bag' => __( 'Bolsa de compras', 'air-light' ),
-  'user'         => __( 'Usuario', 'air-light' ),
-  'lock'         => __( 'Candado', 'air-light' ),
-  'check'        => __( 'Check', 'air-light' ),
-  'camera'       => __( 'Cámara', 'air-light' ),
-  'wifi-high'    => __( 'WiFi', 'air-light' ),
-  'scales'       => __( 'Báscula (porciones)', 'air-light' ),
-  'battery-full' => __( 'Batería', 'air-light' ),
-  'drop'         => __( 'Gota (agua)', 'air-light' ),
-  'package'      => __( 'Paquete (capacidad)', 'air-light' ),
-  'cube'         => __( 'Cubo (material)', 'air-light' ),
-  'plug'         => __( 'Enchufe', 'air-light' ),
-  'paw-print'    => __( 'Huella', 'air-light' ),
-  'medal'        => __( 'Medalla', 'air-light' ),
-  'brain'        => __( 'Cerebro (IA)', 'air-light' ),
-];
+$icon_choices = icon_choices();
 
 acf_add_local_field_group( [
   'key'      => 'group_homepage_canut',
@@ -121,6 +100,7 @@ acf_add_local_field_group( [
           'name'    => 'icon',
           'type'    => 'select',
           'choices' => $icon_choices,
+          'ui'      => 1,
         ],
         [
           'key'   => 'field_hpc_trust_item_label',
@@ -221,6 +201,7 @@ acf_add_local_field_group( [
           'name'    => 'icon',
           'type'    => 'select',
           'choices' => $icon_choices,
+          'ui'      => 1,
         ],
         [
           'key'   => 'field_hpc_featured_spec_label',

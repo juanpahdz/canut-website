@@ -177,6 +177,8 @@ $whatsapp_bubble_messages = get_whatsapp_bubble_messages();
 
 <?php get_template_part( 'template-parts/modal/iframe-modal' ); ?>
 
+<?php get_template_part( 'template-parts/historia/submit-form' ); ?>
+
 </div><!-- #page -->
 
 <?php wp_footer(); ?>
