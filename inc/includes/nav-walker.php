@@ -309,7 +309,7 @@ class Nav_Walker extends \Walker_Nav_Menu {
     // instead of plain text (CSS hides the image again on mobile).
     $product_thumbnail = '';
     if ( $depth > 0 && 'product' === $item->object && function_exists( 'wc_get_product' ) ) {
-      $product_thumbnail = get_the_post_thumbnail( $item->object_id, 'thumbnail', array( 'class' => 'dropdown-item-thumbnail' ) );
+      $product_thumbnail = get_the_post_thumbnail( $item->object_id, 'nav-dropdown-thumbnail', array( 'class' => 'dropdown-item-thumbnail' ) );
     }
 
     // Put the item contents into $output.
