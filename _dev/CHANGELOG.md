@@ -1,4 +1,7 @@
-### [Unreleased]: 2026-08-11
+### [Unreleased]: 2026-08-12
+
+* Darken the homepage hero's media overlay (`.home-hero-media::after`, `_front-page.scss`) so the title/subtitle read more clearly over bright photos/video - black tint raised from 20% to 35%, the bottom-up `primary-dark` gradient from 70% to 75%
+* Animate the homepage hero title (`.home-hero-title`, `template-parts/front-page/hero.php`) in letter by letter on page load - each letter is now its own `<span class="home-hero-letter">` (grouped into `.home-hero-word` spans so words don't break mid-letter), fading and sliding up with a slight overshoot/bounce (`easeOutBack` timing), staggered via an inline `--letter-index` custom property. The visible spans are `aria-hidden`, with the full title kept as the `<h1>`'s `aria-label` for screen readers; disabled under `prefers-reduced-motion: reduce`. Word spacing is drawn with a CSS margin instead of relying on the literal space character between `.home-hero-word` spans, since that whitespace-only text node was being collapsed away
 
 * Remove the "Con CANUT, esto ya no pasa." comparison card from the product page (`woocommerce/single-product.php`, inside `.product-comparison`) - the large image + title/text/"Ver tecnología" link block that followed the "¿Se te hace familiar?" scenarios gallery. Dropped its five ACF fields (`comparison_card_image`/`_title`/`_text`/`_link_label`/`_link_url`, `inc/acf-fields/product-canut.php`) and `.product-comparison-card*` styles (`_product.scss`) - the scenarios gallery and section title above it are untouched
 

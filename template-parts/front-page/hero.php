@@ -39,7 +39,25 @@ $cta_url   = $args['cta_url'] ?? '#featured-product';
   </div>
 
   <div class="wrap-canut home-hero-content">
-    <h1 class="home-hero-title"><?php echo esc_html( $title ); ?></h1>
+    <h1 class="home-hero-title" aria-label="<?php echo esc_attr( $title ); ?>">
+      <span class="home-hero-title-letters" aria-hidden="true">
+        <?php
+        $letter_index = 0;
+
+        foreach ( preg_split( '/(\s+)/u', $title, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY ) as $word ) :
+          if ( trim( $word ) === '' ) :
+            echo ' ';
+            continue;
+          endif;
+          ?>
+          <span class="home-hero-word">
+            <?php foreach ( preg_split( '//u', $word, -1, PREG_SPLIT_NO_EMPTY ) as $letter ) : ?>
+              <span class="home-hero-letter" style="--letter-index: <?php echo (int) $letter_index++; ?>"><?php echo esc_html( $letter ); ?></span>
+            <?php endforeach; ?>
+          </span>
+        <?php endforeach; ?>
+      </span>
+    </h1>
     <p class="home-hero-subtitle"><?php echo esc_html( $subtitle ); ?></p>
     <a href="<?php echo esc_url( $cta_url ); ?>" class="button-canut-base button-canut-ghost home-hero-cta">
       <?php echo esc_html( $cta_label ); ?>
