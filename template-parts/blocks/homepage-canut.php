@@ -191,7 +191,11 @@ if ( $featured_historias->have_posts() ) {
   foreach ( $featured_historias->posts as $historia ) {
     $card_args   = historia_get_card_args( $historia->ID );
     $historias[] = [
-      'image'  => homepage_canut_image( $card_args['image'], 'review-1.jpg', $card_args['author'] ),
+      // No stock-photo fallback here - real stories with no featured image
+      // of their own render without one (template-parts/historia/card.php
+      // already skips the .historia-card-media block when 'image' is
+      // empty) rather than all sharing the same demo photo.
+      'image'  => $card_args['image'],
       'rating' => $card_args['rating'],
       'quote'  => $card_args['quote'],
       'author' => $card_args['author'],
