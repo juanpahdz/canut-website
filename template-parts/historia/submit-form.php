@@ -76,7 +76,7 @@ $turnstile_settings = historia_turnstile_is_configured() ? historia_turnstile_se
       </p>
 
       <div class="historia-submit-form-field">
-        <label class="form-canut-label" for="canut_historia_nombre"><?php esc_html_e( 'Tu nombre', 'air-light' ); ?></label>
+        <label class="form-canut-label" for="canut_historia_nombre"><?php esc_html_e( 'Tu nombre o el de tu mascota', 'air-light' ); ?></label>
         <input class="input-canut" type="text" id="canut_historia_nombre" name="canut_historia_nombre" placeholder="<?php echo esc_attr__( 'Ej. Camila & Bruno', 'air-light' ); ?>" autocomplete="name" required>
       </div>
 

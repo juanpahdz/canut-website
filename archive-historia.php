@@ -30,7 +30,7 @@ get_header(); ?>
 
     <div class="historia-archive-cta">
       <div class="historia-archive-cta-content">
-        <h2><?php esc_html_e( '¿Ya tienes un CANUT?', 'air-light' ); ?></h2>
+        <h2><?php esc_html_e( '¿Ya tienes una historia con CANUT?', 'air-light' ); ?></h2>
         <p><?php esc_html_e( 'Cuenta tu historia y ayuda a otros dueños a decidirse.', 'air-light' ); ?></p>
       </div>
       <button type="button" class="button-canut-base button-canut-light is-no-arrow" data-canut-historia-open>

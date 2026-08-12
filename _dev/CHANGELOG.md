@@ -1,5 +1,7 @@
 ### [Unreleased]: 2026-08-12
 
+* Reword two bits of Historia copy: the historias archive's CTA band heading (`archive-historia.php`) from "¿Ya tienes un CANUT?" to "¿Ya tienes una historia con CANUT?", and the public submission form's name field label (`template-parts/historia/submit-form.php`) from "Tu nombre" to "Tu nombre o el de tu mascota"
+
 * Stop the homepage "Historias CANUT" carousel giving every real story with no featured image of its own the same stock demo photo (`homepage_canut_image( $card_args['image'], 'review-1.jpg', ... )` in `template-parts/blocks/homepage-canut.php`) - real Historia posts now render with no photo at all when none was selected (`template-parts/historia/card.php` already skips its `.historia-card-media` block for an empty image), instead of all sharing one stranger's photo
 
 * Remove the homepage "Historias CANUT" section's hardcoded placeholder testimonials (`template-parts/blocks/homepage-canut.php`) - it used to fall back to 3 fake reviews ("Camila & Bruno", "Javier G.", "Maria P.") whenever `historia_query_random_for_homepage()` found no real published Historia rated 4+, which is misleading and was showing on the live homepage since no real story currently qualifies. The section is now skipped entirely until real ones exist, instead of the old `hero.php`-style "falls back to demo copy" pattern - unlike page copy, fake customer testimonials aren't an acceptable default
