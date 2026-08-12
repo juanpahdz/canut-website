@@ -134,6 +134,12 @@ function build_theme_support() {
   add_theme_support( 'automatic-feed-links' );
   add_theme_support( 'title-tag' );
   add_theme_support( 'post-thumbnails' );
+
+  // Nav dropdown product thumbnails (Nav_Walker::start_el(), inc/includes/nav-walker.php)
+  // render at ~280x210 (.dropdown-item-thumbnail, 4:3 box in _nav-desktop.scss) - sized
+  // at 2x that for retina rather than reusing core's 150x150 'thumbnail', which was
+  // being upscaled ~2-4x and looked blurry.
+  add_image_size( 'nav-dropdown-thumbnail', 560, 420, true );
   add_theme_support( 'align-wide' );
   add_theme_support( 'wp-block-styles' );
   add_theme_support( 'responsive-embeds' );

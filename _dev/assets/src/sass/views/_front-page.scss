@@ -32,8 +32,8 @@ $canut-on-dark-muted: color-mix(in sRGB, var(--wp--preset--color--white) 75%, va
   }
 
   &::after {
-    background-color: color-mix(in sRGB, var(--wp--preset--color--black) 20%, transparent);
-    background-image: linear-gradient(to top, color-mix(in sRGB, var(--wp--preset--color--primary-dark) 70%, transparent) 0%, transparent 40%);
+    background-color: color-mix(in sRGB, var(--wp--preset--color--black) 35%, transparent);
+    background-image: linear-gradient(to top, color-mix(in sRGB, var(--wp--preset--color--primary-dark) 75%, transparent) 0%, transparent 40%);
     content: '';
     inset: 0;
     position: absolute;
@@ -57,6 +57,50 @@ $canut-on-dark-muted: color-mix(in sRGB, var(--wp--preset--color--white) 75%, va
   color: var(--wp--preset--color--white);
   line-height: 1.1;
   margin: 0;
+}
+
+// Word wrapper keeps a word's letters from splitting across a line break
+// (each letter below is display: inline-block, which loses the normal
+// text break opportunities a plain inline run would have). The gap between
+// words is drawn with margin rather than relying on the literal space
+// character hero.php still prints between spans - that whitespace-only
+// text node is only there to keep a break opportunity between words, not
+// for its width, since some HTML output paths collapse it away entirely.
+.home-hero-word {
+  display: inline-block;
+  margin-right: 0.28em;
+
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
+@keyframes home-hero-letter-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.6em);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Letters fade/slide in left to right, each starting slightly after the
+// last (--letter-index, set inline per letter in hero.php) and the
+// overshoot-then-settle easing (easeOutBack) is what reads as a soft bounce.
+.home-hero-letter {
+  animation-delay: calc(var(--letter-index, 0) * 0.035s);
+  animation-duration: 0.6s;
+  animation-fill-mode: both;
+  animation-name: home-hero-letter-in;
+  animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: inline-block;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation-name: none;
+  }
 }
 
 .home-hero-subtitle {
