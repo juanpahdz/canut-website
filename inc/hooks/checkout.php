@@ -75,6 +75,7 @@ function checkout_add_neighborhood_field( $fields ) {
     'label' => __( 'Barrio', 'air-light' ),
     'required' => true,
     'class' => [ 'form-canut-group' ],
+    'placeholder' => __( 'Ej. Chapinero', 'air-light' ),
     'priority' => 65, // Right after city/state, before postcode.
   ];
 
@@ -566,6 +567,44 @@ function checkout_add_field_classes( $fields ) {
   return $fields;
 } // end checkout_add_field_classes
 add_filter( 'woocommerce_checkout_fields', __NAMESPACE__ . '\checkout_add_field_classes' );
+
+/**
+ * Example-value placeholder text per field - none of WooCommerce's default
+ * billing/order fields carry one on their own. Select fields (billing_country,
+ * billing_state) are left out since core's field template never renders a
+ * placeholder for them. billing_phone isn't rendered via woocommerce_form_field()
+ * at all (see checkout_render_phone_field() above) but reads $field['placeholder']
+ * from this same filtered config, so it's covered here too rather than in its
+ * own template.
+ *
+ * @param array $fields All checkout fields, grouped by fieldset.
+ * @return array
+ */
+function checkout_add_field_placeholders( $fields ) {
+  $placeholders = [
+    'billing_first_name' => __( 'Juan', 'air-light' ),
+    'billing_last_name' => __( 'Pérez', 'air-light' ),
+    'billing_company' => __( 'Nombre de tu empresa', 'air-light' ),
+    'billing_email' => __( 'correo@ejemplo.com', 'air-light' ),
+    'billing_phone' => __( '300 123 4567', 'air-light' ),
+    'billing_address_1' => __( 'Calle 123 # 45-67', 'air-light' ),
+    'billing_address_2' => __( 'Apartamento, casa, oficina (opcional)', 'air-light' ),
+    'billing_city' => __( 'Bogotá', 'air-light' ),
+    'billing_postcode' => __( '110111', 'air-light' ),
+    'order_comments' => __( 'Ej. dejar el pedido en portería', 'air-light' ),
+  ];
+
+  foreach ( $fields as $fieldset => $fieldset_fields ) {
+    foreach ( $placeholders as $key => $placeholder ) {
+      if ( isset( $fieldset_fields[ $key ] ) ) {
+        $fields[ $fieldset ][ $key ]['placeholder'] = $placeholder;
+      }
+    }
+  }
+
+  return $fields;
+} // end checkout_add_field_placeholders
+add_filter( 'woocommerce_checkout_fields', __NAMESPACE__ . '\checkout_add_field_placeholders' );
 
 /**
  * Show the "Contraentrega" (cod) payment card before any other gateway, so
